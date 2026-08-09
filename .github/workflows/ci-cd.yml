@@ -1,0 +1,68 @@
+﻿name: CI & Auto Release Tag
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+permissions:
+  contents: write
+
+jobs:
+  test-and-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: Run tests
+        run: cargo test --all-targets --all-features
+
+      - name: Check version against latest tag
+        id: check_version
+        run: |
+          CARGO_VERSION=$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].version')
+          echo "Current Cargo.toml version: $CARGO_VERSION"
+
+          LATEST_TAG=$(git tag -l "v*" --sort=-v:refname | head -n 1)
+
+          if [ -z "$LATEST_TAG" ]; then
+            echo "No existing tags found. Proceeding with tagging initial version."
+            echo "NEW_TAG=v$CARGO_VERSION" >> $GITHUB_OUTPUT
+            echo "SHOULD_TAG=true" >> $GITHUB_OUTPUT
+          else
+            CLEAN_TAG="${LATEST_TAG#v}"
+            echo "Latest Git tag version: $CLEAN_TAG"
+
+            HIGHER_VERSION=$(printf '%s\n%s' "$CLEAN_TAG" "$CARGO_VERSION" | sort -V | tail -n 1)
+
+            if [ "$CARGO_VERSION" != "$CLEAN_TAG" ] && [ "$HIGHER_VERSION" = "$CARGO_VERSION" ]; then
+              echo "Version in Cargo.toml ($CARGO_VERSION) is higher than latest tag ($CLEAN_TAG)."
+              echo "NEW_TAG=v$CARGO_VERSION" >> $GITHUB_OUTPUT
+              echo "SHOULD_TAG=true" >> $GITHUB_OUTPUT
+            else
+              echo "Cargo.toml version ($CARGO_VERSION) is not higher than latest tag ($CLEAN_TAG). Skipping tag creation."
+              echo "SHOULD_TAG=false" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: Create and push Git tag
+        if: steps.check_version.outputs.SHOULD_TAG == 'true'
+        run: |
+          NEW_TAG="${{ steps.check_version.outputs.NEW_TAG }}"
+          echo "Creating Git tag: $NEW_TAG"
+          
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git tag -a "$NEW_TAG" -m "Release $NEW_TAG"
+          git push origin "$NEW_TAG"
