@@ -7,29 +7,31 @@ pub struct ValueType {
     vtype: Option<ApicaTypeBytecode>,
 }
 
-pub fn get_vtype_repr(vtype: ApicaTypeBytecode) -> &'static str {
-    match vtype {
-        ApicaTypeBytecode::Null => "null",
+impl ApicaTypeBytecode {
+    pub fn repr(&self) -> &'static str {
+        match self {
+            ApicaTypeBytecode::Null => "null",
 
-        ApicaTypeBytecode::I8 => "i8",
-        ApicaTypeBytecode::I16 => "i16",
-        ApicaTypeBytecode::I32 => "i32",
-        ApicaTypeBytecode::I64 => "i64",
-        ApicaTypeBytecode::U8 => "u8",
-        ApicaTypeBytecode::U16 => "u16",
-        ApicaTypeBytecode::U32 => "u32",
-        ApicaTypeBytecode::U64 => "u64",
-        ApicaTypeBytecode::F32 => "f32",
-        ApicaTypeBytecode::F64 => "f64",
-        ApicaTypeBytecode::Bool => "bool",
+            ApicaTypeBytecode::I8 => "i8",
+            ApicaTypeBytecode::I16 => "i16",
+            ApicaTypeBytecode::I32 => "i32",
+            ApicaTypeBytecode::I64 => "i64",
+            ApicaTypeBytecode::U8 => "u8",
+            ApicaTypeBytecode::U16 => "u16",
+            ApicaTypeBytecode::U32 => "u32",
+            ApicaTypeBytecode::U64 => "u64",
+            ApicaTypeBytecode::F32 => "f32",
+            ApicaTypeBytecode::F64 => "f64",
+            ApicaTypeBytecode::Bool => "bool",
 
-        ApicaTypeBytecode::Char => "char",
-        ApicaTypeBytecode::String => "string",
+            ApicaTypeBytecode::Char => "char",
+            ApicaTypeBytecode::String => "string",
 
-        ApicaTypeBytecode::Error => "error",
-        ApicaTypeBytecode::Type => "type",
+            ApicaTypeBytecode::Error => "error",
+            ApicaTypeBytecode::Type => "type",
 
-        _ => "???",
+            _ => "???",
+        }
     }
 }
 
@@ -58,7 +60,7 @@ impl ValueTrait for ValueType {
 
     fn show(&self, end: char) {
         match self.vtype {
-            Some(v) => print!("type<{}>{}", get_vtype_repr(v), end),
+            Some(v) => print!("type<{}>{}", v.repr(), end),
             None => print!("type<>{}", end),
         }
     }
@@ -118,7 +120,7 @@ impl ValueTrait for ValueType {
     fn convert(&self, to: ApicaTypeBytecode) -> Option<Value> {
         if let Some(value) = self.vtype {
             match to {
-                ApicaTypeBytecode::String => Some(Value::String(ValueString::with_value(format!("<{}>", get_vtype_repr(value))))),
+                ApicaTypeBytecode::String => Some(Value::String(ValueString::with_value(format!("<{}>", value.repr())))),
                 ApicaTypeBytecode::Bool => Some(Value::Bool(ValueBool::with_value(value != ApicaTypeBytecode::Null))),
 
                 _ => None,

@@ -1,7 +1,7 @@
 ﻿use crate::bytecodes::types::ApicaTypeBytecode;
 use crate::values::bool::ValueBool;
 use crate::values::value::{Value, ValueTrait};
-use crate::values::vtype::{get_vtype_repr, ValueType};
+use crate::values::vtype::ValueType;
 
 pub struct ValueString {
     value: Option<String>,
@@ -101,8 +101,8 @@ impl ValueTrait for ValueString {
             },
             
             Value::Type(v) => Some(Value::String(ValueString::with_value(
-                format!("{}<{}>", self.value.as_ref().unwrap(), get_vtype_repr(v.vtype().unwrap()))
-            ))),
+                format!("{}<{}>", self.value.as_ref().unwrap(), v.vtype().unwrap().repr()))
+            )),
 
             _ => None,
         }

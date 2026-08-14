@@ -1,7 +1,6 @@
 ﻿use crate::bytecodes::types::ApicaTypeBytecode;
 use crate::elements::modifier::ElementModifier;
 use crate::values::value::{Value, ValueTrait};
-use crate::values::vtype::get_vtype_repr;
 
 /// Represents a runtime value unit paired with execution metadata modifiers.
 ///
@@ -279,7 +278,7 @@ impl Element {
             Some(val) => Element::new(ElementModifier::NONE, val),
             None => Element::new(
                 ElementModifier::ERROR,
-                Value::binary_operation_error("as", self.value.get_type_repr(), get_vtype_repr(to)),
+                Value::binary_operation_error("as", self.value.get_type_repr(), to.repr()),
             )
         }
     }
@@ -290,7 +289,7 @@ impl Element {
             Some(auto) => Element::new(ElementModifier::NONE, auto),
             None => Element::new(
                 ElementModifier::ERROR,
-                Value::binary_operation_error("auto-as", self.value.get_type_repr(), get_vtype_repr(to)),
+                Value::binary_operation_error("auto-as", self.value.get_type_repr(), to.repr()),
             )
         }
     }
@@ -316,7 +315,7 @@ impl Element {
             Some(conv) => self.value = conv,
             None => {
                 self.value = Value::binary_operation_error(
-                    "as", self.value.get_type_repr(), get_vtype_repr(to)
+                    "as", self.value.get_type_repr(), to.repr()
                 );
                 self.modifier |= ElementModifier::ERROR;
             }
