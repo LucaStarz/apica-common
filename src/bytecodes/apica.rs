@@ -165,6 +165,9 @@ pub enum ApicaBytecode {
     /// WHILE statement.
     While =             0x00000034,
 
+    /// FOR statement.
+    For =               0x00000035,
+
     /// Total count of Opcodes defined in this enum.
-    BytecodeSize =      0x00000035,
+    BytecodeSize =      0x00000036,
 }
