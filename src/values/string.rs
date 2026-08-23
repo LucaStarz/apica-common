@@ -260,4 +260,11 @@ impl ValueTrait for ValueString {
             }
         }
     }
+
+    fn copy(&self) -> Value {
+        match &self.value { 
+            Some(val) => Value::String(ValueString::with_value(val.to_string())),
+            None => Value::String(ValueString::new()),
+        }
+    }
 }

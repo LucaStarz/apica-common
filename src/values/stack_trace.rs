@@ -109,4 +109,11 @@ impl ValueTrait for ValueStackTrace {
     fn auto_convert(&self, _to: ApicaTypeBytecode) -> Option<Value> {
         None
     }
+
+    fn copy(&self) -> Value {
+        match &self.details { 
+            Some(details) => Value::StackTrace(Box::new(ValueStackTrace::with_details(self.name.clone(), details.to_string()))),
+            None => Value::StackTrace(Box::new(ValueStackTrace::new(self.name.clone()))),
+        }
+    }
 }

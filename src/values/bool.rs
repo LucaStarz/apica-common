@@ -512,4 +512,11 @@ impl ValueTrait for ValueBool {
             }
         }
     }
+
+    fn copy(&self) -> Value {
+        match self.value { 
+            Some(val) => Value::Bool(ValueBool::with_value(val)),
+            None => Value::Bool(ValueBool::new()),
+        }
+    }
 }

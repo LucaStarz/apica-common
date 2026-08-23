@@ -526,4 +526,11 @@ impl ValueTrait for ValueI32 {
             }
         }
     }
+
+    fn copy(&self) -> Value {
+        match self.value { 
+            Some(val) => Value::I32(ValueI32::with_value(val)),
+            None => Value::I32(ValueI32::new()),
+        }
+    }
 }

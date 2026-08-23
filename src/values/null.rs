@@ -117,4 +117,8 @@ impl ValueTrait for ValueNull {
             _ => None,
         }
     }
+
+    fn copy(&self) -> Value {
+        Value::Null(ValueNull::new())
+    }
 }

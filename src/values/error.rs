@@ -150,4 +150,15 @@ impl ValueTrait for ValueError {
             }
         }
     }
+
+    fn copy(&self) -> Value {
+        match &self.name { 
+            Some(name) => match &self.details { 
+                Some(details) => Value::Error(Box::new(ValueError::with_details(name.to_string(), details.to_string()))),
+                None => Value::Error(Box::new(ValueError::with_name(name.to_string()))),
+            },
+            
+            None => Value::Error(Box::new(ValueError::new())),
+        }
+    }
 }

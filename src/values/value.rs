@@ -39,6 +39,8 @@ pub trait ValueTrait {
 
     fn convert(&self, to: ApicaTypeBytecode) -> Option<Value>;
     fn auto_convert(&self, to: ApicaTypeBytecode) -> Option<Value>;
+    
+    fn copy(&self) -> Value;
 }
 
 pub enum Value {
@@ -480,6 +482,28 @@ impl ValueTrait for Value {
             Value::Error(v) => v.auto_convert(to),
             Value::StackTrace(v) => v.auto_convert(to),
             Value::Type(v) => v.auto_convert(to),
+        }
+    }
+
+    fn copy(&self) -> Value {
+        match self { 
+            Value::Null(v) => v.copy(),
+            Value::I8(v) => v.copy(),
+            Value::I16(v) => v.copy(),
+            Value::I32(v) => v.copy(),
+            Value::I64(v) => v.copy(),
+            Value::U8(v) => v.copy(),
+            Value::U16(v) => v.copy(),
+            Value::U32(v) => v.copy(),
+            Value::U64(v) => v.copy(),
+            Value::F32(v) => v.copy(),
+            Value::F64(v) => v.copy(),
+            Value::Bool(v) => v.copy(),
+            Value::Char(v) => v.copy(),
+            Value::String(v) => v.copy(),
+            Value::Error(v) => v.copy(),
+            Value::StackTrace(v) => v.copy(),
+            Value::Type(v) => v.copy(),
         }
     }
 }

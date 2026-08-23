@@ -529,4 +529,11 @@ impl ValueTrait for ValueChar {
             }
         }
     }
+
+    fn copy(&self) -> Value {
+        match self.value { 
+            Some(val) => Value::Char(ValueChar::with_value(val)),
+            None => Value::Char(ValueChar::new()),
+        }
+    }
 }

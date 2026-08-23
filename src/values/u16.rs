@@ -526,4 +526,11 @@ impl ValueTrait for ValueU16 {
             }
         }
     }
+
+    fn copy(&self) -> Value {
+        match self.value { 
+            Some(val) => Value::U16(ValueU16::with_value(val)),
+            None => Value::U16(ValueU16::new()),
+        }
+    }
 }

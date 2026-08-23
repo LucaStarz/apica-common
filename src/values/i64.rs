@@ -526,4 +526,11 @@ impl ValueTrait for ValueI64 {
             }
         }
     }
+
+    fn copy(&self) -> Value {
+        match self.value { 
+            Some(val) => Value::I64(ValueI64::with_value(val)),
+            None => Value::I64(ValueI64::new()),
+        }
+    }
 }

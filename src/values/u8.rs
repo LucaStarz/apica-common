@@ -526,4 +526,11 @@ impl ValueTrait for ValueU8 {
             }
         }
     }
+
+    fn copy(&self) -> Value {
+        match self.value { 
+            Some(val) => Value::U8(ValueU8::with_value(val)),
+            None => Value::U8(ValueU8::new()),
+        }
+    }
 }

@@ -152,4 +152,11 @@ impl ValueTrait for ValueType {
             }
         }
     }
+
+    fn copy(&self) -> Value {
+        match self.vtype { 
+            Some(vt) => Value::Type(ValueType::with_type(vt)),
+            None => Value::Type(ValueType::new()),
+        }
+    }
 }

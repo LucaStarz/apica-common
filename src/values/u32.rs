@@ -526,4 +526,11 @@ impl ValueTrait for ValueU32 {
             }
         }
     }
+
+    fn copy(&self) -> Value {
+        match self.value {
+            Some(val) => Value::U32(ValueU32::with_value(val)),
+            None => Value::U32(ValueU32::new()),
+        }
+    }
 }
