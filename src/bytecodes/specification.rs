@@ -2,7 +2,7 @@
 
 /// Metadata and application specification block fields in Apica bytecodes files.
 #[repr(u64)]
-#[derive(Debug, Clone, Copy, PartialEq, Eq, IntoPrimitive, TryFromPrimitive)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, IntoPrimitive, TryFromPrimitive)]
 pub enum ApicaSpecificationBytecode {
     /// End marker for the specification block.
     EndOfSpecification =    0x00000000,
