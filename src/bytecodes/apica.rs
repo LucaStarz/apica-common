@@ -167,7 +167,4 @@ pub enum ApicaBytecode {
 
     /// FOR statement.
     For =               0x00000035,
-
-    /// Total count of Opcodes defined in this enum.
-    BytecodeSize =      0x00000036,
 }

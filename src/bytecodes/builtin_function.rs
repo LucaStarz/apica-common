@@ -63,7 +63,4 @@ pub enum ApicaBuiltinFunctionBytecode {
 
     /// Render a specific sprite at a given 2D coordinates.
     DrawSprite2DAt =        0x00000012,
-
-    /// Total count of Opcodes defined in this enum.
-    BuiltinFuncSize =       0x00000013,
 }

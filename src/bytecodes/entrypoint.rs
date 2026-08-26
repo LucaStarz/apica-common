@@ -12,7 +12,4 @@ pub enum ApicaEntrypointBytecode {
 
     /// Teardown hook (runs upon exit).
     Quit =              0x00000002,
-
-    /// Total count of Opcodes defined in this enum.
-    EntrypointSize =    0x00000003,
 }

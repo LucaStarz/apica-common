@@ -54,7 +54,4 @@ pub enum ApicaTypeBytecode {
 
     /// Type reference (type).
     Type =      0x00000010,
-
-    /// Total count of Opcodes defined in this enum.
-    TypeSize =  0x00000011,
 }

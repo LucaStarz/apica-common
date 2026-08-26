@@ -27,7 +27,4 @@ pub enum ApicaSpecificationBytecode {
 
     /// Maximum created elements (var/const/func/...) at the same time.
     IdCount =               0x00000007,
-
-    /// Total count of Opcodes defined in this enum.
-    SpecificationSize =     0x00000008,
 }
