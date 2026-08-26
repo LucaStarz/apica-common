@@ -30,8 +30,5 @@ bitflags! {
 
         /// Control flow signal to immediately stop execution.
         const TERMINATE =   0b0100_0000;
-
-        /// Flag indicating that the wrapped value is a copy.
-        const COPY =        0b1000_0000;
     }
 }
