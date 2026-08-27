@@ -321,4 +321,10 @@ impl Element {
             }
         }
     }
+
+    pub fn add_trace(&mut self, trace: String) {
+        if let Value::StackTrace(stack) = &mut self.value {
+            stack.add_trace(trace);
+        }
+    }
 }
