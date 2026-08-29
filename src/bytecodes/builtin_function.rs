@@ -8,62 +8,71 @@
 #[derive(Debug, Clone, Copy, PartialEq, Eq, IntoPrimitive, TryFromPrimitive)]
 pub enum ApicaBuiltinFunctionBytecode {
     /// Terminate application execution immediately.
-    QuitApp =               0x00000000,
+    QuitApp =                   0x00000000,
 
     /// Log an informational message to the `logs` folder.
-    LogInfo =               0x00000001,
+    LogInfo =                   0x00000001,
 
     /// Log an informational message to the `logs` folder with a trailing newline.
-    LognInfo =              0x00000002,
+    LognInfo =                  0x00000002,
 
     /// Log a success message to the `logs` folder.
-    LogSuccess =            0x00000003,
+    LogSuccess =                0x00000003,
 
     /// Log a success message to the `logs` folder with a trailing newline.
-    LognSuccess =           0x00000004,
+    LognSuccess =               0x00000004,
 
     /// Log a warning message to the `logs` folder.
-    LogWarning =            0x00000005,
+    LogWarning =                0x00000005,
 
     /// Log a warning message to the `logs` folder with a trailing newline.
-    LognWarning =           0x00000006,
+    LognWarning =               0x00000006,
 
     /// Log an error message to the `logs` folder.
-    LogError =              0x00000007,
+    LogError =                  0x00000007,
 
     /// Log an error message to the `logs` folder with a trailing newline.
-    LognError =             0x00000008,
+    LognError =                 0x00000008,
 
     /// Load and switch to a new application.
-    LoadApp =               0x00000009,
+    LoadApp =                   0x00000009,
 
     /// Set window title bar text.
-    SetTitle =              0x0000000A,
+    SetTitle =                  0x0000000A,
 
     /// Enable or disable window resizability.
-    SetResizable =          0x0000000B,
+    SetResizable =              0x0000000B,
 
     /// Check if a key is currently in a released state.
-    IsKeyReleased =         0x0000000C,
+    IsKeyReleased =             0x0000000C,
 
     /// Check if a key was pressed down in the current frame.
-    IsKeyJustPressed =      0x0000000D,
+    IsKeyJustPressed =          0x0000000D,
 
     /// Check if a key is currently in a pressed state.
-    IsKeyPressed =          0x0000000E,
+    IsKeyPressed =              0x0000000E,
 
     /// Check if a key was released in the current frame.
-    IsKeyJustReleased =     0x0000000F,
+    IsKeyJustReleased =         0x0000000F,
 
     /// Load a 2D spritesheet into GPU memory.
-    LoadSpritesheet2D =     0x00000010,
+    LoadSpritesheet2D =         0x00000010,
 
     /// Unload a 2D spritesheet from GPU memory.
-    UnloadSpritesheet2D =   0x00000011,
+    UnloadSpritesheet2D =       0x00000011,
 
     /// Render a specific sprite at a given 2D coordinates.
-    DrawSprite2DAt =        0x00000012,
+    DrawSprite2DAt =            0x00000012,
 
-    /// Get the delta-time of the VM
-    DeltaTime =             0x00000013,
+    /// Get the delta-time of the VM.
+    GetDeltaTime =                 0x00000013,
+
+    /// Get the number of columns of a 2D spritesheet.
+    GetSpritesheet2DColumns =   0x00000014,
+
+    /// Get the number of rows of a 2D spritesheet.
+    GetSpritesheet2DRows =      0x00000015,
+
+    /// Get the number of frames of a 2D spritesheet.
+    GetSpritesheet2DFrames =    0x00000016,
 }
