@@ -63,4 +63,7 @@ pub enum ApicaBuiltinFunctionBytecode {
 
     /// Render a specific sprite at a given 2D coordinates.
     DrawSprite2DAt =        0x00000012,
+
+    /// Get the delta-time of the VM
+    DeltaTime =             0x00000013,
 }
