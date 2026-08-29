@@ -2,7 +2,7 @@
 use crate::values::bool::ValueBool;
 use crate::values::string::ValueString;
 use crate::values::value::{Value, ValueTrait};
-use crate::values::vtype::ValueType;
+use crate::values::value_type::ValueType;
 
 pub struct ValueError {
     name: Option<String>,

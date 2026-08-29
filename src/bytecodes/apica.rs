@@ -3,7 +3,7 @@
 /// Opcodes representing low-level instructions for the Apica system.
 ///
 /// Covers execution flow control, declarations, arithmetic, logical operations, ...
-#[repr(u64)]
+#[repr(u32)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, IntoPrimitive, TryFromPrimitive)]
 pub enum ApicaBytecode {
     /// End of bytecodes file.
@@ -153,7 +153,7 @@ pub enum ApicaBytecode {
     /// Return statement with payload (return expr).
     FilledReturn =      0x00000030,
 
-    /// Optional operation (?elt : valid : invalid).
+    /// Ternary operation (?elt : valid : invalid).
     QuestionOperation = 0x00000031,
 
     /// IF statement.

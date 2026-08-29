@@ -14,7 +14,7 @@ use crate::values::u32::ValueU32;
 use crate::values::u64::ValueU64;
 use crate::values::u8::ValueU8;
 use crate::values::value::{Value, ValueTrait};
-use crate::values::vtype::ValueType;
+use crate::values::value_type::ValueType;
 
 pub struct ValueNull {
 
@@ -113,8 +113,6 @@ impl ValueTrait for ValueNull {
             ApicaTypeBytecode::String => Some(Value::String(ValueString::new())),
             ApicaTypeBytecode::Error => Some(Value::Error(Box::new(ValueError::new()))),
             ApicaTypeBytecode::Type => Some(Value::Type(ValueType::with_type(ApicaTypeBytecode::Null))),
-
-            _ => None,
         }
     }
 

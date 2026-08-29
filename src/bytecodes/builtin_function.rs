@@ -4,7 +4,7 @@
 ///
 /// Includes core utilities for application management, console logging,
 /// user input polling, 2D sprite rendering and more.
-#[repr(u64)]
+#[repr(u32)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, IntoPrimitive, TryFromPrimitive)]
 pub enum ApicaBuiltinFunctionBytecode {
     /// Terminate application execution immediately.

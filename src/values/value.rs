@@ -15,7 +15,7 @@ use crate::values::u16::ValueU16;
 use crate::values::u32::ValueU32;
 use crate::values::u64::ValueU64;
 use crate::values::u8::ValueU8;
-use crate::values::vtype::ValueType;
+use crate::values::value_type::ValueType;
 
 pub trait ValueTrait {
     fn is_null(&self) -> bool;

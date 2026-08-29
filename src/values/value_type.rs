@@ -4,7 +4,7 @@ use crate::values::string::ValueString;
 use crate::values::value::{Value, ValueTrait};
 
 pub struct ValueType {
-    vtype: Option<ApicaTypeBytecode>,
+    value: Option<ApicaTypeBytecode>,
 }
 
 impl ApicaTypeBytecode {
@@ -37,21 +37,21 @@ impl ApicaTypeBytecode {
 
 impl ValueType {
     pub fn new() -> ValueType {
-        ValueType { vtype: None }
+        ValueType { value: None }
     }
 
-    pub fn with_type(vtype: ApicaTypeBytecode) -> ValueType {
-        ValueType { vtype: Some(vtype) }
+    pub fn with_type(value: ApicaTypeBytecode) -> ValueType {
+        ValueType { value: Some(value) }
     }
 
-    pub fn vtype(&self) -> Option<ApicaTypeBytecode> {
-        self.vtype
+    pub fn value(&self) -> Option<ApicaTypeBytecode> {
+        self.value
     }
 }
 
 impl ValueTrait for ValueType {
     fn is_null(&self) -> bool {
-        self.vtype.is_none()
+        self.value.is_none()
     }
 
     fn get_type_repr(&self) -> &str {
@@ -59,7 +59,7 @@ impl ValueTrait for ValueType {
     }
 
     fn show(&self, end: char) {
-        match self.vtype {
+        match self.value {
             Some(v) => print!("type<{}>{}", v.repr(), end),
             None => print!("type<>{}", end),
         }
@@ -118,7 +118,7 @@ impl ValueTrait for ValueType {
     }
 
     fn convert(&self, to: ApicaTypeBytecode) -> Option<Value> {
-        if let Some(value) = self.vtype {
+        if let Some(value) = self.value {
             match to {
                 ApicaTypeBytecode::String => Some(Value::String(ValueString::with_value(format!("<{}>", value.repr())))),
                 ApicaTypeBytecode::Bool => Some(Value::Bool(ValueBool::with_value(value != ApicaTypeBytecode::Null))),
@@ -136,7 +136,7 @@ impl ValueTrait for ValueType {
     }
 
     fn auto_convert(&self, to: ApicaTypeBytecode) -> Option<Value> {
-        if let Some(value) = self.vtype {
+        if let Some(value) = self.value {
             match to {
                 ApicaTypeBytecode::Any => Some(Value::Type(ValueType::with_type(value))),
                 ApicaTypeBytecode::Type => Some(Value::Type(ValueType::with_type(ApicaTypeBytecode::Type))),
@@ -154,7 +154,7 @@ impl ValueTrait for ValueType {
     }
 
     fn copy(&self) -> Value {
-        match self.vtype { 
+        match self.value { 
             Some(vt) => Value::Type(ValueType::with_type(vt)),
             None => Value::Type(ValueType::new()),
         }

@@ -47,6 +47,11 @@ impl Element {
         self.modifier.intersects(ElementModifier::ERROR | ElementModifier::BREAK | ElementModifier::CONTINUE | ElementModifier::RETURN | ElementModifier::TERMINATE)
     }
 
+    /// Performs an addition (elt + other) with another [`Element`].
+    /// 
+    /// # Returns
+    /// 
+    /// A new [`Element`] representing the result of the addition or an error.
     pub fn add(&self, other: &Element) -> Element {
         if self.value.is_null() || other.value.is_null() {
             return Element::new(
@@ -65,6 +70,11 @@ impl Element {
         }
     }
 
+    /// Performs a right incrementation (elt++).
+    ///
+    /// # Returns
+    ///
+    /// A new [`Element`] representing the result of the incrementation or an error.
     pub fn increment(&mut self) -> Element {
         if self.value.is_null() {
             return Element::new(
@@ -83,6 +93,11 @@ impl Element {
         }
     }
 
+    /// Performs a left incrementation (++elt).
+    ///
+    /// # Returns
+    ///
+    /// A new [`Element`] representing the result of the incrementation or an error.
     pub fn left_increment(&mut self) -> Element {
         if self.value.is_null() {
             return Element::new(
@@ -100,7 +115,12 @@ impl Element {
             )
         }
     }
-    
+
+    /// Performs a subtraction (elt - other) with another [`Element`].
+    ///
+    /// # Returns
+    ///
+    /// A new [`Element`] representing the result of the subtraction or an error.
     pub fn subtract(&self, other: &Element) -> Element {
         if self.value.is_null() || other.value.is_null() {
             return Element::new(
@@ -118,7 +138,12 @@ impl Element {
             ),
         }
     }
-    
+
+    /// Performs a right decrementation (elt--).
+    ///
+    /// # Returns
+    ///
+    /// A new [`Element`] representing the result of the decrementation or an error.
     pub fn decrement(&mut self) -> Element {
         if self.value.is_null() {
             return Element::new(
@@ -136,7 +161,12 @@ impl Element {
             )
         }
     }
-    
+
+    /// Performs a left decrementation (--elt).
+    ///
+    /// # Returns
+    ///
+    /// A new [`Element`] representing the result of the decrementation or an error.
     pub fn left_decrement(&mut self) -> Element {
         if self.value.is_null() {
             return Element::new(
@@ -154,7 +184,12 @@ impl Element {
             )
         }
     }
-    
+
+    /// Performs a multiplication (elt * other) with another [`Element`].
+    ///
+    /// # Returns
+    ///
+    /// A new [`Element`] representing the result of the multiplication or an error.
     pub fn times(&self, other: &Element) -> Element {
         if self.value.is_null() || other.value.is_null() {
             return Element::new(
@@ -172,7 +207,12 @@ impl Element {
             ),
         }
     }
-    
+
+    /// Performs a not operation (!elt).
+    ///
+    /// # Returns
+    ///
+    /// A new [`Element`] representing the result of the not operation or an error.
     pub fn unary_not(&self) -> Element {
         let result = self.value.unary_not();
         match result { 
@@ -183,7 +223,12 @@ impl Element {
             )
         }
     }
-    
+
+    /// Performs a bitwise not operation (~elt).
+    ///
+    /// # Returns
+    ///
+    /// A new [`Element`] representing the result of the bitwise not operation or an error.
     pub fn bitwise_not(&self) -> Element {
         let result = self.value.bitwise_not();
         match result { 
@@ -194,7 +239,12 @@ impl Element {
             )
         }
     }
-    
+
+    /// Performs a less than operation (elt < other) with another [`Element`].
+    ///
+    /// # Returns
+    ///
+    /// A new [`Element`] representing the result of the less than operation or an error.
     pub fn less_than(&self, other: &Element) -> Element {
         if self.value.is_null() || other.value.is_null() {
             return Element::new(
@@ -212,7 +262,12 @@ impl Element {
             ),
         }
     }
-    
+
+    /// Performs a less than or equals operation (elt <= other) with another [`Element`].
+    ///
+    /// # Returns
+    ///
+    /// A new [`Element`] representing the result of the less than or equals operation or an error.
     pub fn less_or_equal(&self, other: &Element) -> Element {
         if self.value.is_null() || other.value.is_null() {
             return Element::new(
@@ -230,7 +285,12 @@ impl Element {
             ),
         }
     }
-    
+
+    /// Performs a greater than operation (elt > other) with another [`Element`].
+    ///
+    /// # Returns
+    ///
+    /// A new [`Element`] representing the result of the greater than operation or an error.
     pub fn greater_than(&self, other: &Element) -> Element {
         if self.value.is_null() || other.value.is_null() {
             return Element::new(
@@ -248,7 +308,12 @@ impl Element {
             ),
         }
     }
-    
+
+    /// Performs a greater than or equals operation (elt >= other) with another [`Element`].
+    ///
+    /// # Returns
+    ///
+    /// A new [`Element`] representing the result of the greater than or equals operation or an error.
     pub fn greater_or_equal(&self, other: &Element) -> Element {
         if self.value.is_null() || other.value.is_null() {
             return Element::new(
@@ -266,7 +331,12 @@ impl Element {
             ),
         }
     }
-    
+
+    /// Performs a conversion (elt as to) with a [`ApicaTypeBytecode`].
+    ///
+    /// # Returns
+    ///
+    /// A new [`Element`] representing the result of the conversion or an error.
     pub fn convert(&self, to: ApicaTypeBytecode) -> Element {
         let auto_converted = self.value.auto_convert(to);
         if let Some(auto) = auto_converted {
@@ -282,7 +352,12 @@ impl Element {
             )
         }
     }
-    
+
+    /// Performs an auto-conversion (system-only operation) with a [`ApicaTypeBytecode`].
+    ///
+    /// # Returns
+    ///
+    /// A new [`Element`] representing the result of the auto-conversion or an error.
     pub fn auto_convert(&self, to: ApicaTypeBytecode) -> Element {
         let auto_converted = self.value.auto_convert(to);
         match auto_converted { 
@@ -293,7 +368,8 @@ impl Element {
             )
         }
     }
-    
+
+    /// Performs a conversion check (system-only operation) with a [`ApicaTypeBytecode`].
     pub fn check_and_convert(&mut self, to: ApicaTypeBytecode) {
         if self.is_error_or_control() {
             return;
@@ -322,6 +398,7 @@ impl Element {
         }
     }
 
+    /// Add another [`String`] to the trace of a stack-trace if the value of the element is a [`Value::StackTrace`].
     pub fn add_trace(&mut self, trace: String) {
         if let Value::StackTrace(stack) = &mut self.value {
             stack.add_trace(trace);

@@ -12,7 +12,7 @@ use crate::values::u32::ValueU32;
 use crate::values::u64::ValueU64;
 use crate::values::u8::ValueU8;
 use crate::values::value::{Value, ValueTrait};
-use crate::values::vtype::ValueType;
+use crate::values::value_type::ValueType;
 
 pub struct ValueI64 {
     value: Option<i64>,
