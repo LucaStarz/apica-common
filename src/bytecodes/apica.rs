@@ -6,8 +6,8 @@
 #[repr(u32)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, IntoPrimitive, TryFromPrimitive)]
 pub enum ApicaBytecode {
-    /// No-operation (empty compound, ...)
-    NoOperation =       0x00000000,
+    /// End of bytecode file
+    EndOfFile =       0x00000000,
 
     /// End-of-block (compound, list, ...).
     EndOfBlock =        0x00000001,
@@ -167,4 +167,7 @@ pub enum ApicaBytecode {
 
     /// FOR statement.
     For =               0x00000035,
+
+    /// No-operation (empty compound, ...)
+    NoOperation =       0x00000036,
 }
