@@ -474,6 +474,94 @@ impl ValueTrait for ValueChar {
         }
     }
 
+    fn assign(&mut self, other: &Value) -> Option<Value> {
+        match other {
+            Value::I8(v) => {
+                self.value = match v.value() {
+                    Some(val) => Some(val as u32),
+                    None => None,
+                };
+                Some(self.copy())
+            },
+
+            Value::I16(v) => {
+                self.value = match v.value() {
+                    Some(val) => Some(val as u32),
+                    None => None,
+                };
+                Some(self.copy())
+            },
+
+            Value::I32(v) => {
+                self.value = match v.value() {
+                    Some(val) => Some(val as u32),
+                    None => None,
+                };
+                Some(self.copy())
+            },
+
+            Value::I64(v) => {
+                self.value = match v.value() {
+                    Some(val) => Some(val as u32),
+                    None => None,
+                };
+                Some(self.copy())
+            },
+
+            Value::U8(v) => {
+                self.value = match v.value() {
+                    Some(val) => Some(val as u32),
+                    None => None,
+                };
+                Some(self.copy())
+            },
+
+            Value::U16(v) => {
+                self.value = match v.value() {
+                    Some(val) => Some(val as u32),
+                    None => None,
+                };
+                Some(self.copy())
+            },
+
+            Value::U32(v) => {
+                self.value = v.value();
+                Some(self.copy())
+            },
+
+            Value::U64(v) => {
+                self.value = match v.value() {
+                    Some(val) => Some(val as u32),
+                    None => None,
+                };
+                Some(self.copy())
+            },
+
+            Value::F32(v) => {
+                self.value = match v.value() {
+                    Some(val) => Some(val as u32),
+                    None => None,
+                };
+                Some(self.copy())
+            },
+
+            Value::F64(v) => {
+                self.value = match v.value() {
+                    Some(val) => Some(val as u32),
+                    None => None,
+                };
+                Some(self.copy())
+            },
+            
+            Value::Char(v) => {
+                self.value = v.value();
+                Some(self.copy())
+            },
+            
+            _ => None,
+        }
+    }
+
     fn convert(&self, to: ApicaTypeBytecode) -> Option<Value> {
         if let Some(value) = self.value {
             match to {
@@ -527,6 +615,29 @@ impl ValueTrait for ValueChar {
 
                 _ => None,
             }
+        }
+    }
+
+    fn can_convert_to(&self, to: ApicaTypeBytecode, is_auto: bool) -> bool {
+        match to {
+            ApicaTypeBytecode::Any
+            | ApicaTypeBytecode::I8
+            | ApicaTypeBytecode::I16
+            | ApicaTypeBytecode::I32
+            | ApicaTypeBytecode::I64
+            | ApicaTypeBytecode::U8
+            | ApicaTypeBytecode::U16
+            | ApicaTypeBytecode::U32
+            | ApicaTypeBytecode::U64
+            | ApicaTypeBytecode::F32
+            | ApicaTypeBytecode::F64
+            | ApicaTypeBytecode::Char => true,
+            
+            ApicaTypeBytecode::Bool
+            | ApicaTypeBytecode::String
+            | ApicaTypeBytecode::Type => !is_auto,
+            
+            _ => false,
         }
     }
 

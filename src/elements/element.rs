@@ -331,6 +331,44 @@ impl Element {
             ),
         }
     }
+    
+    /// Performs an assignation (elt = other) with another [`Element`].
+    /// 
+    /// # Returns
+    /// 
+    /// A new [`Element`] representing the result of the assignation or an error.
+    pub fn assign(&mut self, other: &Element) -> Element {
+        if self.modifier.contains(ElementModifier::CONST) {
+            return Element::new(
+                ElementModifier::ERROR,
+                Value::constant_operation_error("="),
+            );
+        }
+        
+        if self.value.is_null() {
+            return Element::new(
+                ElementModifier::ERROR,
+                Value::null_operation_error("=", false),
+            );
+        }
+        
+        if self.modifier.contains(ElementModifier::ANY) {
+            self.value = other.value.copy();
+            return Element::new(
+                ElementModifier::NONE,
+                self.value.copy()
+            );
+        }
+        
+        let result = self.value.assign(&other.value);
+        match result { 
+            Some(val) => Element::new(ElementModifier::NONE, val),
+            None => Element::new(
+                ElementModifier::ERROR,
+                Value::binary_operation_error("=", self.value.get_type_repr(), other.value.get_type_repr()),
+            ),
+        }
+    }
 
     /// Performs a conversion (elt as to) with a [`ApicaTypeBytecode`].
     ///
@@ -367,6 +405,15 @@ impl Element {
                 Value::binary_operation_error("auto-as", self.value.get_type_repr(), to.repr()),
             )
         }
+    }
+    
+    /// Checks if the value can be converted to a [`ApicaTypeBytecode`], automatically or not.
+    /// 
+    /// # Returns
+    /// 
+    /// [`true`] if the value can be converted, [`false`] otherwise.
+    pub fn can_convert_to(&self, to: ApicaTypeBytecode, is_auto: bool) -> bool {
+        self.value.can_convert_to(to, is_auto)
     }
 
     /// Performs a conversion check (system-only operation) with a [`ApicaTypeBytecode`].

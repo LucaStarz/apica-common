@@ -40,3 +40,4 @@ pub mod string;
 pub mod error;
 pub mod stack_trace;
 pub mod value_type;
+mod common;

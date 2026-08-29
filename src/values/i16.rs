@@ -1,6 +1,7 @@
 ﻿use crate::bytecodes::types::ApicaTypeBytecode;
 use crate::values::bool::ValueBool;
 use crate::values::char::ValueChar;
+use crate::values::common::number_can_convert_to;
 use crate::values::f32::ValueF32;
 use crate::values::f64::ValueF64;
 use crate::values::i32::ValueI32;
@@ -471,6 +472,105 @@ impl ValueTrait for ValueI16 {
         }
     }
 
+    fn assign(&mut self, other: &Value) -> Option<Value> {
+        match other {
+            Value::I8(v) => {
+                self.value = match v.value() { 
+                    Some(val) => Some(val as i16),
+                    None => None,
+                };
+                Some(self.copy())
+            },
+
+            Value::I16(v) => {
+                self.value = v.value();
+                Some(self.copy())
+            },
+
+            Value::I32(v) => {
+                self.value = match v.value() {
+                    Some(val) => Some(val as i16),
+                    None => None,
+                };
+                Some(self.copy())
+            },
+
+            Value::I64(v) => {
+                self.value = match v.value() {
+                    Some(val) => Some(val as i16),
+                    None => None,
+                };
+                Some(self.copy())
+            },
+
+            Value::U8(v) => {
+                self.value = match v.value() {
+                    Some(val) => Some(val as i16),
+                    None => None,
+                };
+                Some(self.copy())
+            },
+
+            Value::U16(v) => {
+                self.value = match v.value() {
+                    Some(val) => Some(val as i16),
+                    None => None,
+                };
+                Some(self.copy())
+            },
+
+            Value::U32(v) => {
+                self.value = match v.value() {
+                    Some(val) => Some(val as i16),
+                    None => None,
+                };
+                Some(self.copy())
+            },
+
+            Value::U64(v) => {
+                self.value = match v.value() {
+                    Some(val) => Some(val as i16),
+                    None => None,
+                };
+                Some(self.copy())
+            },
+
+            Value::F32(v) => {
+                self.value = match v.value() {
+                    Some(val) => Some(val as i16),
+                    None => None,
+                };
+                Some(self.copy())
+            },
+
+            Value::F64(v) => {
+                self.value = match v.value() {
+                    Some(val) => Some(val as i16),
+                    None => None,
+                };
+                Some(self.copy())
+            },
+
+            Value::Bool(v) => {
+                self.value = match v.value() {
+                    Some(val) => Some(val as i16),
+                    None => None,
+                };
+                Some(self.copy())
+            },
+
+            Value::Char(v) => {
+                self.value = match v.value() {
+                    Some(val) => Some(val as i16),
+                    None => None,
+                };
+                Some(self.copy())
+            }
+
+            _ => None,
+        }
+    }
+
     fn convert(&self, to: ApicaTypeBytecode) -> Option<Value> {
         if let Some(value) = self.value {
             match to { 
@@ -525,6 +625,10 @@ impl ValueTrait for ValueI16 {
                 _ => None,
             }
         }
+    }
+
+    fn can_convert_to(&self, to: ApicaTypeBytecode, is_auto: bool) -> bool {
+        number_can_convert_to(to, is_auto)
     }
 
     fn copy(&self) -> Value {

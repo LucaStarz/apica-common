@@ -117,6 +117,17 @@ impl ValueTrait for ValueType {
         None
     }
 
+    fn assign(&mut self, other: &Value) -> Option<Value> {
+        match other { 
+            Value::Type(v) => {
+                self.value = v.value();
+                Some(self.copy())
+            },
+            
+            _ => None,
+        }
+    }
+    
     fn convert(&self, to: ApicaTypeBytecode) -> Option<Value> {
         if let Some(value) = self.value {
             match to {
@@ -150,6 +161,18 @@ impl ValueTrait for ValueType {
 
                 _ => None,
             }
+        }
+    }
+
+    fn can_convert_to(&self, to: ApicaTypeBytecode, is_auto: bool) -> bool {
+        match to { 
+            ApicaTypeBytecode::Any
+            | ApicaTypeBytecode::Type => true,
+            
+            ApicaTypeBytecode::Bool
+            | ApicaTypeBytecode::String => !is_auto,
+            
+            _ => false,
         }
     }
 

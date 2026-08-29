@@ -91,29 +91,37 @@ impl ValueTrait for ValueNull {
         None
     }
 
+    fn assign(&mut self, _other: &Value) -> Option<Value> {
+        Some(self.copy())
+    }
+    
     fn convert(&self, _to: ApicaTypeBytecode) -> Option<Value> {
         None // null is AUTOMATICALLY converted
     }
 
     fn auto_convert(&self, to: ApicaTypeBytecode) -> Option<Value> {
-        match to {
-            ApicaTypeBytecode::Any | ApicaTypeBytecode::Null => Some(Value::Null(ValueNull::new())),
-            ApicaTypeBytecode::I8 => Some(Value::I8(ValueI8::new())),
-            ApicaTypeBytecode::I16 => Some(Value::I16(ValueI16::new())),
-            ApicaTypeBytecode::I32 => Some(Value::I32(ValueI32::new())),
-            ApicaTypeBytecode::I64 => Some(Value::I64(ValueI64::new())),
-            ApicaTypeBytecode::U8 => Some(Value::U8(ValueU8::new())),
-            ApicaTypeBytecode::U16 => Some(Value::U16(ValueU16::new())),
-            ApicaTypeBytecode::U32 => Some(Value::U32(ValueU32::new())),
-            ApicaTypeBytecode::U64 => Some(Value::U64(ValueU64::new())),
-            ApicaTypeBytecode::F32 => Some(Value::F32(ValueF32::new())),
-            ApicaTypeBytecode::F64 => Some(Value::F64(ValueF64::new())),
-            ApicaTypeBytecode::Bool => Some(Value::Bool(ValueBool::new())),
-            ApicaTypeBytecode::Char => Some(Value::Char(ValueChar::new())),
-            ApicaTypeBytecode::String => Some(Value::String(ValueString::new())),
-            ApicaTypeBytecode::Error => Some(Value::Error(Box::new(ValueError::new()))),
-            ApicaTypeBytecode::Type => Some(Value::Type(ValueType::with_type(ApicaTypeBytecode::Null))),
-        }
+        Some(match to {
+            ApicaTypeBytecode::Any | ApicaTypeBytecode::Null => Value::Null(ValueNull::new()),
+            ApicaTypeBytecode::I8 => Value::I8(ValueI8::new()),
+            ApicaTypeBytecode::I16 => Value::I16(ValueI16::new()),
+            ApicaTypeBytecode::I32 => Value::I32(ValueI32::new()),
+            ApicaTypeBytecode::I64 => Value::I64(ValueI64::new()),
+            ApicaTypeBytecode::U8 => Value::U8(ValueU8::new()),
+            ApicaTypeBytecode::U16 => Value::U16(ValueU16::new()),
+            ApicaTypeBytecode::U32 => Value::U32(ValueU32::new()),
+            ApicaTypeBytecode::U64 => Value::U64(ValueU64::new()),
+            ApicaTypeBytecode::F32 => Value::F32(ValueF32::new()),
+            ApicaTypeBytecode::F64 => Value::F64(ValueF64::new()),
+            ApicaTypeBytecode::Bool => Value::Bool(ValueBool::new()),
+            ApicaTypeBytecode::Char => Value::Char(ValueChar::new()),
+            ApicaTypeBytecode::String => Value::String(ValueString::new()),
+            ApicaTypeBytecode::Error => Value::Error(Box::new(ValueError::new())),
+            ApicaTypeBytecode::Type => Value::Type(ValueType::with_type(ApicaTypeBytecode::Null)),
+        })
+    }
+
+    fn can_convert_to(&self, _to: ApicaTypeBytecode, _is_auto: bool) -> bool {
+        true
     }
 
     fn copy(&self) -> Value {

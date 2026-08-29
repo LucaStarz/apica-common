@@ -109,6 +109,25 @@ impl ValueTrait for ValueError {
         None
     }
 
+    fn assign(&mut self, other: &Value) -> Option<Value> {
+        match other { 
+            Value::Error(v) => {
+                self.name = match v.name() { 
+                    Some(n) => Some(n.to_string()),
+                    None => None,
+                };
+                self.details = match v.details() {
+                    Some(d) => Some(d.to_string()),
+                    None => None,
+                };
+                
+                Some(self.copy())
+            },
+            
+            _ => None,
+        }
+    }
+
     fn convert(&self, to: ApicaTypeBytecode) -> Option<Value> {
         if let Some(name) = &self.name {
             match to { 
@@ -148,6 +167,19 @@ impl ValueTrait for ValueError {
 
                 _ => None,   
             }
+        }
+    }
+
+    fn can_convert_to(&self, to: ApicaTypeBytecode, is_auto: bool) -> bool {
+        match to {
+            ApicaTypeBytecode::Any
+            | ApicaTypeBytecode::Error => true,
+
+            ApicaTypeBytecode::Bool
+            | ApicaTypeBytecode::String
+            | ApicaTypeBytecode::Type => !is_auto,
+
+            _ => false,
         }
     }
 

@@ -37,8 +37,11 @@ pub trait ValueTrait {
     fn greater_than(&self, other: &Value) -> Option<Value>;
     fn greater_or_equal(&self, other: &Value) -> Option<Value>;
 
+    fn assign(&mut self, other: &Value) -> Option<Value>;
+    
     fn convert(&self, to: ApicaTypeBytecode) -> Option<Value>;
     fn auto_convert(&self, to: ApicaTypeBytecode) -> Option<Value>;
+    fn can_convert_to(&self, to: ApicaTypeBytecode, is_auto: bool) -> bool;
     
     fn copy(&self) -> Value;
 }
@@ -67,23 +70,30 @@ impl Value {
     pub fn null_operation_error(op: &str, is_unary: bool) -> Value {
         let operation_kind = if is_unary { "unary" } else { "binary" };
 
-        Value::Error(Box::from(ValueError::with_details(
+        Value::StackTrace(Box::from(ValueStackTrace::with_details(
             String::from("OperationError"),
             format!("Cannot perform {} operation `{}` with a null value", operation_kind, op)
         )))
     }
 
     pub fn unary_operation_error(op: &str, operand: &str) -> Value {
-        Value::Error(Box::from(ValueError::with_details(
+        Value::StackTrace(Box::from(ValueStackTrace::with_details(
             String::from("OperationError"),
             format!("Unary operator `{}` is not defined for type <{}>", op, operand)
         )))
     }
 
     pub fn binary_operation_error(op: &str, left: &str, right: &str) -> Value {
-        Value::Error(Box::from(ValueError::with_details(
+        Value::StackTrace(Box::from(ValueStackTrace::with_details(
             String::from("OperationError"),
             format!("Binary operator `{}` is not defined for types <{}> and <{}>", op, left, right)
+        )))
+    }
+    
+    pub fn constant_operation_error(op: &str) -> Value {
+        Value::StackTrace(Box::from(ValueStackTrace::with_details(
+            String::from("ConstantError"),
+            format!("Cannot perform binary operation `{}` with a constant", op)
         )))
     }
 }
@@ -441,6 +451,28 @@ impl ValueTrait for Value {
         }
     }
 
+    fn assign(&mut self, other: &Value) -> Option<Value> {
+        match self { 
+            Value::Null(v) => v.assign(other),
+            Value::I8(v) => v.assign(other),
+            Value::I16(v) => v.assign(other),
+            Value::I32(v) => v.assign(other),
+            Value::I64(v) => v.assign(other),
+            Value::U8(v) => v.assign(other),
+            Value::U16(v) => v.assign(other),
+            Value::U32(v) => v.assign(other),
+            Value::U64(v) => v.assign(other),
+            Value::F32(v) => v.assign(other),
+            Value::F64(v) => v.assign(other),
+            Value::Bool(v) => v.assign(other),
+            Value::Char(v) => v.assign(other),
+            Value::String(v) => v.assign(other),
+            Value::Error(v) => v.assign(other),
+            Value::StackTrace(v) => v.assign(other),
+            Value::Type(v) => v.assign(other),
+        }
+    }
+
     fn convert(&self, to: ApicaTypeBytecode) -> Option<Value> {
         match self { 
             Value::Null(v) => v.convert(to),
@@ -482,6 +514,28 @@ impl ValueTrait for Value {
             Value::Error(v) => v.auto_convert(to),
             Value::StackTrace(v) => v.auto_convert(to),
             Value::Type(v) => v.auto_convert(to),
+        }
+    }
+
+    fn can_convert_to(&self, to: ApicaTypeBytecode, is_auto: bool) -> bool {
+        match self { 
+            Value::Null(v) => v.can_convert_to(to, is_auto),
+            Value::I8(v) => v.can_convert_to(to, is_auto),
+            Value::I16(v) => v.can_convert_to(to, is_auto),
+            Value::I32(v) => v.can_convert_to(to, is_auto),
+            Value::I64(v) => v.can_convert_to(to, is_auto),
+            Value::U8(v) => v.can_convert_to(to, is_auto),
+            Value::U16(v) => v.can_convert_to(to, is_auto),
+            Value::U32(v) => v.can_convert_to(to, is_auto),
+            Value::U64(v) => v.can_convert_to(to, is_auto),
+            Value::F32(v) => v.can_convert_to(to, is_auto),
+            Value::F64(v) => v.can_convert_to(to, is_auto),
+            Value::Bool(v) => v.can_convert_to(to, is_auto),
+            Value::Char(v) => v.can_convert_to(to, is_auto),
+            Value::String(v) => v.can_convert_to(to, is_auto),
+            Value::Error(v) => v.can_convert_to(to, is_auto),
+            Value::StackTrace(v) => v.can_convert_to(to, is_auto),
+            Value::Type(v) => v.can_convert_to(to, is_auto),
         }
     }
 

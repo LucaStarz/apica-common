@@ -227,6 +227,20 @@ impl ValueTrait for ValueString {
         None
     }
 
+    fn assign(&mut self, other: &Value) -> Option<Value> {
+        match other { 
+            Value::String(v) => {
+                self.value = match v.value() { 
+                    Some(val) => Some(val.to_string()),
+                    None => None,
+                };
+                Some(self.copy())
+            },
+            
+            _ => None,
+        }
+    }
+    
     fn convert(&self, to: ApicaTypeBytecode) -> Option<Value> {
         if let Some(value) = &self.value {
             match to {
@@ -258,6 +272,18 @@ impl ValueTrait for ValueString {
 
                 _ => None,
             }
+        }
+    }
+
+    fn can_convert_to(&self, to: ApicaTypeBytecode, is_auto: bool) -> bool {
+        match to { 
+            ApicaTypeBytecode::Any
+            | ApicaTypeBytecode::String => true,
+            
+            ApicaTypeBytecode::Bool
+            | ApicaTypeBytecode::Type => !is_auto,
+            
+            _ => false,
         }
     }
 

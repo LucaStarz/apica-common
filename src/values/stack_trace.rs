@@ -102,12 +102,20 @@ impl ValueTrait for ValueStackTrace {
         None
     }
 
+    fn assign(&mut self, _other: &Value) -> Option<Value> {
+        None
+    }
+    
     fn convert(&self, _to: ApicaTypeBytecode) -> Option<Value> {
         None
     }
 
     fn auto_convert(&self, _to: ApicaTypeBytecode) -> Option<Value> {
         None
+    }
+
+    fn can_convert_to(&self, _to: ApicaTypeBytecode, _is_auto: bool) -> bool {
+        false
     }
 
     fn copy(&self) -> Value {
