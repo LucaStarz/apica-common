@@ -6,8 +6,8 @@
 #[repr(u32)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, IntoPrimitive, TryFromPrimitive)]
 pub enum ApicaBytecode {
-    /// End of bytecodes file.
-    EndOfFile =         0x00000000,
+    /// No-operation (empty compound, ...)
+    NoOperation =       0x00000000,
 
     /// End-of-block (compound, list, ...).
     EndOfBlock =        0x00000001,
