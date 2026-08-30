@@ -95,6 +95,27 @@ impl Value {
             format!("Cannot perform binary operation `{}` with a constant", op)
         )))
     }
+
+    pub fn value_type(&self) -> ApicaTypeBytecode {
+        match self {
+            Value::Null(_) | Value::StackTrace(_) => ApicaTypeBytecode::Null,
+            Value::I8(_) => ApicaTypeBytecode::I8,
+            Value::I16(_) => ApicaTypeBytecode::I16,
+            Value::I32(_) => ApicaTypeBytecode::I32,
+            Value::I64(_) => ApicaTypeBytecode::I64,
+            Value::U8(_) => ApicaTypeBytecode::U8,
+            Value::U16(_) => ApicaTypeBytecode::U16,
+            Value::U32(_) => ApicaTypeBytecode::U32,
+            Value::U64(_) => ApicaTypeBytecode::U64,
+            Value::F32(_) => ApicaTypeBytecode::F32,
+            Value::F64(_) => ApicaTypeBytecode::F64,
+            Value::Bool(_) => ApicaTypeBytecode::Bool,
+            Value::Char(_) => ApicaTypeBytecode::Char,
+            Value::String(_) => ApicaTypeBytecode::String,
+            Value::Error(_) => ApicaTypeBytecode::Error,
+            Value::Type(_) => ApicaTypeBytecode::Type,
+        }
+    }
 }
 
 impl ValueTrait for Value {
