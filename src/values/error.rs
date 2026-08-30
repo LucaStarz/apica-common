@@ -170,19 +170,6 @@ impl ValueTrait for ValueError {
         }
     }
 
-    fn can_convert_to(&self, to: ApicaTypeBytecode, is_auto: bool) -> bool {
-        match to {
-            ApicaTypeBytecode::Any
-            | ApicaTypeBytecode::Error => true,
-
-            ApicaTypeBytecode::Bool
-            | ApicaTypeBytecode::String
-            | ApicaTypeBytecode::Type => !is_auto,
-
-            _ => false,
-        }
-    }
-
     fn copy(&self) -> Value {
         match &self.name { 
             Some(name) => match &self.details { 

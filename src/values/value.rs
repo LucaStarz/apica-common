@@ -41,7 +41,6 @@ pub trait ValueTrait {
     
     fn convert(&self, to: ApicaTypeBytecode) -> Option<Value>;
     fn auto_convert(&self, to: ApicaTypeBytecode) -> Option<Value>;
-    fn can_convert_to(&self, to: ApicaTypeBytecode, is_auto: bool) -> bool;
     
     fn copy(&self) -> Value;
 }
@@ -514,28 +513,6 @@ impl ValueTrait for Value {
             Value::Error(v) => v.auto_convert(to),
             Value::StackTrace(v) => v.auto_convert(to),
             Value::Type(v) => v.auto_convert(to),
-        }
-    }
-
-    fn can_convert_to(&self, to: ApicaTypeBytecode, is_auto: bool) -> bool {
-        match self { 
-            Value::Null(v) => v.can_convert_to(to, is_auto),
-            Value::I8(v) => v.can_convert_to(to, is_auto),
-            Value::I16(v) => v.can_convert_to(to, is_auto),
-            Value::I32(v) => v.can_convert_to(to, is_auto),
-            Value::I64(v) => v.can_convert_to(to, is_auto),
-            Value::U8(v) => v.can_convert_to(to, is_auto),
-            Value::U16(v) => v.can_convert_to(to, is_auto),
-            Value::U32(v) => v.can_convert_to(to, is_auto),
-            Value::U64(v) => v.can_convert_to(to, is_auto),
-            Value::F32(v) => v.can_convert_to(to, is_auto),
-            Value::F64(v) => v.can_convert_to(to, is_auto),
-            Value::Bool(v) => v.can_convert_to(to, is_auto),
-            Value::Char(v) => v.can_convert_to(to, is_auto),
-            Value::String(v) => v.can_convert_to(to, is_auto),
-            Value::Error(v) => v.can_convert_to(to, is_auto),
-            Value::StackTrace(v) => v.can_convert_to(to, is_auto),
-            Value::Type(v) => v.can_convert_to(to, is_auto),
         }
     }
 

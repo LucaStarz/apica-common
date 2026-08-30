@@ -4,54 +4,22 @@ use crate::values::string::ValueString;
 use crate::values::value::{Value, ValueTrait};
 
 pub struct ValueType {
-    value: Option<ApicaTypeBytecode>,
-}
-
-impl ApicaTypeBytecode {
-    pub fn repr(&self) -> &'static str {
-        match self {
-            ApicaTypeBytecode::Null => "null",
-
-            ApicaTypeBytecode::I8 => "i8",
-            ApicaTypeBytecode::I16 => "i16",
-            ApicaTypeBytecode::I32 => "i32",
-            ApicaTypeBytecode::I64 => "i64",
-            ApicaTypeBytecode::U8 => "u8",
-            ApicaTypeBytecode::U16 => "u16",
-            ApicaTypeBytecode::U32 => "u32",
-            ApicaTypeBytecode::U64 => "u64",
-            ApicaTypeBytecode::F32 => "f32",
-            ApicaTypeBytecode::F64 => "f64",
-            ApicaTypeBytecode::Bool => "bool",
-
-            ApicaTypeBytecode::Char => "char",
-            ApicaTypeBytecode::String => "string",
-
-            ApicaTypeBytecode::Error => "error",
-            ApicaTypeBytecode::Type => "type",
-
-            _ => "???",
-        }
-    }
+    value: ApicaTypeBytecode,
 }
 
 impl ValueType {
-    pub fn new() -> ValueType {
-        ValueType { value: None }
-    }
-
     pub fn with_type(value: ApicaTypeBytecode) -> ValueType {
-        ValueType { value: Some(value) }
+        ValueType { value }
     }
 
-    pub fn value(&self) -> Option<ApicaTypeBytecode> {
+    pub fn value(&self) -> ApicaTypeBytecode {
         self.value
     }
 }
 
 impl ValueTrait for ValueType {
     fn is_null(&self) -> bool {
-        self.value.is_none()
+        false
     }
 
     fn get_type_repr(&self) -> &str {
@@ -59,10 +27,7 @@ impl ValueTrait for ValueType {
     }
 
     fn show(&self, end: char) {
-        match self.value {
-            Some(v) => print!("type<{}>{}", v.repr(), end),
-            None => print!("type<>{}", end),
-        }
+        print!("type<{}>{}", self.value.repr(), end);
     }
 
     fn add(&self, _other: &Value) -> Option<Value> {
@@ -129,57 +94,24 @@ impl ValueTrait for ValueType {
     }
     
     fn convert(&self, to: ApicaTypeBytecode) -> Option<Value> {
-        if let Some(value) = self.value {
-            match to {
-                ApicaTypeBytecode::String => Some(Value::String(ValueString::with_value(format!("<{}>", value.repr())))),
-                ApicaTypeBytecode::Bool => Some(Value::Bool(ValueBool::with_value(value != ApicaTypeBytecode::Null))),
+        match to {
+            ApicaTypeBytecode::String => Some(Value::String(ValueString::with_value(format!("<{}>", self.value.repr())))),
+            ApicaTypeBytecode::Bool => Some(Value::Bool(ValueBool::with_value(self.value != ApicaTypeBytecode::Null))),
 
-                _ => None,
-            }
-        } else {
-            match to {
-                ApicaTypeBytecode::String => Some(Value::String(ValueString::new())),
-                ApicaTypeBytecode::Bool => Some(Value::Bool(ValueBool::new())),
-
-                _ => None,
-            }
+            _ => None,
         }
     }
 
     fn auto_convert(&self, to: ApicaTypeBytecode) -> Option<Value> {
-        if let Some(value) = self.value {
-            match to {
-                ApicaTypeBytecode::Any => Some(Value::Type(ValueType::with_type(value))),
-                ApicaTypeBytecode::Type => Some(Value::Type(ValueType::with_type(ApicaTypeBytecode::Type))),
+        match to {
+            ApicaTypeBytecode::Any => Some(Value::Type(ValueType::with_type(self.value))),
+            ApicaTypeBytecode::Type => Some(Value::Type(ValueType::with_type(ApicaTypeBytecode::Type))),
 
-                _ => None,
-            }
-        } else {
-            match to {
-                ApicaTypeBytecode::Any => Some(Value::Type(ValueType::new())),
-                ApicaTypeBytecode::Type => Some(Value::Type(ValueType::with_type(ApicaTypeBytecode::Type))),
-
-                _ => None,
-            }
-        }
-    }
-
-    fn can_convert_to(&self, to: ApicaTypeBytecode, is_auto: bool) -> bool {
-        match to { 
-            ApicaTypeBytecode::Any
-            | ApicaTypeBytecode::Type => true,
-            
-            ApicaTypeBytecode::Bool
-            | ApicaTypeBytecode::String => !is_auto,
-            
-            _ => false,
+            _ => None,
         }
     }
 
     fn copy(&self) -> Value {
-        match self.value { 
-            Some(vt) => Value::Type(ValueType::with_type(vt)),
-            None => Value::Type(ValueType::new()),
-        }
+        Value::Type(ValueType::with_type(self.value.clone()))
     }
 }

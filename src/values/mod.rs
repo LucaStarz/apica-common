@@ -19,8 +19,8 @@
 //! - [`char::ValueChar`]: An Apica value representing a nullable 32-bit character.
 //! - [`string::ValueString`]: An Apica value representing a nullable UTF-8 encoded array of bytes.
 //! - [`error::ValueError`]: An Apica value representing a nullable error.
-//! - [`stack_trace::ValueStackTrace`]: An Apica value (system-only) representing an error stack trace.
-//! - [`value_type::ValueType`]: An Apica value representing a nullable type.
+//! - [`stack_trace::ValueStackTrace`]: An Apica value (system-only) representing a not-nullable error stack trace.
+//! - [`value_type::ValueType`]: An Apica value representing a not-nullable type.
 
 pub mod value;
 pub mod null;
@@ -40,4 +40,3 @@ pub mod string;
 pub mod error;
 pub mod stack_trace;
 pub mod value_type;
-mod common;

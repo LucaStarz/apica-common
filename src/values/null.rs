@@ -120,10 +120,6 @@ impl ValueTrait for ValueNull {
         })
     }
 
-    fn can_convert_to(&self, _to: ApicaTypeBytecode, _is_auto: bool) -> bool {
-        true
-    }
-
     fn copy(&self) -> Value {
         Value::Null(ValueNull::new())
     }

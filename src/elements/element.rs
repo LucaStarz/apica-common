@@ -406,15 +406,6 @@ impl Element {
             )
         }
     }
-    
-    /// Checks if the value can be converted to a [`ApicaTypeBytecode`], automatically or not.
-    /// 
-    /// # Returns
-    /// 
-    /// [`true`] if the value can be converted, [`false`] otherwise.
-    pub fn can_convert_to(&self, to: ApicaTypeBytecode, is_auto: bool) -> bool {
-        self.value.can_convert_to(to, is_auto)
-    }
 
     /// Performs a conversion check (system-only operation) with a [`ApicaTypeBytecode`].
     pub fn check_and_convert(&mut self, to: ApicaTypeBytecode) {

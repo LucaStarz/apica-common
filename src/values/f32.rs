@@ -1,7 +1,6 @@
 ﻿use crate::bytecodes::types::ApicaTypeBytecode;
 use crate::values::bool::ValueBool;
 use crate::values::char::ValueChar;
-use crate::values::common::number_can_convert_to;
 use crate::values::f64::ValueF64;
 use crate::values::i16::ValueI16;
 use crate::values::i32::ValueI32;
@@ -615,10 +614,6 @@ impl ValueTrait for ValueF32 {
                 _ => None,
             }
         }
-    }
-
-    fn can_convert_to(&self, to: ApicaTypeBytecode, is_auto: bool) -> bool {
-        number_can_convert_to(to, is_auto)
     }
 
     fn copy(&self) -> Value {

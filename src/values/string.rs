@@ -101,7 +101,7 @@ impl ValueTrait for ValueString {
             },
             
             Value::Type(v) => Some(Value::String(ValueString::with_value(
-                format!("{}<{}>", self.value.as_ref().unwrap(), v.value().unwrap().repr()))
+                format!("{}<{}>", self.value.as_ref().unwrap(), v.value().repr()))
             )),
 
             _ => None,
@@ -272,18 +272,6 @@ impl ValueTrait for ValueString {
 
                 _ => None,
             }
-        }
-    }
-
-    fn can_convert_to(&self, to: ApicaTypeBytecode, is_auto: bool) -> bool {
-        match to { 
-            ApicaTypeBytecode::Any
-            | ApicaTypeBytecode::String => true,
-            
-            ApicaTypeBytecode::Bool
-            | ApicaTypeBytecode::Type => !is_auto,
-            
-            _ => false,
         }
     }
 
