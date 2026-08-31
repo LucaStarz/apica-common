@@ -158,4 +158,30 @@ impl ApicaTypeBytecode {
             },
         }
     }
+    
+    pub fn resolve_type_increment_decrement(&self) -> Option<ApicaTypeBytecode> {
+        match self {
+            ApicaTypeBytecode::Any | ApicaTypeBytecode::Null => Some(ApicaTypeBytecode::Null),
+            ApicaTypeBytecode::Bool | ApicaTypeBytecode::String | ApicaTypeBytecode::Error | ApicaTypeBytecode::Type
+                => None,
+
+            _ => Some(*self),
+        }
+    }
+    
+    pub fn resolve_type_unary_not(&self) -> Option<ApicaTypeBytecode> {
+        match self {
+            ApicaTypeBytecode::Any | ApicaTypeBytecode::Null => Some(ApicaTypeBytecode::Null),
+            ApicaTypeBytecode::Type => None,
+            _ => Some(ApicaTypeBytecode::Bool),
+        }
+    }
+    
+    pub fn resolve_type_bitwise_not(&self) -> Option<ApicaTypeBytecode> {
+        match self {
+            ApicaTypeBytecode::Any | ApicaTypeBytecode::Null => Some(ApicaTypeBytecode::Null),
+            ApicaTypeBytecode::String | ApicaTypeBytecode::Error | ApicaTypeBytecode::Type => None,
+            _ => Some(*self),
+        }
+    }
 }
