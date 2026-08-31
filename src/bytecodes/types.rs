@@ -158,17 +158,4 @@ impl ApicaTypeBytecode {
             },
         }
     }
-
-    /// Check if a [`ApicaTypeBytecode`] can be obtained from another [`ApicaTypeBytecode`], automatically or not.
-    ///
-    /// # Returns
-    ///
-    /// [`true`] if it is obtainable, [`false`] otherwise.
-    pub fn can_be_obtained_from(&self, from: ApicaTypeBytecode, is_auto: bool) -> bool {
-        match self {
-            ApicaTypeBytecode::Null => false,
-            ApicaTypeBytecode::Any => true,
-            _ => from.can_be_converted_to(*self, is_auto),
-        }
-    }
 }

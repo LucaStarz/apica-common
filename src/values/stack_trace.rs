@@ -20,6 +20,18 @@ impl ValueStackTrace {
         self.trace.push(trace);
     }
 
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    pub fn details(&self) -> Option<&str> {
+        self.details.as_deref()
+    }
+
+    pub fn trace(&self) -> &Vec<String> {
+        &self.trace
+    }
+
     pub fn message(&self) -> String {
         let mut message = self.name.clone();
         if let Some(d) = self.details.as_deref() {
