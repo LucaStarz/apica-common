@@ -270,11 +270,11 @@ impl Element {
         }
     }
 
-    /// Performs a less than or equals operation (elt <= other) with another [`Element`].
+    /// Performs a less than or equal operation (elt <= other) with another [`Element`].
     ///
     /// # Returns
     ///
-    /// A new [`Element`] representing the result of the less than or equals operation or an error.
+    /// A new [`Element`] representing the result of the less than or equal operation or an error.
     pub fn less_or_equal(&self, other: &Element) -> Element {
         if self.value.is_null() || other.value.is_null() {
             return Element::new(
@@ -316,11 +316,11 @@ impl Element {
         }
     }
 
-    /// Performs a greater than or equals operation (elt >= other) with another [`Element`].
+    /// Performs a greater than or equal operation (elt >= other) with another [`Element`].
     ///
     /// # Returns
     ///
-    /// A new [`Element`] representing the result of the greater than or equals operation or an error.
+    /// A new [`Element`] representing the result of the greater than or equal operation or an error.
     pub fn greater_or_equal(&self, other: &Element) -> Element {
         if self.value.is_null() || other.value.is_null() {
             return Element::new(
@@ -336,6 +336,38 @@ impl Element {
                 ElementModifier::ERROR,
                 Value::binary_operation_error(">=", self.value.get_type_repr(), other.value.get_type_repr()),
             ),
+        }
+    }
+
+    /// Performs an equals operation (elt == other) with another [`Element`].
+    ///
+    /// # Returns
+    ///
+    /// A new [`Element`] representing the result of the equals operation or an error.
+    pub fn equals(&self, other: &Element) -> Element {
+        let result = self.value.equals(&other.value);
+        match result {
+            Some(val) => Element::new(ElementModifier::NONE, val),
+            None => Element::new(
+                ElementModifier::ERROR,
+                Value::binary_operation_error("==", self.value.get_type_repr(), other.value.get_type_repr()),
+            )
+        }
+    }
+
+    /// Performs a not equals operation (elt != other) with another [`Element`].
+    ///
+    /// # Returns
+    ///
+    /// A new [`Element`] representing the result of the not equals operation or an error.
+    pub fn not_equals(&self, other: &Element) -> Element {
+        let result = self.value.not_equals(&other.value);
+        match result {
+            Some(val) => Element::new(ElementModifier::NONE, val),
+            None => Element::new(
+                ElementModifier::ERROR,
+                Value::binary_operation_error("!=", self.value.get_type_repr(), other.value.get_type_repr()),
+            )
         }
     }
     

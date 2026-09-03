@@ -471,6 +471,122 @@ impl ValueTrait for ValueI64 {
         }
     }
 
+    fn equals(&self, other: &Value) -> Option<Value> {
+        match other {
+            Value::Null(_) => Some(Value::Bool(ValueBool::with_value(
+                self.is_null()
+            ))),
+
+            Value::I8(v) => Some(Value::Bool(ValueBool::with_value(
+                if self.is_null() { v.is_null() } else { self.value.unwrap() == v.value().unwrap() as i64 }
+            ))),
+
+            Value::I16(v) => Some(Value::Bool(ValueBool::with_value(
+                if self.is_null() { v.is_null() } else { self.value.unwrap() == v.value().unwrap() as i64 }
+            ))),
+
+            Value::I32(v) => Some(Value::Bool(ValueBool::with_value(
+                if self.is_null() { v.is_null() } else { self.value.unwrap() == v.value().unwrap() as i64 }
+            ))),
+
+            Value::I64(v) => Some(Value::Bool(ValueBool::with_value(
+                if self.is_null() { v.is_null() } else { self.value.unwrap() == v.value().unwrap() }
+            ))),
+
+            Value::U8(v) => Some(Value::Bool(ValueBool::with_value(
+                if self.is_null() { v.is_null() } else { self.value.unwrap() as u64 == v.value().unwrap() as u64 }
+            ))),
+
+            Value::U16(v) => Some(Value::Bool(ValueBool::with_value(
+                if self.is_null() { v.is_null() } else { self.value.unwrap() as u64 == v.value().unwrap() as u64 }
+            ))),
+
+            Value::U32(v) => Some(Value::Bool(ValueBool::with_value(
+                if self.is_null() { v.is_null() } else { self.value.unwrap() as u64 == v.value().unwrap() as u64 }
+            ))),
+
+            Value::U64(v) => Some(Value::Bool(ValueBool::with_value(
+                if self.is_null() { v.is_null() } else { self.value.unwrap() as u64 == v.value().unwrap() }
+            ))),
+
+            Value::F32(v) => Some(Value::Bool(ValueBool::with_value(
+                if self.is_null() { v.is_null() } else { self.value.unwrap() as f64 == v.value().unwrap() as f64 }
+            ))),
+
+            Value::F64(v) => Some(Value::Bool(ValueBool::with_value(
+                if self.is_null() { v.is_null() } else { self.value.unwrap() as f64 == v.value().unwrap() }
+            ))),
+
+            Value::Bool(v) => Some(Value::Bool(ValueBool::with_value(
+                if self.is_null() { v.is_null() } else { self.value.unwrap() == v.value().unwrap() as i64 }
+            ))),
+
+            Value::Char(v) => Some(Value::Bool(ValueBool::with_value(
+                if self.is_null() { v.is_null() } else { self.value.unwrap() as u64 == v.value().unwrap() as u64 }
+            ))),
+
+            _ => None,
+        }
+    }
+
+    fn not_equals(&self, other: &Value) -> Option<Value> {
+        match other {
+            Value::Null(_) => Some(Value::Bool(ValueBool::with_value(
+                !self.is_null()
+            ))),
+
+            Value::I8(v) => Some(Value::Bool(ValueBool::with_value(
+                if self.is_null() { !v.is_null() } else { self.value.unwrap() != v.value().unwrap() as i64 }
+            ))),
+
+            Value::I16(v) => Some(Value::Bool(ValueBool::with_value(
+                if self.is_null() { !v.is_null() } else { self.value.unwrap() != v.value().unwrap() as i64 }
+            ))),
+
+            Value::I32(v) => Some(Value::Bool(ValueBool::with_value(
+                if self.is_null() { !v.is_null() } else { self.value.unwrap() != v.value().unwrap() as i64 }
+            ))),
+
+            Value::I64(v) => Some(Value::Bool(ValueBool::with_value(
+                if self.is_null() { !v.is_null() } else { self.value.unwrap() != v.value().unwrap() }
+            ))),
+
+            Value::U8(v) => Some(Value::Bool(ValueBool::with_value(
+                if self.is_null() { !v.is_null() } else { self.value.unwrap() as u64 != v.value().unwrap() as u64 }
+            ))),
+
+            Value::U16(v) => Some(Value::Bool(ValueBool::with_value(
+                if self.is_null() { !v.is_null() } else { self.value.unwrap() as u64 != v.value().unwrap() as u64 }
+            ))),
+
+            Value::U32(v) => Some(Value::Bool(ValueBool::with_value(
+                if self.is_null() { !v.is_null() } else { self.value.unwrap() as u64 != v.value().unwrap() as u64 }
+            ))),
+
+            Value::U64(v) => Some(Value::Bool(ValueBool::with_value(
+                if self.is_null() { !v.is_null() } else { self.value.unwrap() as u64 != v.value().unwrap() }
+            ))),
+
+            Value::F32(v) => Some(Value::Bool(ValueBool::with_value(
+                if self.is_null() { !v.is_null() } else { self.value.unwrap() as f64 != v.value().unwrap() as f64 }
+            ))),
+
+            Value::F64(v) => Some(Value::Bool(ValueBool::with_value(
+                if self.is_null() { !v.is_null() } else { self.value.unwrap() as f64 != v.value().unwrap() }
+            ))),
+
+            Value::Bool(v) => Some(Value::Bool(ValueBool::with_value(
+                if self.is_null() { !v.is_null() } else { self.value.unwrap() != v.value().unwrap() as i64 }
+            ))),
+
+            Value::Char(v) => Some(Value::Bool(ValueBool::with_value(
+                if self.is_null() { !v.is_null() } else { self.value.unwrap() as u64 != v.value().unwrap() as u64 }
+            ))),
+
+            _ => None,
+        }
+    }
+
     fn assign(&mut self, other: &Value) -> Option<Value> {
         match other {
             Value::I8(v) => {

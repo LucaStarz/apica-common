@@ -114,6 +114,14 @@ impl ValueTrait for ValueStackTrace {
         None
     }
 
+    fn equals(&self, _other: &Value) -> Option<Value> {
+        None
+    }
+
+    fn not_equals(&self, _other: &Value) -> Option<Value> {
+        None
+    }
+
     fn assign(&mut self, _other: &Value) -> Option<Value> {
         None
     }

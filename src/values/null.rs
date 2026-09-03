@@ -91,6 +91,14 @@ impl ValueTrait for ValueNull {
         None
     }
 
+    fn equals(&self, other: &Value) -> Option<Value> {
+        Some(Value::Bool(ValueBool::with_value(other.is_null())))
+    }
+
+    fn not_equals(&self, other: &Value) -> Option<Value> {
+        Some(Value::Bool(ValueBool::with_value(!other.is_null())))
+    }
+
     fn assign(&mut self, _other: &Value) -> Option<Value> {
         None
     }

@@ -82,6 +82,34 @@ impl ValueTrait for ValueType {
         None
     }
 
+    fn equals(&self, other: &Value) -> Option<Value> {
+        match other { 
+            Value::Null(_) => Some(Value::Bool(ValueBool::with_value(
+                self.value == ApicaTypeBytecode::Null
+            ))),
+            
+            Value::Type(v) => Some(Value::Bool(ValueBool::with_value(
+                self.value == v.value
+            ))),
+            
+            _ => None,
+        }
+    }
+
+    fn not_equals(&self, other: &Value) -> Option<Value> {
+        match other { 
+            Value::Null(_) => Some(Value::Bool(ValueBool::with_value(
+                self.value != ApicaTypeBytecode::Null
+            ))),
+            
+            Value::Type(v) => Some(Value::Bool(ValueBool::with_value(
+                self.value != v.value
+            ))),
+            
+            _ => None,
+        }
+    }
+
     fn assign(&mut self, other: &Value) -> Option<Value> {
         match other { 
             Value::Type(v) => {

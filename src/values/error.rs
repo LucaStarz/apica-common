@@ -109,6 +109,34 @@ impl ValueTrait for ValueError {
         None
     }
 
+    fn equals(&self, other: &Value) -> Option<Value> {
+        match other { 
+            Value::Null(_) => Some(Value::Bool(ValueBool::with_value(
+                self.is_null()
+            ))),
+            
+            Value::Error(v) => Some(Value::Bool(ValueBool::with_value(
+                self.name == v.name && self.details == v.details,
+            ))),
+            
+            _ => None,
+        }
+    }
+
+    fn not_equals(&self, other: &Value) -> Option<Value> {
+        match other { 
+            Value::Null(_) => Some(Value::Bool(ValueBool::with_value(
+                !self.is_null()
+            ))),
+            
+            Value::Error(v) => Some(Value::Bool(ValueBool::with_value(
+                self.name != v.name || self.details != v.details,
+            ))),
+            
+            _ => None,
+        }
+    }
+    
     fn assign(&mut self, other: &Value) -> Option<Value> {
         match other { 
             Value::Error(v) => {

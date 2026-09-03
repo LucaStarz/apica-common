@@ -32,10 +32,13 @@ pub trait ValueTrait {
 
     fn unary_not(&self) -> Option<Value>;
     fn bitwise_not(&self) -> Option<Value>;
+
     fn less_than(&self, other: &Value) -> Option<Value>;
     fn less_or_equal(&self, other: &Value) -> Option<Value>;
     fn greater_than(&self, other: &Value) -> Option<Value>;
     fn greater_or_equal(&self, other: &Value) -> Option<Value>;
+    fn equals(&self, other: &Value) -> Option<Value>;
+    fn not_equals(&self, other: &Value) -> Option<Value>;
 
     fn assign(&mut self, other: &Value) -> Option<Value>;
     
@@ -475,6 +478,50 @@ impl ValueTrait for Value {
             Value::Error(v) => v.greater_or_equal(other),
             Value::StackTrace(v) => v.greater_or_equal(other),
             Value::Type(v) => v.greater_or_equal(other),
+        }
+    }
+
+    fn equals(&self, other: &Value) -> Option<Value> {
+        match self { 
+            Value::Null(v) => v.equals(other),
+            Value::I8(v) => v.equals(other),
+            Value::I16(v) => v.equals(other),
+            Value::I32(v) => v.equals(other),
+            Value::I64(v) => v.equals(other),
+            Value::U8(v) => v.equals(other),
+            Value::U16(v) => v.equals(other),
+            Value::U32(v) => v.equals(other),
+            Value::U64(v) => v.equals(other),
+            Value::F32(v) => v.equals(other),
+            Value::F64(v) => v.equals(other),
+            Value::Bool(v) => v.equals(other),
+            Value::Char(v) => v.equals(other),
+            Value::String(v) => v.equals(other),
+            Value::Error(v) => v.equals(other),
+            Value::StackTrace(v) => v.equals(other),
+            Value::Type(v) => v.equals(other),
+        }
+    }
+
+    fn not_equals(&self, other: &Value) -> Option<Value> {
+        match self { 
+            Value::Null(v) => v.not_equals(other),
+            Value::I8(v) => v.not_equals(other),
+            Value::I16(v) => v.not_equals(other),
+            Value::I32(v) => v.not_equals(other),
+            Value::I64(v) => v.not_equals(other),
+            Value::U8(v) => v.not_equals(other),
+            Value::U16(v) => v.not_equals(other),
+            Value::U32(v) => v.not_equals(other),
+            Value::U64(v) => v.not_equals(other),
+            Value::F32(v) => v.not_equals(other),
+            Value::F64(v) => v.not_equals(other),
+            Value::Bool(v) => v.not_equals(other),
+            Value::Char(v) => v.not_equals(other),
+            Value::String(v) => v.not_equals(other),
+            Value::Error(v) => v.not_equals(other),
+            Value::StackTrace(v) => v.not_equals(other),
+            Value::Type(v) => v.not_equals(other),
         }
     }
 

@@ -339,6 +339,14 @@ impl ApicaTypeBytecode {
             },
         }
     }
+    
+    const fn resolve_type_convert(&self, other: ApicaTypeBytecode) -> Option<ApicaTypeBytecode> {
+        if self.can_be_converted_to(other, false) {
+            Some(other)
+        } else {
+            None
+        }
+    }
 
     /// Obtain the representation of a [`ApicaTypeBytecode`].
     pub const fn repr(&self) -> &'static str {
@@ -442,6 +450,8 @@ impl ApicaTypeBytecode {
             ApicaBytecode::LeftShift | ApicaBytecode::RightShift => self.resolve_type_shift(&other),
             
             ApicaBytecode::Assign => self.resolve_type_assign(&other),
+            
+            ApicaBytecode::As => self.resolve_type_convert(other),
 
             ApicaBytecode::SpecialOp => Some(ApicaTypeBytecode::Any),
             _ => None,
