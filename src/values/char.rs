@@ -53,16 +53,16 @@ impl ValueTrait for ValueChar {
 
     fn add(&self, other: &Value) -> Option<Value> {
         match other {
-            Value::I8(v) => Some(Value::Char(ValueChar::with_value(
-                self.value.unwrap() + v.value().unwrap() as u32
+            Value::I8(v) => Some(Value::I32(ValueI32::with_value(
+                self.value.unwrap() as i32 + v.value().unwrap() as i32
             ))),
 
-            Value::I16(v) => Some(Value::Char(ValueChar::with_value(
-                self.value.unwrap() + v.value().unwrap() as u32
+            Value::I16(v) => Some(Value::I32(ValueI32::with_value(
+                self.value.unwrap() as i32 + v.value().unwrap() as i32
             ))),
 
-            Value::I32(v) => Some(Value::Char(ValueChar::with_value(
-                self.value.unwrap() + v.value().unwrap() as u32
+            Value::I32(v) => Some(Value::I32(ValueI32::with_value(
+                self.value.unwrap() as i32 + v.value().unwrap()
             ))),
 
             Value::I64(v) => Some(Value::I64(ValueI64::with_value(
@@ -122,16 +122,16 @@ impl ValueTrait for ValueChar {
 
     fn subtract(&self, other: &Value) -> Option<Value> {
         match other {
-            Value::I8(v) => Some(Value::Char(ValueChar::with_value(
-                self.value.unwrap() - v.value().unwrap() as u32
+            Value::I8(v) => Some(Value::I32(ValueI32::with_value(
+                self.value.unwrap() as i32 - v.value().unwrap() as i32
             ))),
 
-            Value::I16(v) => Some(Value::Char(ValueChar::with_value(
-                self.value.unwrap() - v.value().unwrap() as u32
+            Value::I16(v) => Some(Value::I32(ValueI32::with_value(
+                self.value.unwrap() as i32 - v.value().unwrap() as i32
             ))),
 
-            Value::I32(v) => Some(Value::Char(ValueChar::with_value(
-                self.value.unwrap() - v.value().unwrap() as u32
+            Value::I32(v) => Some(Value::I32(ValueI32::with_value(
+                self.value.unwrap() as i32 - v.value().unwrap()
             ))),
 
             Value::I64(v) => Some(Value::I64(ValueI64::with_value(
@@ -191,16 +191,16 @@ impl ValueTrait for ValueChar {
 
     fn times(&self, other: &Value) -> Option<Value> {
         match other {
-            Value::I8(v) => Some(Value::Char(ValueChar::with_value(
-                self.value.unwrap() * v.value().unwrap() as u32
+            Value::I8(v) => Some(Value::I32(ValueI32::with_value(
+                self.value.unwrap() as i32 * v.value().unwrap() as i32
             ))),
 
-            Value::I16(v) => Some(Value::Char(ValueChar::with_value(
-                self.value.unwrap() * v.value().unwrap() as u32
+            Value::I16(v) => Some(Value::I32(ValueI32::with_value(
+                self.value.unwrap() as i32 * v.value().unwrap() as i32
             ))),
 
-            Value::I32(v) => Some(Value::Char(ValueChar::with_value(
-                self.value.unwrap() * v.value().unwrap() as u32
+            Value::I32(v) => Some(Value::I32(ValueI32::with_value(
+                self.value.unwrap() as i32 * v.value().unwrap()
             ))),
 
             Value::I64(v) => Some(Value::I64(ValueI64::with_value(
@@ -546,6 +546,14 @@ impl ValueTrait for ValueChar {
             },
 
             Value::F64(v) => {
+                self.value = match v.value() {
+                    Some(val) => Some(val as u32),
+                    None => None,
+                };
+                Some(self.copy())
+            },
+            
+            Value::Bool(v) => {
                 self.value = match v.value() {
                     Some(val) => Some(val as u32),
                     None => None,

@@ -96,6 +96,13 @@ impl Value {
         )))
     }
 
+    pub fn not_nullable_error(op: &str) -> Value {
+        Value::StackTrace(Box::from(ValueStackTrace::with_details(
+            String::from("NotNullableError"),
+            format!("Cannot perform operation `{}` with a not-nullable variable", op)
+        )))
+    }
+
     pub fn value_type(&self) -> ApicaTypeBytecode {
         match self {
             Value::Null(_) | Value::StackTrace(_) => ApicaTypeBytecode::Null,

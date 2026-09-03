@@ -544,6 +544,14 @@ impl ValueTrait for ValueBool {
                 Some(self.copy())
             },
             
+            Value::Char(v) => {
+                self.value = match v.value() { 
+                    Some(val) => Some(val != 0),
+                    None => None,
+                };
+                Some(self.copy())
+            },
+            
             _ => None,
         }
     }

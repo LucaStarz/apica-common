@@ -188,12 +188,12 @@ impl ValueTrait for ValueU16 {
 
     fn times(&self, other: &Value) -> Option<Value> {
         match other {
-            Value::I8(v) => Some(Value::I32(ValueI32::with_value(
-                self.value.unwrap() as i32 * v.value().unwrap() as i32
+            Value::I8(v) => Some(Value::I16(ValueI16::with_value(
+                self.value.unwrap() as i16 * v.value().unwrap() as i16
             ))),
 
-            Value::I16(v) => Some(Value::I32(ValueI32::with_value(
-                self.value.unwrap() as i32 * v.value().unwrap() as i32
+            Value::I16(v) => Some(Value::I16(ValueI16::with_value(
+                self.value.unwrap() as i16 * v.value().unwrap()
             ))),
 
             Value::I32(v) => Some(Value::I32(ValueI32::with_value(
@@ -204,12 +204,12 @@ impl ValueTrait for ValueU16 {
                 self.value.unwrap() as i64 * v.value().unwrap()
             ))),
 
-            Value::U8(v) => Some(Value::U32(ValueU32::with_value(
-                self.value.unwrap() as u32 * v.value().unwrap() as u32
+            Value::U8(v) => Some(Value::U16(ValueU16::with_value(
+                self.value.unwrap() * v.value().unwrap() as u16
             ))),
 
-            Value::U16(v) => Some(Value::U32(ValueU32::with_value(
-                self.value.unwrap() as u32 * v.value().unwrap() as u32
+            Value::U16(v) => Some(Value::U16(ValueU16::with_value(
+                self.value.unwrap() * v.value().unwrap()
             ))),
 
             Value::U32(v) => Some(Value::U32(ValueU32::with_value(

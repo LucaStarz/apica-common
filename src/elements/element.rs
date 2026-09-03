@@ -230,6 +230,13 @@ impl Element {
     ///
     /// A new [`Element`] representing the result of the bitwise not operation or an error.
     pub fn bitwise_not(&self) -> Element {
+        if self.value.is_null() {
+            return Element::new(
+                ElementModifier::ERROR,
+                Value::null_operation_error("~", false),
+            );
+        }
+
         let result = self.value.bitwise_not();
         match result { 
             Some(val) => Element::new(ElementModifier::NONE, val),
@@ -350,6 +357,13 @@ impl Element {
                 ElementModifier::ERROR,
                 Value::null_operation_error("=", false),
             );
+        }
+        
+        if self.modifier.contains(ElementModifier::NOT_NULLABLE) {
+            return Element::new(
+                ElementModifier::ERROR,
+                Value::not_nullable_error("="),
+            )
         }
         
         if self.modifier.contains(ElementModifier::ANY) {

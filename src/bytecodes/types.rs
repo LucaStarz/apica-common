@@ -1,4 +1,5 @@
 ﻿use num_enum::{IntoPrimitive, TryFromPrimitive};
+use crate::bytecodes::apica::ApicaBytecode;
 
 /// Type tag opcodes supported by the Apica type system.
 #[repr(u8)]
@@ -57,8 +58,290 @@ pub enum ApicaTypeBytecode {
 }
 
 impl ApicaTypeBytecode {
+    const fn primitive(&self) -> u8 {
+        *self as u8
+    }
+
+    const fn is_signed_integer(&self) -> bool {
+        matches!(self, ApicaTypeBytecode::I8 | ApicaTypeBytecode::I16 | ApicaTypeBytecode::I32 | ApicaTypeBytecode::I64)
+    }
+
+    const fn is_unsigned_integer(&self) -> bool {
+        matches!(self, ApicaTypeBytecode::U8 | ApicaTypeBytecode::U16 | ApicaTypeBytecode::U32 | ApicaTypeBytecode::U64)
+    }
+
+    const fn is_integer(&self) -> bool {
+        self.is_signed_integer() || self.is_unsigned_integer()
+    }
+
+    const fn is_float(&self) -> bool {
+        matches!(self, ApicaTypeBytecode::F32 | ApicaTypeBytecode::F64)
+    }
+
+    const fn is_number(&self) -> bool {
+        self.is_integer() || self.is_float()
+    }
+
+    const fn number_can_convert_to(to: ApicaTypeBytecode, is_auto: bool) -> bool {
+        match to {
+            ApicaTypeBytecode::Any | ApicaTypeBytecode::Bool | ApicaTypeBytecode::Char => true,
+            ApicaTypeBytecode::String | ApicaTypeBytecode::Type => !is_auto,
+
+            _ => to.is_number(),
+        }
+    }
+
+    const fn decimal_can_convert_to(to: ApicaTypeBytecode, is_auto: bool) -> bool {
+        match to {
+            ApicaTypeBytecode::Any | ApicaTypeBytecode::Bool => true,
+            ApicaTypeBytecode::Char | ApicaTypeBytecode::String | ApicaTypeBytecode::Type => !is_auto,
+
+            _ => to.is_number(),
+        }
+    }
+    
+    const fn number_comparison_resolve_to(other: &ApicaTypeBytecode, is_equality: bool) -> Option<ApicaTypeBytecode> {
+        match other {
+            ApicaTypeBytecode::Null => if is_equality { Some(ApicaTypeBytecode::Bool) } else { None },
+
+            _ if other.is_number() || matches!(other, ApicaTypeBytecode::Any | ApicaTypeBytecode::Bool | ApicaTypeBytecode::Char)
+                => Some(ApicaTypeBytecode::Bool),
+
+            _ => None,
+        }
+    }
+
+    const fn resolve_type_increment_decrement(&self) -> Option<ApicaTypeBytecode> {
+        match self {
+            ApicaTypeBytecode::Any => Some(ApicaTypeBytecode::Any),
+
+            ApicaTypeBytecode::Null | ApicaTypeBytecode::Bool | ApicaTypeBytecode::String | ApicaTypeBytecode::Error | ApicaTypeBytecode::Type
+                => None,
+
+            _ => Some(*self),
+        }
+    }
+
+    const fn resolve_type_unary_not(&self) -> Option<ApicaTypeBytecode> {
+        match self {
+            ApicaTypeBytecode::Type => None,
+
+            _ => Some(ApicaTypeBytecode::Bool),
+        }
+    }
+
+    const fn resolve_type_bitwise(&self) -> Option<ApicaTypeBytecode> {
+        match self {
+            ApicaTypeBytecode::Any => Some(ApicaTypeBytecode::Any),
+
+            ApicaTypeBytecode::Null | ApicaTypeBytecode::F32 | ApicaTypeBytecode::F64
+            | ApicaTypeBytecode::String | ApicaTypeBytecode::Error | ApicaTypeBytecode::Type => None,
+
+            _ => Some(*self),
+        }
+    }
+
+    const fn resolve_type_compare(&self, other: &ApicaTypeBytecode) -> Option<ApicaTypeBytecode> {
+        match self {
+            ApicaTypeBytecode::Any => Some(ApicaTypeBytecode::Bool),
+
+            _ if self.is_number() || matches!(self, ApicaTypeBytecode::Bool | ApicaTypeBytecode::Char)
+                => ApicaTypeBytecode::number_comparison_resolve_to(other, false),
+
+            _ => None,
+        }
+    }
+
+    const fn resolve_type_equality(&self, other: &ApicaTypeBytecode) -> Option<ApicaTypeBytecode> {
+        match self {
+            ApicaTypeBytecode::Any | ApicaTypeBytecode::Null => Some(ApicaTypeBytecode::Bool),
+
+            _ if self.is_number() || matches!(self, ApicaTypeBytecode::Bool | ApicaTypeBytecode::Char)
+                => ApicaTypeBytecode::number_comparison_resolve_to(other, true),
+
+            _ => if self.primitive() == other.primitive() || matches!(other, ApicaTypeBytecode::Null) {
+                Some(ApicaTypeBytecode::Bool)
+            } else {
+                None
+            }
+        }
+    }
+
+    const fn resolve_type_basic_binary_operations(&self, other: &ApicaTypeBytecode, is_addition: bool) -> Option<ApicaTypeBytecode> {
+        match self {
+            ApicaTypeBytecode::Any => Some(ApicaTypeBytecode::Any),
+            ApicaTypeBytecode::Null => None,
+
+            ApicaTypeBytecode::String => if is_addition && !matches!(other, ApicaTypeBytecode::Null) {
+                Some(Self::String)
+            } else {
+                None
+            },
+            
+            ApicaTypeBytecode::I8 => match other { 
+                ApicaTypeBytecode::Any => Some(ApicaTypeBytecode::Any),
+                
+                ApicaTypeBytecode::I8 | ApicaTypeBytecode::I16 | ApicaTypeBytecode::I32 | ApicaTypeBytecode::I64
+                | ApicaTypeBytecode::F32 | ApicaTypeBytecode::F64 => Some(*other),
+                
+                ApicaTypeBytecode::U8 | ApicaTypeBytecode::Bool => Some(ApicaTypeBytecode::I8),
+                ApicaTypeBytecode::U16 => Some(ApicaTypeBytecode::I16),
+                ApicaTypeBytecode::U32 | ApicaTypeBytecode::Char => Some(ApicaTypeBytecode::I32),
+                ApicaTypeBytecode::U64 => Some(ApicaTypeBytecode::I64),
+                
+                _ => None,
+            },
+            
+            ApicaTypeBytecode::I16 => match other {
+                ApicaTypeBytecode::Any => Some(ApicaTypeBytecode::Any),
+
+                ApicaTypeBytecode::I16 | ApicaTypeBytecode::I32 | ApicaTypeBytecode::I64
+                | ApicaTypeBytecode::F32 | ApicaTypeBytecode::F64 => Some(*other),
+
+                ApicaTypeBytecode::I8 | ApicaTypeBytecode::U8 | ApicaTypeBytecode::U16 | ApicaTypeBytecode::Bool 
+                    => Some(ApicaTypeBytecode::I16),
+                
+                ApicaTypeBytecode::U32 | ApicaTypeBytecode::Char => Some(ApicaTypeBytecode::I32),
+                ApicaTypeBytecode::U64 => Some(ApicaTypeBytecode::I64),
+
+                _ => None,
+            },
+            
+            ApicaTypeBytecode::I32 => match other {
+                ApicaTypeBytecode::Any => Some(ApicaTypeBytecode::Any),
+
+                ApicaTypeBytecode::I32 | ApicaTypeBytecode::I64
+                | ApicaTypeBytecode::F32 | ApicaTypeBytecode::F64 => Some(*other),
+
+                ApicaTypeBytecode::I8 | ApicaTypeBytecode::I16 | ApicaTypeBytecode::U8 | ApicaTypeBytecode::U16 
+                | ApicaTypeBytecode::U32 | ApicaTypeBytecode::Bool | ApicaTypeBytecode::Char
+                => Some(ApicaTypeBytecode::I32),
+
+                ApicaTypeBytecode::U64 => Some(ApicaTypeBytecode::I64),
+
+                _ => None,
+            },
+            
+            ApicaTypeBytecode::I64 => match other {
+                ApicaTypeBytecode::Any => Some(ApicaTypeBytecode::Any),
+                    
+                ApicaTypeBytecode::F32 | ApicaTypeBytecode::F64 => Some(ApicaTypeBytecode::F64),
+
+                ApicaTypeBytecode::I8 | ApicaTypeBytecode::I16 | ApicaTypeBytecode::I32 | ApicaTypeBytecode::I64 
+                | ApicaTypeBytecode::U8 | ApicaTypeBytecode::U16 | ApicaTypeBytecode::U32 | ApicaTypeBytecode::U64
+                | ApicaTypeBytecode::Bool | ApicaTypeBytecode::Char
+                => Some(ApicaTypeBytecode::I64),
+                
+                _ => None,
+            },
+            
+            ApicaTypeBytecode::U8 | ApicaTypeBytecode::Bool => match other {
+                ApicaTypeBytecode::Any => Some(ApicaTypeBytecode::Any),
+
+                ApicaTypeBytecode::I8 | ApicaTypeBytecode::I16 | ApicaTypeBytecode::I32 | ApicaTypeBytecode::I64
+                | ApicaTypeBytecode::U8 | ApicaTypeBytecode::U16 | ApicaTypeBytecode::U32 | ApicaTypeBytecode::U64
+                | ApicaTypeBytecode::F32 | ApicaTypeBytecode::F64 => Some(*other),
+                
+                ApicaTypeBytecode::Bool => Some(ApicaTypeBytecode::U8),
+                ApicaTypeBytecode::Char => Some(ApicaTypeBytecode::U32),
+
+                _ => None,
+            },
+            
+            ApicaTypeBytecode::U16 => match other { 
+                ApicaTypeBytecode::Any => Some(ApicaTypeBytecode::Any),
+
+                ApicaTypeBytecode::I16 | ApicaTypeBytecode::I32 | ApicaTypeBytecode::I64
+                | ApicaTypeBytecode::U16 | ApicaTypeBytecode::U32 | ApicaTypeBytecode::U64
+                | ApicaTypeBytecode::F32 | ApicaTypeBytecode::F64 => Some(*other),
+
+                ApicaTypeBytecode::I8 => Some(ApicaTypeBytecode::I16),
+                ApicaTypeBytecode::U8 | ApicaTypeBytecode::Bool => Some(ApicaTypeBytecode::U16),
+                ApicaTypeBytecode::Char => Some(ApicaTypeBytecode::U32),
+
+                _ => None,
+            },
+            
+            ApicaTypeBytecode::U32 | ApicaTypeBytecode::Char => match other { 
+                ApicaTypeBytecode::Any => Some(ApicaTypeBytecode::Any),
+
+                ApicaTypeBytecode::I64 | ApicaTypeBytecode::U64 | ApicaTypeBytecode::F32 | ApicaTypeBytecode::F64 => Some(*other),
+                
+                ApicaTypeBytecode::I8 | ApicaTypeBytecode::I16 | ApicaTypeBytecode::I32 => Some(ApicaTypeBytecode::I32),
+                
+                ApicaTypeBytecode::U8 | ApicaTypeBytecode::U16 | ApicaTypeBytecode::U32
+                | ApicaTypeBytecode::Bool | ApicaTypeBytecode::Char => Some(ApicaTypeBytecode::U32),
+                
+                _ => None,
+            },
+            
+            ApicaTypeBytecode::U64 => match other {
+                ApicaTypeBytecode::Any => Some(ApicaTypeBytecode::Any),
+
+                ApicaTypeBytecode::F32 | ApicaTypeBytecode::F64 => Some(ApicaTypeBytecode::F64),
+
+                ApicaTypeBytecode::I8 | ApicaTypeBytecode::I16 | ApicaTypeBytecode::I32 | ApicaTypeBytecode::I64 
+                    => Some(ApicaTypeBytecode::I64),
+
+                ApicaTypeBytecode::U8 | ApicaTypeBytecode::U16 | ApicaTypeBytecode::U32 | ApicaTypeBytecode::U64
+                | ApicaTypeBytecode::Bool | ApicaTypeBytecode::Char => Some(ApicaTypeBytecode::U64),
+
+                _ => None,
+            },
+            
+            ApicaTypeBytecode::F32 => match other { 
+                ApicaTypeBytecode::Any => Some(ApicaTypeBytecode::Any),
+
+                ApicaTypeBytecode::I8 | ApicaTypeBytecode::I16 | ApicaTypeBytecode::I32
+                | ApicaTypeBytecode::U8 | ApicaTypeBytecode::U16 | ApicaTypeBytecode::U32
+                | ApicaTypeBytecode::F32 | ApicaTypeBytecode::Bool | ApicaTypeBytecode::Char
+                    => Some(ApicaTypeBytecode::F32),
+                
+                ApicaTypeBytecode::I64 | ApicaTypeBytecode::U64 | ApicaTypeBytecode::F64 => Some(ApicaTypeBytecode::F64),
+
+                _ => None,
+            },
+            
+            ApicaTypeBytecode::F64 => match other {
+                ApicaTypeBytecode::Any => Some(ApicaTypeBytecode::Any),
+
+                _ if other.is_number() || matches!(other, ApicaTypeBytecode::Bool | ApicaTypeBytecode::Char)
+                    => Some(ApicaTypeBytecode::F64),
+                
+                _ => None,
+            },
+            
+            _ => None,
+        }
+    }
+    
+    const fn resolve_type_shift(&self, other: &ApicaTypeBytecode) -> Option<ApicaTypeBytecode> {
+        match self {
+            ApicaTypeBytecode::Any => Some(ApicaTypeBytecode::Any),
+
+            _ if self.is_number() && other.is_number() => Some(*self),
+
+            _ => None,
+        }
+    }
+    
+    const fn resolve_type_assign(&self, other: &ApicaTypeBytecode) -> Option<ApicaTypeBytecode> {
+        match self {
+            ApicaTypeBytecode::Any => Some(ApicaTypeBytecode::Any),
+            ApicaTypeBytecode::Null => None,
+
+            _ if self.is_number() && other.is_number() => Some(*self),
+
+            _ => if self.primitive() == other.primitive() {
+                Some(*self)
+            } else {
+                None
+            },
+        }
+    }
+
     /// Obtain the representation of a [`ApicaTypeBytecode`].
-    pub fn repr(&self) -> &'static str {
+    pub const fn repr(&self) -> &'static str {
         match self {
             ApicaTypeBytecode::Null => "null",
             ApicaTypeBytecode::Any => "???",
@@ -83,40 +366,12 @@ impl ApicaTypeBytecode {
         }
     }
 
-    fn number_can_convert_to(to: ApicaTypeBytecode, is_auto: bool) -> bool {
-        match to {
-            ApicaTypeBytecode::Any |
-            ApicaTypeBytecode::I8 | ApicaTypeBytecode::I16 | ApicaTypeBytecode::I32 | ApicaTypeBytecode::I64 |
-            ApicaTypeBytecode::U8 | ApicaTypeBytecode::U16 | ApicaTypeBytecode::U32 | ApicaTypeBytecode::U64 |
-            ApicaTypeBytecode::F32 | ApicaTypeBytecode::F64 |
-            ApicaTypeBytecode::Bool | ApicaTypeBytecode::Char => true,
-
-            ApicaTypeBytecode::String | ApicaTypeBytecode::Type => !is_auto,
-
-            _ => false,
-        }
-    }
-
-    fn decimal_can_convert_to(to: ApicaTypeBytecode, is_auto: bool) -> bool {
-        match to {
-            ApicaTypeBytecode::Any |
-            ApicaTypeBytecode::I8 | ApicaTypeBytecode::I16 | ApicaTypeBytecode::I32 | ApicaTypeBytecode::I64 |
-            ApicaTypeBytecode::U8 | ApicaTypeBytecode::U16 | ApicaTypeBytecode::U32 | ApicaTypeBytecode::U64 |
-            ApicaTypeBytecode::F32 | ApicaTypeBytecode::F64 |
-            ApicaTypeBytecode::Bool => true,
-
-            ApicaTypeBytecode::Char | ApicaTypeBytecode::String | ApicaTypeBytecode::Type => !is_auto,
-
-            _ => false,
-        }
-    }
-
     /// Check if a [`ApicaTypeBytecode`] can be converted to another [`ApicaTypeBytecode`], automatically or not.
     ///
     /// # Returns
     ///
     /// [`true`] if it is convertable, [`false`] otherwise.
-    pub fn can_be_converted_to(&self, to: ApicaTypeBytecode, is_auto: bool) -> bool {
+    pub const fn can_be_converted_to(&self, to: ApicaTypeBytecode, is_auto: bool) -> bool {
         match self {
             ApicaTypeBytecode::Null | ApicaTypeBytecode::Any => true,
 
@@ -158,30 +413,38 @@ impl ApicaTypeBytecode {
             },
         }
     }
-    
-    pub fn resolve_type_increment_decrement(&self) -> Option<ApicaTypeBytecode> {
-        match self {
-            ApicaTypeBytecode::Any | ApicaTypeBytecode::Null => Some(ApicaTypeBytecode::Null),
-            ApicaTypeBytecode::Bool | ApicaTypeBytecode::String | ApicaTypeBytecode::Error | ApicaTypeBytecode::Type
-                => None,
 
-            _ => Some(*self),
-        }
-    }
-    
-    pub fn resolve_type_unary_not(&self) -> Option<ApicaTypeBytecode> {
-        match self {
-            ApicaTypeBytecode::Any | ApicaTypeBytecode::Null => Some(ApicaTypeBytecode::Null),
-            ApicaTypeBytecode::Type => None,
-            _ => Some(ApicaTypeBytecode::Bool),
-        }
-    }
-    
-    pub fn resolve_type_bitwise_not(&self) -> Option<ApicaTypeBytecode> {
-        match self {
-            ApicaTypeBytecode::Any | ApicaTypeBytecode::Null => Some(ApicaTypeBytecode::Null),
-            ApicaTypeBytecode::String | ApicaTypeBytecode::Error | ApicaTypeBytecode::Type => None,
-            _ => Some(*self),
+    /// Get the [`ApicaTypeBytecode`] resulting of an operator applied to values of one or two specific(s) [`ApicaTypeBytecode`].
+    /// To handle assignment operators (i.e. `+=`, `|=`, ...), it should be used twice (`+` then `=`, `|` then `=`, ...).
+    ///
+    /// # Returns
+    ///
+    /// [`Some(ApicaTypeBytecode)`] if the operator is applicable, [`None`] otherwise.
+    pub const fn resolve_type_operators(&self, other: ApicaTypeBytecode, operator: ApicaBytecode) -> Option<ApicaTypeBytecode> {
+        match operator { 
+            ApicaBytecode::Increment | ApicaBytecode::LeftIncrement | ApicaBytecode::Decrement | ApicaBytecode::LeftDecrement
+                => self.resolve_type_increment_decrement(),
+            
+            ApicaBytecode::BitwiseNot | ApicaBytecode::BitwiseOr | ApicaBytecode::BitwiseAnd | ApicaBytecode::BitwiseXor
+                => self.resolve_type_bitwise(),
+            
+            ApicaBytecode::Not => self.resolve_type_unary_not(),
+            
+            ApicaBytecode::LessThan | ApicaBytecode::LessOrEquals | ApicaBytecode::GreaterThan | ApicaBytecode::GreaterOrEquals
+                => self.resolve_type_compare(&other),
+            
+            ApicaBytecode::Equals | ApicaBytecode::NotEquals => self.resolve_type_equality(&other),
+            
+            ApicaBytecode::Add => self.resolve_type_basic_binary_operations(&other, true),
+            ApicaBytecode::Subtract | ApicaBytecode::Multiply | ApicaBytecode::Divide | ApicaBytecode::Modulo
+                => self.resolve_type_basic_binary_operations(&other, false),
+
+            ApicaBytecode::LeftShift | ApicaBytecode::RightShift => self.resolve_type_shift(&other),
+            
+            ApicaBytecode::Assign => self.resolve_type_assign(&other),
+
+            ApicaBytecode::SpecialOp => Some(ApicaTypeBytecode::Any),
+            _ => None,
         }
     }
 }

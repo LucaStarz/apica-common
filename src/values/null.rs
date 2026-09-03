@@ -68,7 +68,7 @@ impl ValueTrait for ValueNull {
     }
 
     fn unary_not(&self) -> Option<Value> {
-        None
+        Some(Value::Bool(ValueBool::with_value(true)))
     }
 
     fn bitwise_not(&self) -> Option<Value> {
@@ -92,7 +92,7 @@ impl ValueTrait for ValueNull {
     }
 
     fn assign(&mut self, _other: &Value) -> Option<Value> {
-        Some(self.copy())
+        None
     }
     
     fn convert(&self, _to: ApicaTypeBytecode) -> Option<Value> {

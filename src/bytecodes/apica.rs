@@ -170,4 +170,16 @@ pub enum ApicaBytecode {
 
     /// No-operation (empty compound, ...)
     NoOperation =       0x00000036,
+
+    /// Left shift (elt << elt)
+    LeftShift =         0x00000037,
+
+    /// Left shift assignment (elt <<= elt)
+    LeftShiftAssign =   0x00000038,
+
+    /// Right shift (elt >> elt)
+    RightShift =        0x00000039,
+    
+    /// Right shift assignment (elt >>= elt)
+    RightShiftAssign =  0x0000003A,
 }
