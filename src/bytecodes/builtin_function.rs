@@ -81,4 +81,25 @@ pub enum ApicaBuiltinFunctionBytecode {
 
     /// Set the window size.
     SetWindowSize =             0x00000018,
+
+    /// Set the language of the system.
+    SetSystemLanguage =         0x00000019,
+
+    /// Get the language of the system.
+    GetSystemLanguage =         0x0000001A,
+
+    /// Get a string representing a specific date.
+    GetFormattedDate =          0x0000001B,
+
+    /// Get a string representing the actual date.
+    GetActualFormattedDate =    0x0000001C,
+
+    /// Get a string representing a specific time.
+    GetFormattedTime =          0x0000001D,
+
+    /// Get a string representing the actual time.
+    GetActualFormattedTime =    0x0000001E,
+    
+    /// Display a text at a given position.
+    DisplayTextAt =             0x0000001F,
 }
