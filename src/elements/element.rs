@@ -247,6 +247,75 @@ impl Element {
         }
     }
 
+    /// Performs a bitwise or operation (elt | other) with another [`Element`].
+    ///
+    /// # Returns
+    ///
+    /// A new [`Element`] representing the result of the bitwise or operation or an error.
+    pub fn bitwise_or(&self, other: &Element) -> Element {
+        if self.value.is_null() || other.value.is_null() {
+            return Element::new(
+                ElementModifier::ERROR,
+                Value::null_operation_error("|", false),
+            )
+        }
+        
+        let result = self.value.bitwise_or(&other.value);
+        match result { 
+            Some(val) => Element::new(ElementModifier::NONE, val),
+            None => Element::new(
+                ElementModifier::ERROR,
+                Value::binary_operation_error("|", self.value.get_type_repr(), other.value.get_type_repr()),
+            )
+        }
+    }
+
+    /// Performs a bitwise xor operation (elt ^ other) with another [`Element`].
+    ///
+    /// # Returns
+    ///
+    /// A new [`Element`] representing the result of the bitwise xor operation or an error.
+    pub fn bitwise_xor(&self, other: &Element) -> Element {
+        if self.value.is_null() || other.value.is_null() {
+            return Element::new(
+                ElementModifier::ERROR,
+                Value::null_operation_error("^", false),
+            )
+        }
+        
+        let result = self.value.bitwise_xor(&other.value);
+        match result { 
+            Some(val) => Element::new(ElementModifier::NONE, val),
+            None => Element::new(
+                ElementModifier::ERROR,
+                Value::binary_operation_error("^", self.value.get_type_repr(), other.value.get_type_repr()),
+            )
+        }
+    }
+
+    /// Performs a bitwise and operation (elt & other) with another [`Element`].
+    ///
+    /// # Returns
+    ///
+    /// A new [`Element`] representing the result of the bitwise and operation or an error.
+    pub fn bitwise_and(&self, other: &Element) -> Element {
+        if self.value.is_null() || other.value.is_null() {
+            return Element::new(
+                ElementModifier::ERROR,
+                Value::null_operation_error("&", false),
+            )
+        }
+        
+        let result = self.value.bitwise_and(&other.value);
+        match result { 
+            Some(val) => Element::new(ElementModifier::NONE, val),
+            None => Element::new(
+                ElementModifier::ERROR,
+                Value::binary_operation_error("&", self.value.get_type_repr(), other.value.get_type_repr()),
+            )
+        }
+    }
+
     /// Performs a less than operation (elt < other) with another [`Element`].
     ///
     /// # Returns

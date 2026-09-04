@@ -32,6 +32,9 @@ pub trait ValueTrait {
 
     fn unary_not(&self) -> Option<Value>;
     fn bitwise_not(&self) -> Option<Value>;
+    fn bitwise_or(&self, other: &Value) -> Option<Value>;
+    fn bitwise_xor(&self, other: &Value) -> Option<Value>;
+    fn bitwise_and(&self, other: &Value) -> Option<Value>;
 
     fn less_than(&self, other: &Value) -> Option<Value>;
     fn less_or_equal(&self, other: &Value) -> Option<Value>;
@@ -390,6 +393,72 @@ impl ValueTrait for Value {
             Value::Error(v) => v.bitwise_not(),
             Value::StackTrace(v) => v.bitwise_not(),
             Value::Type(v) => v.bitwise_not(),
+        }
+    }
+
+    fn bitwise_or(&self, other: &Value) -> Option<Value> {
+        match self {
+            Value::Null(v) => v.bitwise_or(other),
+            Value::I8(v) => v.bitwise_or(other),
+            Value::I16(v) => v.bitwise_or(other),
+            Value::I32(v) => v.bitwise_or(other),
+            Value::I64(v) => v.bitwise_or(other),
+            Value::U8(v) => v.bitwise_or(other),
+            Value::U16(v) => v.bitwise_or(other),
+            Value::U32(v) => v.bitwise_or(other),
+            Value::U64(v) => v.bitwise_or(other),
+            Value::F32(v) => v.bitwise_or(other),
+            Value::F64(v) => v.bitwise_or(other),
+            Value::Bool(v) => v.bitwise_or(other),
+            Value::Char(v) => v.bitwise_or(other),
+            Value::String(v) => v.bitwise_or(other),
+            Value::Error(v) => v.bitwise_or(other),
+            Value::StackTrace(v) => v.bitwise_or(other),
+            Value::Type(v) => v.bitwise_or(other),
+        }
+    }
+
+    fn bitwise_xor(&self, other: &Value) -> Option<Value> {
+        match self {
+            Value::Null(v) => v.bitwise_xor(other),
+            Value::I8(v) => v.bitwise_xor(other),
+            Value::I16(v) => v.bitwise_xor(other),
+            Value::I32(v) => v.bitwise_xor(other),
+            Value::I64(v) => v.bitwise_xor(other),
+            Value::U8(v) => v.bitwise_xor(other),
+            Value::U16(v) => v.bitwise_xor(other),
+            Value::U32(v) => v.bitwise_xor(other),
+            Value::U64(v) => v.bitwise_xor(other),
+            Value::F32(v) => v.bitwise_xor(other),
+            Value::F64(v) => v.bitwise_xor(other),
+            Value::Bool(v) => v.bitwise_xor(other),
+            Value::Char(v) => v.bitwise_xor(other),
+            Value::String(v) => v.bitwise_xor(other),
+            Value::Error(v) => v.bitwise_xor(other),
+            Value::StackTrace(v) => v.bitwise_xor(other),
+            Value::Type(v) => v.bitwise_xor(other),
+        }
+    }
+
+    fn bitwise_and(&self, other: &Value) -> Option<Value> {
+        match self {
+            Value::Null(v) => v.bitwise_and(other),
+            Value::I8(v) => v.bitwise_and(other),
+            Value::I16(v) => v.bitwise_and(other),
+            Value::I32(v) => v.bitwise_and(other),
+            Value::I64(v) => v.bitwise_and(other),
+            Value::U8(v) => v.bitwise_and(other),
+            Value::U16(v) => v.bitwise_and(other),
+            Value::U32(v) => v.bitwise_and(other),
+            Value::U64(v) => v.bitwise_and(other),
+            Value::F32(v) => v.bitwise_and(other),
+            Value::F64(v) => v.bitwise_and(other),
+            Value::Bool(v) => v.bitwise_and(other),
+            Value::Char(v) => v.bitwise_and(other),
+            Value::String(v) => v.bitwise_and(other),
+            Value::Error(v) => v.bitwise_and(other),
+            Value::StackTrace(v) => v.bitwise_and(other),
+            Value::Type(v) => v.bitwise_and(other),
         }
     }
 

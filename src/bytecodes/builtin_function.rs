@@ -65,7 +65,7 @@ pub enum ApicaBuiltinFunctionBytecode {
     DrawSprite2DAt =            0x00000012,
 
     /// Get the delta-time of the VM.
-    GetDeltaTime =                 0x00000013,
+    GetDeltaTime =              0x00000013,
 
     /// Get the number of columns of a 2D spritesheet.
     GetSpritesheet2DColumns =   0x00000014,
@@ -75,4 +75,10 @@ pub enum ApicaBuiltinFunctionBytecode {
 
     /// Get the number of frames of a 2D spritesheet.
     GetSpritesheet2DFrames =    0x00000016,
+
+    /// Set the Clear Color of the renderer.
+    SetClearColor =             0x00000017,
+
+    /// Set the window size.
+    SetWindowSize =             0x00000018,
 }

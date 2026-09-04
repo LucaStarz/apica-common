@@ -255,6 +255,168 @@ impl ValueTrait for ValueI8 {
         )))
     }
 
+    fn bitwise_or(&self, other: &Value) -> Option<Value> {
+        match other {
+            Value::I8(v) => Some(Value::I8(ValueI8::with_value(
+                self.value.unwrap() | v.value().unwrap()
+            ))),
+
+            Value::I16(v) => Some(Value::I16(ValueI16::with_value(
+                self.value.unwrap() as i16 | v.value().unwrap()
+            ))),
+
+            Value::I32(v) => Some(Value::I32(ValueI32::with_value(
+                self.value.unwrap() as i32 | v.value().unwrap()
+            ))),
+
+            Value::I64(v) => Some(Value::I64(ValueI64::with_value(
+                self.value.unwrap() as i64 | v.value().unwrap()
+            ))),
+
+            Value::U8(v) => Some(Value::U8(ValueU8::with_value(
+                self.value.unwrap() as u8 | v.value().unwrap()
+            ))),
+
+            Value::U16(v) => Some(Value::U16(ValueU16::with_value(
+                self.value.unwrap() as u16 | v.value().unwrap()
+            ))),
+
+            Value::U32(v) => Some(Value::U32(ValueU32::with_value(
+                self.value.unwrap() as u32 | v.value().unwrap()
+            ))),
+
+            Value::U64(v) => Some(Value::U64(ValueU64::with_value(
+                self.value.unwrap() as u64 | v.value().unwrap()
+            ))),
+
+            Value::F32(v) => Some(Value::U32(ValueU32::with_value(
+                self.value.unwrap() as u32 | v.value().unwrap() as u32
+            ))),
+
+            Value::F64(v) => Some(Value::U64(ValueU64::with_value(
+                self.value.unwrap() as u64 | v.value().unwrap() as u64
+            ))),
+
+            Value::Bool(v) => Some(Value::I8(ValueI8::with_value(
+                self.value.unwrap() | v.value().unwrap() as i8
+            ))),
+
+            Value::Char(v) => Some(Value::U32(ValueU32::with_value(
+                self.value.unwrap() as u32 | v.value().unwrap()
+            ))),
+
+            _ => None,
+        }
+    }
+
+    fn bitwise_xor(&self, other: &Value) -> Option<Value> {
+        match other {
+            Value::I8(v) => Some(Value::I8(ValueI8::with_value(
+                self.value.unwrap() ^ v.value().unwrap()
+            ))),
+
+            Value::I16(v) => Some(Value::I16(ValueI16::with_value(
+                self.value.unwrap() as i16 ^ v.value().unwrap()
+            ))),
+
+            Value::I32(v) => Some(Value::I32(ValueI32::with_value(
+                self.value.unwrap() as i32 ^ v.value().unwrap()
+            ))),
+
+            Value::I64(v) => Some(Value::I64(ValueI64::with_value(
+                self.value.unwrap() as i64 ^ v.value().unwrap()
+            ))),
+
+            Value::U8(v) => Some(Value::U8(ValueU8::with_value(
+                self.value.unwrap() as u8 ^ v.value().unwrap()
+            ))),
+
+            Value::U16(v) => Some(Value::U16(ValueU16::with_value(
+                self.value.unwrap() as u16 ^ v.value().unwrap()
+            ))),
+
+            Value::U32(v) => Some(Value::U32(ValueU32::with_value(
+                self.value.unwrap() as u32 ^ v.value().unwrap()
+            ))),
+
+            Value::U64(v) => Some(Value::U64(ValueU64::with_value(
+                self.value.unwrap() as u64 ^ v.value().unwrap()
+            ))),
+
+            Value::F32(v) => Some(Value::U32(ValueU32::with_value(
+                self.value.unwrap() as u32 ^ v.value().unwrap() as u32
+            ))),
+
+            Value::F64(v) => Some(Value::U64(ValueU64::with_value(
+                self.value.unwrap() as u64 ^ v.value().unwrap() as u64
+            ))),
+
+            Value::Bool(v) => Some(Value::I8(ValueI8::with_value(
+                self.value.unwrap() ^ v.value().unwrap() as i8
+            ))),
+
+            Value::Char(v) => Some(Value::U32(ValueU32::with_value(
+                self.value.unwrap() as u32 ^ v.value().unwrap()
+            ))),
+
+            _ => None,
+        }
+    }
+
+    fn bitwise_and(&self, other: &Value) -> Option<Value> {
+        match other {
+            Value::I8(v) => Some(Value::I8(ValueI8::with_value(
+                self.value.unwrap() & v.value().unwrap()
+            ))),
+
+            Value::I16(v) => Some(Value::I16(ValueI16::with_value(
+                self.value.unwrap() as i16 & v.value().unwrap()
+            ))),
+
+            Value::I32(v) => Some(Value::I32(ValueI32::with_value(
+                self.value.unwrap() as i32 & v.value().unwrap()
+            ))),
+
+            Value::I64(v) => Some(Value::I64(ValueI64::with_value(
+                self.value.unwrap() as i64 & v.value().unwrap()
+            ))),
+
+            Value::U8(v) => Some(Value::U8(ValueU8::with_value(
+                self.value.unwrap() as u8 & v.value().unwrap()
+            ))),
+
+            Value::U16(v) => Some(Value::U16(ValueU16::with_value(
+                self.value.unwrap() as u16 & v.value().unwrap()
+            ))),
+
+            Value::U32(v) => Some(Value::U32(ValueU32::with_value(
+                self.value.unwrap() as u32 & v.value().unwrap()
+            ))),
+
+            Value::U64(v) => Some(Value::U64(ValueU64::with_value(
+                self.value.unwrap() as u64 & v.value().unwrap()
+            ))),
+
+            Value::F32(v) => Some(Value::U32(ValueU32::with_value(
+                self.value.unwrap() as u32 & v.value().unwrap() as u32
+            ))),
+
+            Value::F64(v) => Some(Value::U64(ValueU64::with_value(
+                self.value.unwrap() as u64 & v.value().unwrap() as u64
+            ))),
+
+            Value::Bool(v) => Some(Value::I8(ValueI8::with_value(
+                self.value.unwrap() & v.value().unwrap() as i8
+            ))),
+
+            Value::Char(v) => Some(Value::U32(ValueU32::with_value(
+                self.value.unwrap() as u32 & v.value().unwrap()
+            ))),
+
+            _ => None,
+        }
+    }
+
     fn less_than(&self, other: &Value) -> Option<Value> {
         match other {
             Value::I8(v) => Some(Value::Bool(ValueBool::with_value(

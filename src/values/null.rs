@@ -75,6 +75,18 @@ impl ValueTrait for ValueNull {
         None
     }
 
+    fn bitwise_or(&self, _other: &Value) -> Option<Value> {
+        None
+    }
+
+    fn bitwise_xor(&self, _other: &Value) -> Option<Value> {
+        None
+    }
+
+    fn bitwise_and(&self, _other: &Value) -> Option<Value> {
+        None
+    }
+
     fn less_than(&self, _other: &Value) -> Option<Value> {
         None
     }

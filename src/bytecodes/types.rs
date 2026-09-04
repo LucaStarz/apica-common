@@ -130,7 +130,7 @@ impl ApicaTypeBytecode {
         }
     }
 
-    const fn resolve_type_bitwise(&self) -> Option<ApicaTypeBytecode> {
+    const fn resolve_type_bitwise_not(&self) -> Option<ApicaTypeBytecode> {
         match self {
             ApicaTypeBytecode::Any => Some(ApicaTypeBytecode::Any),
 
@@ -433,8 +433,7 @@ impl ApicaTypeBytecode {
             ApicaBytecode::Increment | ApicaBytecode::LeftIncrement | ApicaBytecode::Decrement | ApicaBytecode::LeftDecrement
                 => self.resolve_type_increment_decrement(),
             
-            ApicaBytecode::BitwiseNot | ApicaBytecode::BitwiseOr | ApicaBytecode::BitwiseAnd | ApicaBytecode::BitwiseXor
-                => self.resolve_type_bitwise(),
+            ApicaBytecode::BitwiseNot => self.resolve_type_bitwise_not(),
             
             ApicaBytecode::Not => self.resolve_type_unary_not(),
             
@@ -445,6 +444,7 @@ impl ApicaTypeBytecode {
             
             ApicaBytecode::Add => self.resolve_type_basic_binary_operations(&other, true),
             ApicaBytecode::Subtract | ApicaBytecode::Multiply | ApicaBytecode::Divide | ApicaBytecode::Modulo
+            | ApicaBytecode::BitwiseOr | ApicaBytecode::BitwiseAnd | ApicaBytecode::BitwiseXor
                 => self.resolve_type_basic_binary_operations(&other, false),
 
             ApicaBytecode::LeftShift | ApicaBytecode::RightShift => self.resolve_type_shift(&other),
