@@ -88,18 +88,21 @@ pub enum ApicaBuiltinFunctionBytecode {
     /// Get the language of the system.
     GetSystemLanguage =         0x0000001A,
 
-    /// Get a string representing a specific date.
-    GetFormattedDate =          0x0000001B,
+    /// Get a formatted representation of a specific datetime.
+    GetFormattedDateTime =          0x0000001B,
 
-    /// Get a string representing the actual date.
-    GetActualFormattedDate =    0x0000001C,
+    /// Get a formatted representation of the actual datetime.
+    GetActualFormattedDateTime =    0x0000001C,
 
-    /// Get a string representing a specific time.
-    GetFormattedTime =          0x0000001D,
+    /// Load a font file.
+    LoadFont =                      0x0000001D,
 
-    /// Get a string representing the actual time.
-    GetActualFormattedTime =    0x0000001E,
-    
+    /// Unload a font file.
+    UnloadFont =                    0x0000001E,
+
     /// Display a text at a given position.
-    DisplayTextAt =             0x0000001F,
+    DisplayTextAt =                 0x0000001F,
+
+    /// Get the actual timestamp, in milliseconds.
+    GetActualMilliTimestamp =       0x00000020,
 }
