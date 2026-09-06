@@ -48,6 +48,13 @@ impl ValueTrait for ValueBool {
         }
     }
 
+    fn repr(&self) -> String {
+        match self.value { 
+            Some(v) => format!("bool<{}>", v),
+            None => String::from("bool<>"),
+        }
+    }
+
     fn add(&self, other: &Value) -> Option<Value> {
         match other {
             Value::I8(v) => Some(Value::I8(ValueI8::with_value(

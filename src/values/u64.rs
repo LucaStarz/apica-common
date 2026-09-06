@@ -48,6 +48,13 @@ impl ValueTrait for ValueU64 {
         }
     }
 
+    fn repr(&self) -> String {
+        match self.value { 
+            Some(v) => format!("u64<{}>", v),
+            None => String::from("u64<>"),
+        }
+    }
+
     fn add(&self, other: &Value) -> Option<Value> {
         match other {
             Value::I8(v) => Some(Value::I64(ValueI64::with_value(

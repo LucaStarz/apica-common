@@ -30,6 +30,10 @@ impl ValueTrait for ValueType {
         print!("type<{}>{}", self.value.repr(), end);
     }
 
+    fn repr(&self) -> String {
+        format!("type<{}>", self.value.repr())
+    }
+
     fn add(&self, _other: &Value) -> Option<Value> {
         None
     }

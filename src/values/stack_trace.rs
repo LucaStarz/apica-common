@@ -62,6 +62,10 @@ impl ValueTrait for ValueStackTrace {
         print!("stack-trace<>{}", end);
     }
 
+    fn repr(&self) -> String {
+        String::new()
+    }
+
     fn add(&self, _other: &Value) -> Option<Value> {
         None
     }

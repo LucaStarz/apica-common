@@ -39,6 +39,10 @@ impl ValueTrait for ValueNull {
         print!("null<>{}", end);
     }
 
+    fn repr(&self) -> String {
+        String::from("null<>")
+    }
+
     fn add(&self, _other: &Value) -> Option<Value> {
         None
     }

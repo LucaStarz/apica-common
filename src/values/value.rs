@@ -21,6 +21,7 @@ pub trait ValueTrait {
     fn is_null(&self) -> bool;
     fn get_type_repr(&self) -> &str;
     fn show(&self, end: char);
+    fn repr(&self) -> String;
 
     fn add(&self, other: &Value) -> Option<Value>;
     fn increment(&mut self) -> Option<Value>;
@@ -195,6 +196,28 @@ impl ValueTrait for Value {
             Value::Error(v) => v.show(end),
             Value::StackTrace(v) => v.show(end),
             Value::Type(v) => v.show(end),
+        }
+    }
+
+    fn repr(&self) -> String {
+        match self { 
+            Value::Null(v) => v.repr(),
+            Value::I8(v) => v.repr(),
+            Value::I16(v) => v.repr(),
+            Value::I32(v) => v.repr(),
+            Value::I64(v) => v.repr(),
+            Value::U8(v) => v.repr(),
+            Value::U16(v) => v.repr(),
+            Value::U32(v) => v.repr(),
+            Value::U64(v) => v.repr(),
+            Value::F32(v) => v.repr(),
+            Value::F64(v) => v.repr(),
+            Value::Bool(v) => v.repr(),
+            Value::Char(v) => v.repr(),
+            Value::String(v) => v.repr(),
+            Value::Error(v) => v.repr(),
+            Value::StackTrace(v) => v.repr(),
+            Value::Type(v) => v.repr(),
         }
     }
 

@@ -42,13 +42,21 @@ impl ValueTrait for ValueError {
 
     fn show(&self, end: char) {
         match self.name.as_deref() {
-            Some(n) => {
-                match self.details.as_deref() {
-                    Some(d) => print!("error<{}: {}>{}", n, d, end),
-                    None => print!("error<{}>{}", n, end),
-                }
+            Some(n) => match self.details.as_deref() {
+                Some(d) => print!("error<{}: {}>{}", n, d, end),
+                None => print!("error<{}>{}", n, end),
             },
             None => print!("error<>{}", end),
+        }
+    }
+
+    fn repr(&self) -> String {
+        match self.name.as_deref() { 
+            Some(n) => match self.details.as_deref() { 
+                Some(d) => format!("error<{}: {}>", n, d),
+                None => format!("error<{}>", n),
+            },
+            None => String::from("error<>"),
         }
     }
 

@@ -51,6 +51,16 @@ impl ValueTrait for ValueChar {
         }
     }
 
+    fn repr(&self) -> String {
+        match self.value { 
+            Some(v) => {
+                let c = char::from_u32(v).unwrap_or('�');
+                format!("char<{}>", c)
+            },
+            None => String::from("char<>"),
+        }
+    }
+
     fn add(&self, other: &Value) -> Option<Value> {
         match other {
             Value::I8(v) => Some(Value::I32(ValueI32::with_value(

@@ -37,6 +37,13 @@ impl ValueTrait for ValueString {
         }
     }
 
+    fn repr(&self) -> String {
+        match self.value.as_deref() { 
+            Some(v) => format!("string<{}>", v),
+            None => String::from("string<>"),
+        }
+    }
+
     fn add(&self, other: &Value) -> Option<Value> {
         match other {
             Value::I8(v) => Some(Value::String(ValueString::with_value(
