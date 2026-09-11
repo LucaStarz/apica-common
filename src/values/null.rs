@@ -8,6 +8,7 @@ use crate::values::i16::ValueI16;
 use crate::values::i32::ValueI32;
 use crate::values::i64::ValueI64;
 use crate::values::i8::ValueI8;
+use crate::values::reference::ValueReference;
 use crate::values::string::ValueString;
 use crate::values::u16::ValueU16;
 use crate::values::u32::ValueU32;
@@ -16,6 +17,7 @@ use crate::values::u8::ValueU8;
 use crate::values::value::{Value, ValueTrait};
 use crate::values::value_type::ValueType;
 
+#[derive(Clone)]
 pub struct ValueNull {
 
 }
@@ -31,8 +33,8 @@ impl ValueTrait for ValueNull {
         true
     }
 
-    fn get_type_repr(&self) -> &str {
-        "null"
+    fn get_type_repr(&self) -> String {
+        String::from("null")
     }
 
     fn show(&self, end: char) {
@@ -119,12 +121,12 @@ impl ValueTrait for ValueNull {
         None
     }
     
-    fn convert(&self, _to: ApicaTypeBytecode) -> Option<Value> {
+    fn convert(&self, _to: &ValueType, _is_nullable: bool) -> Option<Value> {
         None // null is AUTOMATICALLY converted
     }
 
-    fn auto_convert(&self, to: ApicaTypeBytecode) -> Option<Value> {
-        Some(match to {
+    fn auto_convert(&self, to: &ValueType, is_nullable: bool) -> Option<Value> {
+        Some(match to.value() {
             ApicaTypeBytecode::Any | ApicaTypeBytecode::Null => Value::Null(ValueNull::new()),
             ApicaTypeBytecode::I8 => Value::I8(ValueI8::new()),
             ApicaTypeBytecode::I16 => Value::I16(ValueI16::new()),
@@ -140,11 +142,11 @@ impl ValueTrait for ValueNull {
             ApicaTypeBytecode::Char => Value::Char(ValueChar::new()),
             ApicaTypeBytecode::String => Value::String(ValueString::new()),
             ApicaTypeBytecode::Error => Value::Error(Box::new(ValueError::new())),
-            ApicaTypeBytecode::Type => Value::Type(ValueType::with_type(ApicaTypeBytecode::Null)),
-        })
-    }
+            ApicaTypeBytecode::Type => Value::Type(Box::new(ValueType::new(ApicaTypeBytecode::Null, is_nullable))),
 
-    fn copy(&self) -> Value {
-        Value::Null(ValueNull::new())
+            ApicaTypeBytecode::Reference => Value::Reference(Box::new(ValueReference::new(
+                to.contained()[0].clone()
+            ))),
+        })
     }
 }

@@ -3,6 +3,7 @@ use crate::values::bool::ValueBool;
 use crate::values::value::{Value, ValueTrait};
 use crate::values::value_type::ValueType;
 
+#[derive(Clone)]
 pub struct ValueString {
     value: Option<String>,
 }
@@ -26,8 +27,8 @@ impl ValueTrait for ValueString {
         self.value.is_none()
     }
 
-    fn get_type_repr(&self) -> &str {
-        "string"
+    fn get_type_repr(&self) -> String {
+        String::from("string")
     }
 
     fn show(&self, end: char) {
@@ -275,30 +276,35 @@ impl ValueTrait for ValueString {
     }
 
     fn assign(&mut self, other: &Value) -> Option<Value> {
-        match other { 
+        match other {
+            Value::Null(_) => {
+                self.value = None;
+                Some(Value::String(self.clone()))
+            },
+            
             Value::String(v) => {
                 self.value = match v.value() { 
                     Some(val) => Some(val.to_string()),
                     None => None,
                 };
-                Some(self.copy())
+                Some(Value::String(self.clone()))
             },
             
             _ => None,
         }
     }
     
-    fn convert(&self, to: ApicaTypeBytecode) -> Option<Value> {
+    fn convert(&self, to: &ValueType, is_nullable: bool) -> Option<Value> {
         if let Some(value) = &self.value {
-            match to {
-                ApicaTypeBytecode::Type => Some(Value::Type(ValueType::with_type(ApicaTypeBytecode::String))),
+            match to.value() {
+                ApicaTypeBytecode::Type => Some(Value::Type(Box::new(ValueType::new(ApicaTypeBytecode::String, is_nullable)))),
                 ApicaTypeBytecode::Bool => Some(Value::Bool(ValueBool::with_value(!value.is_empty()))),
 
                 _ => None,
             }
         } else {
-            match to {
-                ApicaTypeBytecode::Type => Some(Value::Type(ValueType::with_type(ApicaTypeBytecode::String))),
+            match to.value() {
+                ApicaTypeBytecode::Type => Some(Value::Type(Box::new(ValueType::new(ApicaTypeBytecode::String, is_nullable)))),
                 ApicaTypeBytecode::Bool => Some(Value::Bool(ValueBool::new())),
 
                 _ => None,
@@ -306,26 +312,19 @@ impl ValueTrait for ValueString {
         }
     }
 
-    fn auto_convert(&self, to: ApicaTypeBytecode) -> Option<Value> {
+    fn auto_convert(&self, to: &ValueType, _is_nullable: bool) -> Option<Value> {
         if let Some(value) = &self.value {
-            match to {
+            match to.value() {
                 ApicaTypeBytecode::Any | ApicaTypeBytecode::String => Some(Value::String(ValueString::with_value(value.clone()))),
 
                 _ => None,
             }
         } else {
-            match to {
+            match to.value() {
                 ApicaTypeBytecode::Any | ApicaTypeBytecode::String => Some(Value::String(ValueString::new())),
 
                 _ => None,
             }
-        }
-    }
-
-    fn copy(&self) -> Value {
-        match &self.value { 
-            Some(val) => Value::String(ValueString::with_value(val.to_string())),
-            None => Value::String(ValueString::new()),
         }
     }
 }

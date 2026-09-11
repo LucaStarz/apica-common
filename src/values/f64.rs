@@ -14,6 +14,7 @@ use crate::values::u8::ValueU8;
 use crate::values::value::{Value, ValueTrait};
 use crate::values::value_type::ValueType;
 
+#[derive(Clone, Copy)]
 pub struct ValueF64 {
     value: Option<f64>,
 }
@@ -37,8 +38,8 @@ impl ValueTrait for ValueF64 {
         self.value.is_none()
     }
 
-    fn get_type_repr(&self) -> &str {
-        "f64"
+    fn get_type_repr(&self) -> String {
+        String::from("f64")
     }
 
     fn show(&self, end: char) {
@@ -756,12 +757,17 @@ impl ValueTrait for ValueF64 {
 
     fn assign(&mut self, other: &Value) -> Option<Value> {
         match other {
+            Value::Null(_) => {
+                self.value = None;
+                Some(Value::F64(self.clone()))
+            },
+            
             Value::I8(v) => {
                 self.value = match v.value() {
                     Some(val) => Some(val as f64),
                     None => None,
                 };
-                Some(self.copy())
+                Some(Value::F64(self.clone()))
             },
 
             Value::I16(v) => {
@@ -769,7 +775,7 @@ impl ValueTrait for ValueF64 {
                     Some(val) => Some(val as f64),
                     None => None,
                 };
-                Some(self.copy())
+                Some(Value::F64(self.clone()))
             },
 
             Value::I32(v) => {
@@ -777,7 +783,7 @@ impl ValueTrait for ValueF64 {
                     Some(val) => Some(val as f64),
                     None => None,
                 };
-                Some(self.copy())
+                Some(Value::F64(self.clone()))
             },
 
             Value::I64(v) => {
@@ -785,7 +791,7 @@ impl ValueTrait for ValueF64 {
                     Some(val) => Some(val as f64),
                     None => None,
                 };
-                Some(self.copy())
+                Some(Value::F64(self.clone()))
             },
 
             Value::U8(v) => {
@@ -793,7 +799,7 @@ impl ValueTrait for ValueF64 {
                     Some(val) => Some(val as f64),
                     None => None,
                 };
-                Some(self.copy())
+                Some(Value::F64(self.clone()))
             },
 
             Value::U16(v) => {
@@ -801,7 +807,7 @@ impl ValueTrait for ValueF64 {
                     Some(val) => Some(val as f64),
                     None => None,
                 };
-                Some(self.copy())
+                Some(Value::F64(self.clone()))
             },
 
             Value::U32(v) => {
@@ -809,7 +815,7 @@ impl ValueTrait for ValueF64 {
                     Some(val) => Some(val as f64),
                     None => None,
                 };
-                Some(self.copy())
+                Some(Value::F64(self.clone()))
             },
 
             Value::U64(v) => {
@@ -817,7 +823,7 @@ impl ValueTrait for ValueF64 {
                     Some(val) => Some(val as f64),
                     None => None,
                 };
-                Some(self.copy())
+                Some(Value::F64(self.clone()))
             },
 
             Value::F32(v) => {
@@ -825,12 +831,12 @@ impl ValueTrait for ValueF64 {
                     Some(val) => Some(val as f64),
                     None => None,
                 };
-                Some(self.copy())
+                Some(Value::F64(self.clone()))
             },
 
             Value::F64(v) => {
                 self.value = v.value();
-                Some(self.copy())
+                Some(Value::F64(self.clone()))
             },
 
             Value::Bool(v) => {
@@ -838,36 +844,36 @@ impl ValueTrait for ValueF64 {
                     Some(val) => Some(val as u64 as f64),
                     None => None,
                 };
-                Some(self.copy())
+                Some(Value::F64(self.clone()))
             }
 
             _ => None,
         }
     }
 
-    fn convert(&self, to: ApicaTypeBytecode) -> Option<Value> {
+    fn convert(&self, to: &ValueType, is_nullable: bool) -> Option<Value> {
         if let Some(value) = self.value {
-            match to {
+            match to.value() {
                 ApicaTypeBytecode::Char => Some(Value::Char(ValueChar::with_value(value as u32))),
                 ApicaTypeBytecode::String => Some(Value::String(ValueString::with_value(value.to_string()))),
-                ApicaTypeBytecode::Type => Some(Value::Type(ValueType::with_type(ApicaTypeBytecode::F64))),
+                ApicaTypeBytecode::Type => Some(Value::Type(Box::new(ValueType::new(ApicaTypeBytecode::F64, is_nullable)))),
 
                 _ => None,
             }
         } else {
-            match to {
+            match to.value() {
                 ApicaTypeBytecode::Char => Some(Value::Char(ValueChar::new())),
                 ApicaTypeBytecode::String => Some(Value::String(ValueString::new())),
-                ApicaTypeBytecode::Type => Some(Value::Type(ValueType::with_type(ApicaTypeBytecode::F64))),
+                ApicaTypeBytecode::Type => Some(Value::Type(Box::new(ValueType::new(ApicaTypeBytecode::F64, is_nullable)))),
 
                 _ => None,
             }
         }
     }
 
-    fn auto_convert(&self, to: ApicaTypeBytecode) -> Option<Value> {
+    fn auto_convert(&self, to: &ValueType, _is_nullable: bool) -> Option<Value> {
         if let Some(value) = self.value {
-            match to {
+            match to.value() {
                 ApicaTypeBytecode::Any | ApicaTypeBytecode::F64 => Some(Value::F64(ValueF64::with_value(value))),
                 ApicaTypeBytecode::I8 => Some(Value::I8(ValueI8::with_value(value as i8))),
                 ApicaTypeBytecode::I16 => Some(Value::I16(ValueI16::with_value(value as i16))),
@@ -883,7 +889,7 @@ impl ValueTrait for ValueF64 {
                 _ => None,
             }
         } else {
-            match to {
+            match to.value() {
                 ApicaTypeBytecode::Any | ApicaTypeBytecode::F64 => Some(Value::F64(ValueF64::new())),
                 ApicaTypeBytecode::I8 => Some(Value::I8(ValueI8::new())),
                 ApicaTypeBytecode::I16 => Some(Value::I16(ValueI16::new())),
@@ -898,13 +904,6 @@ impl ValueTrait for ValueF64 {
 
                 _ => None,
             }
-        }
-    }
-
-    fn copy(&self) -> Value {
-        match self.value { 
-            Some(val) => Value::F64(ValueF64::with_value(val)),
-            None => Value::F64(ValueF64::new()),
         }
     }
 }

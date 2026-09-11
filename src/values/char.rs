@@ -14,6 +14,7 @@ use crate::values::u8::ValueU8;
 use crate::values::value::{Value, ValueTrait};
 use crate::values::value_type::ValueType;
 
+#[derive(Clone)]
 pub struct ValueChar {
     value: Option<u32>,
 }
@@ -37,8 +38,8 @@ impl ValueTrait for ValueChar {
         self.value.is_none()
     }
 
-    fn get_type_repr(&self) -> &str {
-        "char"
+    fn get_type_repr(&self) -> String {
+        String::from("char")
     }
 
     fn show(&self, end: char) {
@@ -764,12 +765,17 @@ impl ValueTrait for ValueChar {
 
     fn assign(&mut self, other: &Value) -> Option<Value> {
         match other {
+            Value::Null(_) => {
+                self.value = None;
+                Some(Value::Char(self.clone()))
+            },
+            
             Value::I8(v) => {
                 self.value = match v.value() {
                     Some(val) => Some(val as u32),
                     None => None,
                 };
-                Some(self.copy())
+                Some(Value::Char(self.clone()))
             },
 
             Value::I16(v) => {
@@ -777,7 +783,7 @@ impl ValueTrait for ValueChar {
                     Some(val) => Some(val as u32),
                     None => None,
                 };
-                Some(self.copy())
+                Some(Value::Char(self.clone()))
             },
 
             Value::I32(v) => {
@@ -785,7 +791,7 @@ impl ValueTrait for ValueChar {
                     Some(val) => Some(val as u32),
                     None => None,
                 };
-                Some(self.copy())
+                Some(Value::Char(self.clone()))
             },
 
             Value::I64(v) => {
@@ -793,7 +799,7 @@ impl ValueTrait for ValueChar {
                     Some(val) => Some(val as u32),
                     None => None,
                 };
-                Some(self.copy())
+                Some(Value::Char(self.clone()))
             },
 
             Value::U8(v) => {
@@ -801,7 +807,7 @@ impl ValueTrait for ValueChar {
                     Some(val) => Some(val as u32),
                     None => None,
                 };
-                Some(self.copy())
+                Some(Value::Char(self.clone()))
             },
 
             Value::U16(v) => {
@@ -809,12 +815,12 @@ impl ValueTrait for ValueChar {
                     Some(val) => Some(val as u32),
                     None => None,
                 };
-                Some(self.copy())
+                Some(Value::Char(self.clone()))
             },
 
             Value::U32(v) => {
                 self.value = v.value();
-                Some(self.copy())
+                Some(Value::Char(self.clone()))
             },
 
             Value::U64(v) => {
@@ -822,7 +828,7 @@ impl ValueTrait for ValueChar {
                     Some(val) => Some(val as u32),
                     None => None,
                 };
-                Some(self.copy())
+                Some(Value::Char(self.clone()))
             },
 
             Value::F32(v) => {
@@ -830,7 +836,7 @@ impl ValueTrait for ValueChar {
                     Some(val) => Some(val as u32),
                     None => None,
                 };
-                Some(self.copy())
+                Some(Value::Char(self.clone()))
             },
 
             Value::F64(v) => {
@@ -838,7 +844,7 @@ impl ValueTrait for ValueChar {
                     Some(val) => Some(val as u32),
                     None => None,
                 };
-                Some(self.copy())
+                Some(Value::Char(self.clone()))
             },
             
             Value::Bool(v) => {
@@ -846,41 +852,41 @@ impl ValueTrait for ValueChar {
                     Some(val) => Some(val as u32),
                     None => None,
                 };
-                Some(self.copy())
+                Some(Value::Char(self.clone()))
             },
             
             Value::Char(v) => {
                 self.value = v.value();
-                Some(self.copy())
+                Some(Value::Char(self.clone()))
             },
             
             _ => None,
         }
     }
 
-    fn convert(&self, to: ApicaTypeBytecode) -> Option<Value> {
+    fn convert(&self, to: &ValueType, is_nullable: bool) -> Option<Value> {
         if let Some(value) = self.value {
-            match to {
+            match to.value() {
                 ApicaTypeBytecode::Bool => Some(Value::Bool(ValueBool::with_value(value != 0))),
                 ApicaTypeBytecode::String => Some(Value::String(ValueString::with_value(char::from_u32(value).unwrap_or('�').to_string()))),
-                ApicaTypeBytecode::Type => Some(Value::Type(ValueType::with_type(ApicaTypeBytecode::Char))),
+                ApicaTypeBytecode::Type => Some(Value::Type(Box::new(ValueType::new(ApicaTypeBytecode::Char, is_nullable)))),
 
                 _ => None,
             }
         } else {
-            match to {
+            match to.value() {
                 ApicaTypeBytecode::Bool => Some(Value::Bool(ValueBool::new())),
                 ApicaTypeBytecode::String => Some(Value::String(ValueString::new())),
-                ApicaTypeBytecode::Type => Some(Value::Type(ValueType::with_type(ApicaTypeBytecode::Char))),
+                ApicaTypeBytecode::Type => Some(Value::Type(Box::new(ValueType::new(ApicaTypeBytecode::Char, is_nullable)))),
 
                 _ => None,
             }
         }
     }
 
-    fn auto_convert(&self, to: ApicaTypeBytecode) -> Option<Value> {
+    fn auto_convert(&self, to: &ValueType, _is_nullable: bool) -> Option<Value> {
         if let Some(value) = self.value {
-            match to {
+            match to.value() {
                 ApicaTypeBytecode::Any | ApicaTypeBytecode::Char => Some(Value::Char(ValueChar::with_value(value))),
                 ApicaTypeBytecode::I8 => Some(Value::I8(ValueI8::with_value(value as i8))),
                 ApicaTypeBytecode::I16 => Some(Value::I16(ValueI16::with_value(value as i16))),
@@ -896,7 +902,7 @@ impl ValueTrait for ValueChar {
                 _ => None,
             }
         } else {
-            match to {
+            match to.value() {
                 ApicaTypeBytecode::Any | ApicaTypeBytecode::Char => Some(Value::Char(ValueChar::new())),
                 ApicaTypeBytecode::I8 => Some(Value::I8(ValueI8::new())),
                 ApicaTypeBytecode::I16 => Some(Value::I16(ValueI16::new())),
@@ -911,13 +917,6 @@ impl ValueTrait for ValueChar {
 
                 _ => None,
             }
-        }
-    }
-
-    fn copy(&self) -> Value {
-        match self.value { 
-            Some(val) => Value::Char(ValueChar::with_value(val)),
-            None => Value::Char(ValueChar::new()),
         }
     }
 }

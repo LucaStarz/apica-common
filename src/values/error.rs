@@ -4,6 +4,7 @@ use crate::values::string::ValueString;
 use crate::values::value::{Value, ValueTrait};
 use crate::values::value_type::ValueType;
 
+#[derive(Clone)]
 pub struct ValueError {
     name: Option<String>,
     details: Option<String>,
@@ -36,8 +37,8 @@ impl ValueTrait for ValueError {
         self.name.is_none()
     }
 
-    fn get_type_repr(&self) -> &str {
-        "error"
+    fn get_type_repr(&self) -> String {
+        String::from("error")
     }
 
     fn show(&self, end: char) {
@@ -158,7 +159,13 @@ impl ValueTrait for ValueError {
     }
     
     fn assign(&mut self, other: &Value) -> Option<Value> {
-        match other { 
+        match other {
+            Value::Null(_) => {
+                self.name = None;
+                self.details = None;
+                Some(Value::Error(Box::new(self.clone())))
+            },
+            
             Value::Error(v) => {
                 self.name = match v.name() { 
                     Some(n) => Some(n.to_string()),
@@ -169,63 +176,49 @@ impl ValueTrait for ValueError {
                     None => None,
                 };
                 
-                Some(self.copy())
+                Some(Value::Error(Box::new(self.clone())))
             },
             
             _ => None,
         }
     }
 
-    fn convert(&self, to: ApicaTypeBytecode) -> Option<Value> {
+    fn convert(&self, to: &ValueType, is_nullable: bool) -> Option<Value> {
         if let Some(name) = &self.name {
-            match to { 
+            match to.value() { 
                 ApicaTypeBytecode::Bool => Some(Value::Bool(ValueBool::with_value(true))),
                 ApicaTypeBytecode::String => match &self.details {
                     Some(details) => Some(Value::String(ValueString::with_value(format!("{}: {}", name, details)))),
                     None => Some(Value::String(ValueString::with_value(name.to_string()))),
                 },
-                ApicaTypeBytecode::Type => Some(Value::Type(ValueType::with_type(ApicaTypeBytecode::Error))),
+                ApicaTypeBytecode::Type => Some(Value::Type(Box::new(ValueType::new(ApicaTypeBytecode::Error, is_nullable)))),
                 
                 _ => None,
             }
         } else {
-            match to { 
+            match to.value() { 
                 ApicaTypeBytecode::Bool => Some(Value::Bool(ValueBool::new())),
                 ApicaTypeBytecode::String => Some(Value::String(ValueString::new())),
-                ApicaTypeBytecode::Type => Some(Value::Type(ValueType::with_type(ApicaTypeBytecode::Error))),
+                ApicaTypeBytecode::Type => Some(Value::Type(Box::new(ValueType::new(ApicaTypeBytecode::Error, is_nullable)))),
                 
                 _ => None,
             }
         }
     }
 
-    fn auto_convert(&self, to: ApicaTypeBytecode) -> Option<Value> {
-        if let Some(name) = &self.name {
-            match to { 
-                ApicaTypeBytecode::Any | ApicaTypeBytecode::Error => match &self.details { 
-                    Some(details) => Some(Value::Error(Box::new(ValueError::with_details(name.to_string(), details.to_string())))),
-                    None => Some(Value::Error(Box::new(ValueError::with_name(name.to_string())))),
-                },
+    fn auto_convert(&self, to: &ValueType, _is_nullable: bool) -> Option<Value> {
+        if self.name.is_some() {
+            match to.value() { 
+                ApicaTypeBytecode::Any | ApicaTypeBytecode::Error => Some(Value::Error(Box::new(self.clone()))),
                 
                 _ => None,
             }
         } else {
-            match to {
+            match to.value() {
                 ApicaTypeBytecode::Any | ApicaTypeBytecode::Error => Some(Value::Error(Box::new(ValueError::new()))),
 
                 _ => None,   
             }
-        }
-    }
-
-    fn copy(&self) -> Value {
-        match &self.name { 
-            Some(name) => match &self.details { 
-                Some(details) => Value::Error(Box::new(ValueError::with_details(name.to_string(), details.to_string()))),
-                None => Value::Error(Box::new(ValueError::with_name(name.to_string()))),
-            },
-            
-            None => Value::Error(Box::new(ValueError::new())),
         }
     }
 }

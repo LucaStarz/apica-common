@@ -1,6 +1,7 @@
 ﻿use crate::bytecodes::types::ApicaTypeBytecode;
 use crate::elements::modifier::ElementModifier;
 use crate::values::value::{Value, ValueTrait};
+use crate::values::value_type::ValueType;
 
 /// Represents a runtime value unit paired with execution metadata modifiers.
 ///
@@ -65,7 +66,7 @@ impl Element {
             Some(val) => Element::new(ElementModifier::NONE, val),
             None => Element::new(
                 ElementModifier::ERROR,
-                Value::binary_operation_error("+", self.value.get_type_repr(), other.value.get_type_repr()),
+                Value::binary_operation_error("+", &self.value.get_type_repr(), &other.value.get_type_repr()),
             ),
         }
     }
@@ -88,7 +89,7 @@ impl Element {
             Some(val) => Element::new(ElementModifier::NONE, val),
             None => Element::new(
                 ElementModifier::ERROR,
-                Value::unary_operation_error("right ++", self.value.get_type_repr()),
+                Value::unary_operation_error("right ++", &self.value.get_type_repr()),
             )
         }
     }
@@ -111,7 +112,7 @@ impl Element {
             Some(val) => Element::new(ElementModifier::NONE, val),
             None => Element::new(
                 ElementModifier::ERROR,
-                Value::unary_operation_error("left ++", self.value.get_type_repr()),
+                Value::unary_operation_error("left ++", &self.value.get_type_repr()),
             )
         }
     }
@@ -134,7 +135,7 @@ impl Element {
             Some(val) => Element::new(ElementModifier::NONE, val),
             None => Element::new(
                 ElementModifier::ERROR,
-                Value::binary_operation_error("-", self.value.get_type_repr(), other.value.get_type_repr()),
+                Value::binary_operation_error("-", &self.value.get_type_repr(), &other.value.get_type_repr()),
             ),
         }
     }
@@ -157,7 +158,7 @@ impl Element {
             Some(val) => Element::new(ElementModifier::NONE, val),
             None => Element::new(
                 ElementModifier::ERROR,
-                Value::unary_operation_error("right --", self.value.get_type_repr()),
+                Value::unary_operation_error("right --", &self.value.get_type_repr()),
             )
         }
     }
@@ -180,7 +181,7 @@ impl Element {
             Some(val) => Element::new(ElementModifier::NONE, val),
             None => Element::new(
                 ElementModifier::ERROR,
-                Value::unary_operation_error("left --", self.value.get_type_repr()),
+                Value::unary_operation_error("left --", &self.value.get_type_repr()),
             )
         }
     }
@@ -203,7 +204,7 @@ impl Element {
             Some(val) => Element::new(ElementModifier::NONE, val),
             None => Element::new(
                 ElementModifier::ERROR,
-                Value::binary_operation_error("*", self.value.get_type_repr(), other.value.get_type_repr()),
+                Value::binary_operation_error("*", &self.value.get_type_repr(), &other.value.get_type_repr()),
             ),
         }
     }
@@ -219,7 +220,7 @@ impl Element {
             Some(val) => Element::new(ElementModifier::NONE, val),
             None => Element::new(
                 ElementModifier::ERROR,
-                Value::unary_operation_error("!", self.value.get_type_repr()),
+                Value::unary_operation_error("!", &self.value.get_type_repr()),
             )
         }
     }
@@ -242,7 +243,7 @@ impl Element {
             Some(val) => Element::new(ElementModifier::NONE, val),
             None => Element::new(
                 ElementModifier::ERROR,
-                Value::unary_operation_error("~", self.value.get_type_repr()),
+                Value::unary_operation_error("~", &self.value.get_type_repr()),
             )
         }
     }
@@ -265,7 +266,7 @@ impl Element {
             Some(val) => Element::new(ElementModifier::NONE, val),
             None => Element::new(
                 ElementModifier::ERROR,
-                Value::binary_operation_error("|", self.value.get_type_repr(), other.value.get_type_repr()),
+                Value::binary_operation_error("|", &self.value.get_type_repr(), &other.value.get_type_repr()),
             )
         }
     }
@@ -288,7 +289,7 @@ impl Element {
             Some(val) => Element::new(ElementModifier::NONE, val),
             None => Element::new(
                 ElementModifier::ERROR,
-                Value::binary_operation_error("^", self.value.get_type_repr(), other.value.get_type_repr()),
+                Value::binary_operation_error("^", &self.value.get_type_repr(), &other.value.get_type_repr()),
             )
         }
     }
@@ -311,7 +312,7 @@ impl Element {
             Some(val) => Element::new(ElementModifier::NONE, val),
             None => Element::new(
                 ElementModifier::ERROR,
-                Value::binary_operation_error("&", self.value.get_type_repr(), other.value.get_type_repr()),
+                Value::binary_operation_error("&", &self.value.get_type_repr(), &other.value.get_type_repr()),
             )
         }
     }
@@ -334,7 +335,7 @@ impl Element {
             Some(val) => Element::new(ElementModifier::NONE, val),
             None => Element::new(
                 ElementModifier::ERROR,
-                Value::binary_operation_error("<", self.value.get_type_repr(), other.value.get_type_repr()),
+                Value::binary_operation_error("<", &self.value.get_type_repr(), &other.value.get_type_repr()),
             ),
         }
     }
@@ -357,7 +358,7 @@ impl Element {
             Some(val) => Element::new(ElementModifier::NONE, val),
             None => Element::new(
                 ElementModifier::ERROR,
-                Value::binary_operation_error("<=", self.value.get_type_repr(), other.value.get_type_repr()),
+                Value::binary_operation_error("<=", &self.value.get_type_repr(), &other.value.get_type_repr()),
             ),
         }
     }
@@ -380,7 +381,7 @@ impl Element {
             Some(val) => Element::new(ElementModifier::NONE, val),
             None => Element::new(
                 ElementModifier::ERROR,
-                Value::binary_operation_error(">", self.value.get_type_repr(), other.value.get_type_repr()),
+                Value::binary_operation_error(">", &self.value.get_type_repr(), &other.value.get_type_repr()),
             ),
         }
     }
@@ -403,7 +404,7 @@ impl Element {
             Some(val) => Element::new(ElementModifier::NONE, val),
             None => Element::new(
                 ElementModifier::ERROR,
-                Value::binary_operation_error(">=", self.value.get_type_repr(), other.value.get_type_repr()),
+                Value::binary_operation_error(">=", &self.value.get_type_repr(), &other.value.get_type_repr()),
             ),
         }
     }
@@ -419,7 +420,7 @@ impl Element {
             Some(val) => Element::new(ElementModifier::NONE, val),
             None => Element::new(
                 ElementModifier::ERROR,
-                Value::binary_operation_error("==", self.value.get_type_repr(), other.value.get_type_repr()),
+                Value::binary_operation_error("==", &self.value.get_type_repr(), &other.value.get_type_repr()),
             )
         }
     }
@@ -435,7 +436,7 @@ impl Element {
             Some(val) => Element::new(ElementModifier::NONE, val),
             None => Element::new(
                 ElementModifier::ERROR,
-                Value::binary_operation_error("!=", self.value.get_type_repr(), other.value.get_type_repr()),
+                Value::binary_operation_error("!=", &self.value.get_type_repr(), &other.value.get_type_repr()),
             )
         }
     }
@@ -460,7 +461,7 @@ impl Element {
             );
         }
         
-        if self.modifier.contains(ElementModifier::NOT_NULLABLE) {
+        if self.modifier.contains(ElementModifier::NOT_NULLABLE) && other.value.is_null() {
             return Element::new(
                 ElementModifier::ERROR,
                 Value::not_nullable_error("="),
@@ -468,10 +469,10 @@ impl Element {
         }
         
         if self.modifier.contains(ElementModifier::ANY) {
-            self.value = other.value.copy();
+            self.value = other.value.clone();
             return Element::new(
                 ElementModifier::NONE,
-                self.value.copy()
+                self.value.clone()
             );
         }
         
@@ -480,71 +481,77 @@ impl Element {
             Some(val) => Element::new(ElementModifier::NONE, val),
             None => Element::new(
                 ElementModifier::ERROR,
-                Value::binary_operation_error("=", self.value.get_type_repr(), other.value.get_type_repr()),
+                Value::binary_operation_error("=", &self.value.get_type_repr(), &other.value.get_type_repr()),
             ),
         }
     }
 
-    /// Performs a conversion (elt as to) with a [`ApicaTypeBytecode`].
+    /// Performs a conversion (elt as to) with a [`ValueType`].
     ///
     /// # Returns
     ///
     /// A new [`Element`] representing the result of the conversion or an error.
-    pub fn convert(&self, to: ApicaTypeBytecode) -> Element {
-        let auto_converted = self.value.auto_convert(to);
+    pub fn convert(&self, to: &ValueType) -> Element {
+        let is_nullable = !self.modifier.contains(ElementModifier::NOT_NULLABLE);
+        
+        let auto_converted = self.value.auto_convert(to, is_nullable);
         if let Some(auto) = auto_converted {
             return Element::new(ElementModifier::NONE, auto);
         }
         
-        let converted = self.value.convert(to);
+        let converted = self.value.convert(to, is_nullable);
         match converted { 
             Some(val) => Element::new(ElementModifier::NONE, val),
             None => Element::new(
                 ElementModifier::ERROR,
-                Value::binary_operation_error("as", self.value.get_type_repr(), to.repr()),
+                Value::binary_operation_error("as", &self.value.get_type_repr(), &to.repr()),
             )
         }
     }
 
-    /// Performs an auto-conversion (system-only operation) with a [`ApicaTypeBytecode`].
+    /// Performs an auto-conversion (system-only operation) with a [`ValueType`].
     ///
     /// # Returns
     ///
     /// A new [`Element`] representing the result of the auto-conversion or an error.
-    pub fn auto_convert(&self, to: ApicaTypeBytecode) -> Element {
-        let auto_converted = self.value.auto_convert(to);
+    pub fn auto_convert(&self, to: &ValueType) -> Element {
+        let is_nullable = !self.modifier.contains(ElementModifier::NOT_NULLABLE);
+        
+        let auto_converted = self.value.auto_convert(to, is_nullable);
         match auto_converted { 
             Some(auto) => Element::new(ElementModifier::NONE, auto),
             None => Element::new(
                 ElementModifier::ERROR,
-                Value::binary_operation_error("auto-as", self.value.get_type_repr(), to.repr()),
+                Value::binary_operation_error("auto-as", &self.value.get_type_repr(), &to.repr()),
             )
         }
     }
 
     /// Performs a conversion check (system-only operation) with a [`ApicaTypeBytecode`].
-    pub fn check_and_convert(&mut self, to: ApicaTypeBytecode) {
+    pub fn check_and_convert(&mut self, to: &ValueType) {
         if self.is_error_or_control() {
             return;
         }
         
-        if to == ApicaTypeBytecode::Any {
+        if to.value() == ApicaTypeBytecode::Any {
             self.modifier |= ElementModifier::ANY;
             return;
         }
         
-        let auto_converted = self.value.auto_convert(to);
+        let is_nullable = !self.modifier.contains(ElementModifier::NOT_NULLABLE);
+        
+        let auto_converted = self.value.auto_convert(to, is_nullable);
         if let Some(auto) = auto_converted {
             self.value = auto;
             return;
         }
         
-        let converted = self.value.convert(to);
+        let converted = self.value.convert(to, is_nullable);
         match converted { 
             Some(conv) => self.value = conv,
             None => {
                 self.value = Value::binary_operation_error(
-                    "as", self.value.get_type_repr(), to.repr()
+                    "as", &self.value.get_type_repr(), &to.repr()
                 );
                 self.modifier |= ElementModifier::ERROR;
             }

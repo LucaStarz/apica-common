@@ -182,4 +182,10 @@ pub enum ApicaBytecode {
     
     /// Right shift assignment (elt >>= elt)
     RightShiftAssign =  0x0000003A,
+    
+    /// Reference of operation (&elt)
+    ReferenceOf =         0x0000003B,
+    
+    /// Obtain the variable pointed by a pointer (*elt)
+    Dereference =         0x0000003C,
 }

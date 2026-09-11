@@ -1,6 +1,7 @@
-﻿use crate::bytecodes::types::ApicaTypeBytecode;
-use crate::values::value::{Value, ValueTrait};
+﻿use crate::values::value::{Value, ValueTrait};
+use crate::values::value_type::ValueType;
 
+#[derive(Clone)]
 pub struct ValueStackTrace {
     name: String,
     details: Option<String>,
@@ -54,8 +55,8 @@ impl ValueTrait for ValueStackTrace {
         false
     }
 
-    fn get_type_repr(&self) -> &str {
-        "error"
+    fn get_type_repr(&self) -> String {
+        String::from("error")
     }
     
     fn show(&self, end: char) {
@@ -142,18 +143,11 @@ impl ValueTrait for ValueStackTrace {
         None
     }
     
-    fn convert(&self, _to: ApicaTypeBytecode) -> Option<Value> {
+    fn convert(&self, _to: &ValueType, _is_nullable: bool) -> Option<Value> {
         None
     }
 
-    fn auto_convert(&self, _to: ApicaTypeBytecode) -> Option<Value> {
+    fn auto_convert(&self, _to: &ValueType, _is_nullable: bool) -> Option<Value> {
         None
-    }
-    
-    fn copy(&self) -> Value {
-        match &self.details { 
-            Some(details) => Value::StackTrace(Box::new(ValueStackTrace::with_details(self.name.clone(), details.to_string()))),
-            None => Value::StackTrace(Box::new(ValueStackTrace::new(self.name.clone()))),
-        }
     }
 }

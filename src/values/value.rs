@@ -9,6 +9,7 @@ use crate::values::i32::ValueI32;
 use crate::values::i64::ValueI64;
 use crate::values::i8::ValueI8;
 use crate::values::null::ValueNull;
+use crate::values::reference::ValueReference;
 use crate::values::stack_trace::ValueStackTrace;
 use crate::values::string::ValueString;
 use crate::values::u16::ValueU16;
@@ -19,7 +20,7 @@ use crate::values::value_type::ValueType;
 
 pub trait ValueTrait {
     fn is_null(&self) -> bool;
-    fn get_type_repr(&self) -> &str;
+    fn get_type_repr(&self) -> String;
     fn show(&self, end: char);
     fn repr(&self) -> String;
 
@@ -46,12 +47,11 @@ pub trait ValueTrait {
 
     fn assign(&mut self, other: &Value) -> Option<Value>;
     
-    fn convert(&self, to: ApicaTypeBytecode) -> Option<Value>;
-    fn auto_convert(&self, to: ApicaTypeBytecode) -> Option<Value>;
-    
-    fn copy(&self) -> Value;
+    fn convert(&self, to: &ValueType, is_nullable: bool) -> Option<Value>;
+    fn auto_convert(&self, to: &ValueType, is_nullable: bool) -> Option<Value>;
 }
 
+#[derive(Clone)]
 pub enum Value {
     Null(ValueNull),
     I8(ValueI8),
@@ -69,7 +69,8 @@ pub enum Value {
     String(ValueString),
     Error(Box<ValueError>),
     StackTrace(Box<ValueStackTrace>),
-    Type(ValueType),
+    Type(Box<ValueType>),
+    Reference(Box<ValueReference>),
 }
 
 impl Value {
@@ -110,24 +111,29 @@ impl Value {
         )))
     }
 
-    pub fn value_type(&self) -> ApicaTypeBytecode {
+    pub fn value_type(&self) -> ValueType {
         match self {
-            Value::Null(_) | Value::StackTrace(_) => ApicaTypeBytecode::Null,
-            Value::I8(_) => ApicaTypeBytecode::I8,
-            Value::I16(_) => ApicaTypeBytecode::I16,
-            Value::I32(_) => ApicaTypeBytecode::I32,
-            Value::I64(_) => ApicaTypeBytecode::I64,
-            Value::U8(_) => ApicaTypeBytecode::U8,
-            Value::U16(_) => ApicaTypeBytecode::U16,
-            Value::U32(_) => ApicaTypeBytecode::U32,
-            Value::U64(_) => ApicaTypeBytecode::U64,
-            Value::F32(_) => ApicaTypeBytecode::F32,
-            Value::F64(_) => ApicaTypeBytecode::F64,
-            Value::Bool(_) => ApicaTypeBytecode::Bool,
-            Value::Char(_) => ApicaTypeBytecode::Char,
-            Value::String(_) => ApicaTypeBytecode::String,
-            Value::Error(_) => ApicaTypeBytecode::Error,
-            Value::Type(_) => ApicaTypeBytecode::Type,
+            Value::Null(_) | Value::StackTrace(_) => ValueType::new(ApicaTypeBytecode::Null, true),
+            Value::I8(_) => ValueType::new(ApicaTypeBytecode::I8, true),
+            Value::I16(_) => ValueType::new(ApicaTypeBytecode::I16, true),
+            Value::I32(_) => ValueType::new(ApicaTypeBytecode::I32, true),
+            Value::I64(_) => ValueType::new(ApicaTypeBytecode::I64, true),
+            Value::U8(_) => ValueType::new(ApicaTypeBytecode::U8, true),
+            Value::U16(_) => ValueType::new(ApicaTypeBytecode::U16, true),
+            Value::U32(_) => ValueType::new(ApicaTypeBytecode::U32, true),
+            Value::U64(_) => ValueType::new(ApicaTypeBytecode::U64, true),
+            Value::F32(_) => ValueType::new(ApicaTypeBytecode::F32, true),
+            Value::F64(_) => ValueType::new(ApicaTypeBytecode::F64, true),
+            Value::Bool(_) => ValueType::new(ApicaTypeBytecode::Bool, true),
+            Value::Char(_) => ValueType::new(ApicaTypeBytecode::Char, true),
+            Value::String(_) => ValueType::new(ApicaTypeBytecode::String, true),
+            Value::Error(_) => ValueType::new(ApicaTypeBytecode::Error, true),
+            Value::Type(_) => ValueType::new(ApicaTypeBytecode::Type, true),
+            
+            Value::Reference(_) => ValueType::new(
+                ApicaTypeBytecode::Reference, 
+                true,
+            ),
         }
     }
 }
@@ -152,10 +158,11 @@ impl ValueTrait for Value {
             Value::Error(v) => v.is_null(),
             Value::StackTrace(v) => v.is_null(),
             Value::Type(v) => v.is_null(),
+            Value::Reference(v) => v.is_null(),
         }
     }
 
-    fn get_type_repr(&self) -> &str {
+    fn get_type_repr(&self) -> String {
         match self {
             Value::Null(v) => v.get_type_repr(),
             Value::I8(v) => v.get_type_repr(),
@@ -174,6 +181,7 @@ impl ValueTrait for Value {
             Value::Error(v) => v.get_type_repr(),
             Value::StackTrace(v) => v.get_type_repr(),
             Value::Type(v) => v.get_type_repr(),
+            Value::Reference(v) => v.get_type_repr(),
         }
     }
 
@@ -196,6 +204,7 @@ impl ValueTrait for Value {
             Value::Error(v) => v.show(end),
             Value::StackTrace(v) => v.show(end),
             Value::Type(v) => v.show(end),
+            Value::Reference(v) => v.show(end),
         }
     }
 
@@ -218,6 +227,7 @@ impl ValueTrait for Value {
             Value::Error(v) => v.repr(),
             Value::StackTrace(v) => v.repr(),
             Value::Type(v) => v.repr(),
+            Value::Reference(v) => v.repr(),
         }
     }
 
@@ -240,6 +250,7 @@ impl ValueTrait for Value {
             Value::Error(v) => v.add(other),
             Value::StackTrace(v) => v.add(other),
             Value::Type(v) => v.add(other),
+            Value::Reference(v) => v.add(other),
         }
     }
 
@@ -262,6 +273,7 @@ impl ValueTrait for Value {
             Value::Error(v) => v.increment(),
             Value::StackTrace(v) => v.increment(),
             Value::Type(v) => v.increment(),
+            Value::Reference(v) => v.increment(),
         }
     }
 
@@ -284,6 +296,7 @@ impl ValueTrait for Value {
             Value::Error(v) => v.left_increment(),
             Value::StackTrace(v) => v.left_increment(),
             Value::Type(v) => v.left_increment(),
+            Value::Reference(v) => v.left_increment(),
         }
     }
 
@@ -306,6 +319,7 @@ impl ValueTrait for Value {
             Value::Error(v) => v.subtract(other),
             Value::StackTrace(v) => v.subtract(other),
             Value::Type(v) => v.subtract(other),
+            Value::Reference(v) => v.subtract(other),
         }
     }
 
@@ -328,6 +342,7 @@ impl ValueTrait for Value {
             Value::Error(v) => v.decrement(),
             Value::StackTrace(v) => v.decrement(),
             Value::Type(v) => v.decrement(),
+            Value::Reference(v) => v.decrement(),
         }
     }
 
@@ -350,6 +365,7 @@ impl ValueTrait for Value {
             Value::Error(v) => v.left_decrement(),
             Value::StackTrace(v) => v.left_decrement(),
             Value::Type(v) => v.left_decrement(),
+            Value::Reference(v) => v.left_decrement(),
         }
     }
 
@@ -372,6 +388,7 @@ impl ValueTrait for Value {
             Value::Error(v) => v.times(other),
             Value::StackTrace(v) => v.times(other),
             Value::Type(v) => v.times(other),
+            Value::Reference(v) => v.times(other),
         }
     }
 
@@ -394,6 +411,7 @@ impl ValueTrait for Value {
             Value::Error(v) => v.unary_not(),
             Value::StackTrace(v) => v.unary_not(),
             Value::Type(v) => v.unary_not(),
+            Value::Reference(v) => v.unary_not(),
         }
     }
 
@@ -416,6 +434,7 @@ impl ValueTrait for Value {
             Value::Error(v) => v.bitwise_not(),
             Value::StackTrace(v) => v.bitwise_not(),
             Value::Type(v) => v.bitwise_not(),
+            Value::Reference(v) => v.bitwise_not(),
         }
     }
 
@@ -438,6 +457,7 @@ impl ValueTrait for Value {
             Value::Error(v) => v.bitwise_or(other),
             Value::StackTrace(v) => v.bitwise_or(other),
             Value::Type(v) => v.bitwise_or(other),
+            Value::Reference(v) => v.bitwise_or(other),
         }
     }
 
@@ -460,6 +480,7 @@ impl ValueTrait for Value {
             Value::Error(v) => v.bitwise_xor(other),
             Value::StackTrace(v) => v.bitwise_xor(other),
             Value::Type(v) => v.bitwise_xor(other),
+            Value::Reference(v) => v.bitwise_xor(other),
         }
     }
 
@@ -482,6 +503,7 @@ impl ValueTrait for Value {
             Value::Error(v) => v.bitwise_and(other),
             Value::StackTrace(v) => v.bitwise_and(other),
             Value::Type(v) => v.bitwise_and(other),
+            Value::Reference(v) => v.bitwise_and(other),
         }
     }
 
@@ -504,6 +526,7 @@ impl ValueTrait for Value {
             Value::Error(v) => v.less_than(other),
             Value::StackTrace(v) => v.less_than(other),
             Value::Type(v) => v.less_than(other),
+            Value::Reference(v) => v.less_than(other),
         }
     }
 
@@ -526,6 +549,7 @@ impl ValueTrait for Value {
             Value::Error(v) => v.less_or_equal(other),
             Value::StackTrace(v) => v.less_or_equal(other),
             Value::Type(v) => v.less_or_equal(other),
+            Value::Reference(v) => v.less_or_equal(other),
         }
     }
 
@@ -548,6 +572,7 @@ impl ValueTrait for Value {
             Value::Error(v) => v.greater_than(other),
             Value::StackTrace(v) => v.greater_than(other),
             Value::Type(v) => v.greater_than(other),
+            Value::Reference(v) => v.greater_than(other),
         }
     }
 
@@ -570,6 +595,7 @@ impl ValueTrait for Value {
             Value::Error(v) => v.greater_or_equal(other),
             Value::StackTrace(v) => v.greater_or_equal(other),
             Value::Type(v) => v.greater_or_equal(other),
+            Value::Reference(v) => v.greater_or_equal(other),
         }
     }
 
@@ -592,6 +618,7 @@ impl ValueTrait for Value {
             Value::Error(v) => v.equals(other),
             Value::StackTrace(v) => v.equals(other),
             Value::Type(v) => v.equals(other),
+            Value::Reference(v) => v.equals(other),
         }
     }
 
@@ -614,6 +641,7 @@ impl ValueTrait for Value {
             Value::Error(v) => v.not_equals(other),
             Value::StackTrace(v) => v.not_equals(other),
             Value::Type(v) => v.not_equals(other),
+            Value::Reference(v) => v.not_equals(other),
         }
     }
 
@@ -636,72 +664,53 @@ impl ValueTrait for Value {
             Value::Error(v) => v.assign(other),
             Value::StackTrace(v) => v.assign(other),
             Value::Type(v) => v.assign(other),
+            Value::Reference(v) => v.assign(other),
         }
     }
 
-    fn convert(&self, to: ApicaTypeBytecode) -> Option<Value> {
+    fn convert(&self, to: &ValueType, is_nullable: bool) -> Option<Value> {
         match self { 
-            Value::Null(v) => v.convert(to),
-            Value::I8(v) => v.convert(to),
-            Value::I16(v) => v.convert(to),
-            Value::I32(v) => v.convert(to),
-            Value::I64(v) => v.convert(to),
-            Value::U8(v) => v.convert(to),
-            Value::U16(v) => v.convert(to),
-            Value::U32(v) => v.convert(to),
-            Value::U64(v) => v.convert(to),
-            Value::F32(v) => v.convert(to),
-            Value::F64(v) => v.convert(to),
-            Value::Bool(v) => v.convert(to),
-            Value::Char(v) => v.convert(to),
-            Value::String(v) => v.convert(to),
-            Value::Error(v) => v.convert(to),
-            Value::StackTrace(v) => v.convert(to),
-            Value::Type(v) => v.convert(to),
+            Value::Null(v) => v.convert(to, is_nullable),
+            Value::I8(v) => v.convert(to, is_nullable),
+            Value::I16(v) => v.convert(to, is_nullable),
+            Value::I32(v) => v.convert(to, is_nullable),
+            Value::I64(v) => v.convert(to, is_nullable),
+            Value::U8(v) => v.convert(to, is_nullable),
+            Value::U16(v) => v.convert(to, is_nullable),
+            Value::U32(v) => v.convert(to, is_nullable),
+            Value::U64(v) => v.convert(to, is_nullable),
+            Value::F32(v) => v.convert(to, is_nullable),
+            Value::F64(v) => v.convert(to, is_nullable),
+            Value::Bool(v) => v.convert(to, is_nullable),
+            Value::Char(v) => v.convert(to, is_nullable),
+            Value::String(v) => v.convert(to, is_nullable),
+            Value::Error(v) => v.convert(to, is_nullable),
+            Value::StackTrace(v) => v.convert(to, is_nullable),
+            Value::Type(v) => v.convert(to, is_nullable),
+            Value::Reference(v) => v.convert(to, is_nullable),
         }
     }
 
-    fn auto_convert(&self, to: ApicaTypeBytecode) -> Option<Value> {
+    fn auto_convert(&self, to: &ValueType, is_nullable: bool) -> Option<Value> {
         match self { 
-            Value::Null(v) => v.auto_convert(to),
-            Value::I8(v) => v.auto_convert(to),
-            Value::I16(v) => v.auto_convert(to),
-            Value::I32(v) => v.auto_convert(to),
-            Value::I64(v) => v.auto_convert(to),
-            Value::U8(v) => v.auto_convert(to),
-            Value::U16(v) => v.auto_convert(to),
-            Value::U32(v) => v.auto_convert(to),
-            Value::U64(v) => v.auto_convert(to),
-            Value::F32(v) => v.auto_convert(to),
-            Value::F64(v) => v.auto_convert(to),
-            Value::Bool(v) => v.auto_convert(to),
-            Value::Char(v) => v.auto_convert(to),
-            Value::String(v) => v.auto_convert(to),
-            Value::Error(v) => v.auto_convert(to),
-            Value::StackTrace(v) => v.auto_convert(to),
-            Value::Type(v) => v.auto_convert(to),
-        }
-    }
-
-    fn copy(&self) -> Value {
-        match self { 
-            Value::Null(v) => v.copy(),
-            Value::I8(v) => v.copy(),
-            Value::I16(v) => v.copy(),
-            Value::I32(v) => v.copy(),
-            Value::I64(v) => v.copy(),
-            Value::U8(v) => v.copy(),
-            Value::U16(v) => v.copy(),
-            Value::U32(v) => v.copy(),
-            Value::U64(v) => v.copy(),
-            Value::F32(v) => v.copy(),
-            Value::F64(v) => v.copy(),
-            Value::Bool(v) => v.copy(),
-            Value::Char(v) => v.copy(),
-            Value::String(v) => v.copy(),
-            Value::Error(v) => v.copy(),
-            Value::StackTrace(v) => v.copy(),
-            Value::Type(v) => v.copy(),
+            Value::Null(v) => v.auto_convert(to, is_nullable),
+            Value::I8(v) => v.auto_convert(to, is_nullable),
+            Value::I16(v) => v.auto_convert(to, is_nullable),
+            Value::I32(v) => v.auto_convert(to, is_nullable),
+            Value::I64(v) => v.auto_convert(to, is_nullable),
+            Value::U8(v) => v.auto_convert(to, is_nullable),
+            Value::U16(v) => v.auto_convert(to, is_nullable),
+            Value::U32(v) => v.auto_convert(to, is_nullable),
+            Value::U64(v) => v.auto_convert(to, is_nullable),
+            Value::F32(v) => v.auto_convert(to, is_nullable),
+            Value::F64(v) => v.auto_convert(to, is_nullable),
+            Value::Bool(v) => v.auto_convert(to, is_nullable),
+            Value::Char(v) => v.auto_convert(to, is_nullable),
+            Value::String(v) => v.auto_convert(to, is_nullable),
+            Value::Error(v) => v.auto_convert(to, is_nullable),
+            Value::StackTrace(v) => v.auto_convert(to, is_nullable),
+            Value::Type(v) => v.auto_convert(to, is_nullable),
+            Value::Reference(v) => v.auto_convert(to, is_nullable),
         }
     }
 }

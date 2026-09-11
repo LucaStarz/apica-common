@@ -14,6 +14,7 @@ use crate::values::u8::ValueU8;
 use crate::values::value::{Value, ValueTrait};
 use crate::values::value_type::ValueType;
 
+#[derive(Clone)]
 pub struct ValueBool {
     value: Option<bool>,
 }
@@ -37,8 +38,8 @@ impl ValueTrait for ValueBool {
         self.value.is_none()
     }
 
-    fn get_type_repr(&self) -> &str {
-        "bool"
+    fn get_type_repr(&self) -> String {
+        String::from("bool")
     }
 
     fn show(&self, end: char) {
@@ -743,13 +744,18 @@ impl ValueTrait for ValueBool {
     }
 
     fn assign(&mut self, other: &Value) -> Option<Value> {
-        match other { 
+        match other {
+            Value::Null(_) => {
+                self.value = None;
+                Some(Value::Bool(self.clone()))
+            },
+            
             Value::I8(v) => {
                 self.value = match v.value() { 
                     Some(val) => Some(val != 0),
                     None => None,
                 };
-                Some(self.copy())
+                Some(Value::Bool(self.clone()))
             },
             
             Value::I16(v) => {
@@ -757,7 +763,7 @@ impl ValueTrait for ValueBool {
                     Some(val) => Some(val != 0),
                     None => None,
                 };
-                Some(self.copy())
+                Some(Value::Bool(self.clone()))
             },
             
             Value::I32(v) => {
@@ -765,7 +771,7 @@ impl ValueTrait for ValueBool {
                     Some(val) => Some(val != 0),
                     None => None,
                 };
-                Some(self.copy())
+                Some(Value::Bool(self.clone()))
             },
             
             Value::I64(v) => {
@@ -773,7 +779,7 @@ impl ValueTrait for ValueBool {
                     Some(val) => Some(val != 0),
                     None => None,
                 };
-                Some(self.copy())
+                Some(Value::Bool(self.clone()))
             },
             
             Value::U8(v) => {
@@ -781,7 +787,7 @@ impl ValueTrait for ValueBool {
                     Some(val) => Some(val != 0),
                     None => None,
                 };
-                Some(self.copy())
+                Some(Value::Bool(self.clone()))
             },
             
             Value::U16(v) => {
@@ -789,7 +795,7 @@ impl ValueTrait for ValueBool {
                     Some(val) => Some(val != 0),
                     None => None,
                 };
-                Some(self.copy())
+                Some(Value::Bool(self.clone()))
             },
             
             Value::U32(v) => {
@@ -797,7 +803,7 @@ impl ValueTrait for ValueBool {
                     Some(val) => Some(val != 0),
                     None => None,
                 };
-                Some(self.copy())
+                Some(Value::Bool(self.clone()))
             },
             
             Value::U64(v) => {
@@ -805,7 +811,7 @@ impl ValueTrait for ValueBool {
                     Some(val) => Some(val != 0),
                     None => None,
                 };
-                Some(self.copy())
+                Some(Value::Bool(self.clone()))
             },
             
             Value::F32(v) => {
@@ -813,7 +819,7 @@ impl ValueTrait for ValueBool {
                     Some(val) => Some(val != 0.0),
                     None => None,
                 };
-                Some(self.copy())
+                Some(Value::Bool(self.clone()))
             },
             
             Value::F64(v) => {
@@ -821,12 +827,12 @@ impl ValueTrait for ValueBool {
                     Some(val) => Some(val != 0.0),
                     None => None,
                 };
-                Some(self.copy())
+                Some(Value::Bool(self.clone()))
             },
             
             Value::Bool(v) => {
                 self.value = v.value();
-                Some(self.copy())
+                Some(Value::Bool(self.clone()))
             },
             
             Value::Char(v) => {
@@ -834,36 +840,36 @@ impl ValueTrait for ValueBool {
                     Some(val) => Some(val != 0),
                     None => None,
                 };
-                Some(self.copy())
+                Some(Value::Bool(self.clone()))
             },
             
             _ => None,
         }
     }
 
-    fn convert(&self, to: ApicaTypeBytecode) -> Option<Value> {
+    fn convert(&self, to: &ValueType, is_nullable: bool) -> Option<Value> {
         if let Some(value) = self.value {
-            match to {
+            match to.value() {
                 ApicaTypeBytecode::Char => Some(Value::Char(ValueChar::with_value(value as u32))),
                 ApicaTypeBytecode::String => Some(Value::String(ValueString::with_value(String::from(if value { "true" } else { "false" })))),
-                ApicaTypeBytecode::Type => Some(Value::Type(ValueType::with_type(ApicaTypeBytecode::Bool))),
+                ApicaTypeBytecode::Type => Some(Value::Type(Box::new(ValueType::new(ApicaTypeBytecode::Bool, is_nullable)))),
 
                 _ => None,
             }
         } else {
-            match to {
+            match to.value() {
                 ApicaTypeBytecode::Char => Some(Value::Char(ValueChar::new())),
                 ApicaTypeBytecode::String => Some(Value::String(ValueString::new())),
-                ApicaTypeBytecode::Type => Some(Value::Type(ValueType::with_type(ApicaTypeBytecode::Bool))),
+                ApicaTypeBytecode::Type => Some(Value::Type(Box::new(ValueType::new(ApicaTypeBytecode::Bool, is_nullable)))),
 
                 _ => None,
             }
         }
     }
 
-    fn auto_convert(&self, to: ApicaTypeBytecode) -> Option<Value> {
+    fn auto_convert(&self, to: &ValueType, _is_nullable: bool) -> Option<Value> {
         if let Some(value) = self.value {
-            match to {
+            match to.value() {
                 ApicaTypeBytecode::Any | ApicaTypeBytecode::Bool => Some(Value::Bool(ValueBool::with_value(value))),
                 ApicaTypeBytecode::I8 => Some(Value::I8(ValueI8::with_value(value as i8))),
                 ApicaTypeBytecode::I16 => Some(Value::I16(ValueI16::with_value(value as i16))),
@@ -879,7 +885,7 @@ impl ValueTrait for ValueBool {
                 _ => None,
             }
         } else {
-            match to {
+            match to.value() {
                 ApicaTypeBytecode::Any | ApicaTypeBytecode::Bool => Some(Value::Bool(ValueBool::new())),
                 ApicaTypeBytecode::I8 => Some(Value::I8(ValueI8::new())),
                 ApicaTypeBytecode::I16 => Some(Value::I16(ValueI16::new())),
@@ -894,13 +900,6 @@ impl ValueTrait for ValueBool {
 
                 _ => None,
             }
-        }
-    }
-
-    fn copy(&self) -> Value {
-        match self.value { 
-            Some(val) => Value::Bool(ValueBool::with_value(val)),
-            None => Value::Bool(ValueBool::new()),
         }
     }
 }

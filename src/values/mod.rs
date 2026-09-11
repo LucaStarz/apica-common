@@ -21,6 +21,7 @@
 //! - [`error::ValueError`]: An Apica value representing a nullable error.
 //! - [`stack_trace::ValueStackTrace`]: An Apica value (system-only) representing a not-nullable error stack trace.
 //! - [`value_type::ValueType`]: An Apica value representing a not-nullable type.
+//! - [`reference::ValueReference`]: An Apica value representing a reference to a variable.
 
 pub mod value;
 pub mod null;
@@ -40,3 +41,4 @@ pub mod string;
 pub mod error;
 pub mod stack_trace;
 pub mod value_type;
+pub mod reference;
