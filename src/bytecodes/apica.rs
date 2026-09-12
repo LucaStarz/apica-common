@@ -185,7 +185,4 @@ pub enum ApicaBytecode {
     
     /// Reference of operation (&elt)
     ReferenceOf =         0x0000003B,
-    
-    /// Obtain the variable pointed by a pointer (*elt)
-    Dereference =         0x0000003C,
 }

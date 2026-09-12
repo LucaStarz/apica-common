@@ -27,4 +27,10 @@ pub enum ApicaSpecificationBytecode {
 
     /// Maximum created elements (var/const/func/...) at the same time.
     IdCount =               0x0007,
+
+    /// Renderer logical width in pixels.
+    RendererWidth =         0x0008,
+
+    /// Renderer logical height in pixels.
+    RendererHeight =        0x0009,
 }
