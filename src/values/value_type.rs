@@ -162,9 +162,14 @@ impl ValueType {
         match self.value {
             ApicaTypeBytecode::Any | ApicaTypeBytecode::Null => Some(ValueType::new(ApicaTypeBytecode::Bool, false)),
 
-            ApicaTypeBytecode::Reference => if self.contained[0].type_equals(&other.contained()[0]) || other.value == ApicaTypeBytecode::Null {
-                Some(ValueType::new(ApicaTypeBytecode::Bool, false))
-            } else { None },
+            ApicaTypeBytecode::Reference => match other.value {
+                ApicaTypeBytecode::Null => Some(ValueType::new(ApicaTypeBytecode::Bool, false)),
+                ApicaTypeBytecode::Reference => if self.contained[0].type_equals(&other.contained[0]) {
+                    Some(ValueType::new(ApicaTypeBytecode::Bool, false))
+                } else { None },
+
+                _ => None,
+            }
 
             _ if self.is_number() || matches!(self.value, ApicaTypeBytecode::Bool | ApicaTypeBytecode::Char)
                 => ValueType::number_comparison_resolve_to(other, false),
@@ -240,9 +245,13 @@ impl ValueType {
             ApicaTypeBytecode::Any => Some(ValueType::new(ApicaTypeBytecode::Any, true)),
             ApicaTypeBytecode::Null => None,
 
-            ApicaTypeBytecode::Reference => if self.contained[0].type_equals(&other.contained()[0]) {
-                Some(self.clone())
-            } else { None },
+            ApicaTypeBytecode::Reference => match other.value {
+                ApicaTypeBytecode::Reference => if self.contained[0].type_equals(&other.contained()[0]) {
+                    Some(self.clone())
+                } else { None },
+
+                _ => None,
+            }
 
             _ if self.is_number() && (other.is_number() || other.value == ApicaTypeBytecode::Null)
                 => Some(self.clone()),
