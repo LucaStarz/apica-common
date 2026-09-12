@@ -32,20 +32,20 @@ impl ValueTrait for ValueUInt {
     }
 
     fn get_type_repr(&self) -> String {
-        String::from("u64")
+        String::from("uint")
     }
 
     fn show(&self, end: char) {
         match self.value {
-            Some(v) => print!("u64<{}>{}", v, end),
-            None => print!("u64<>{}", end),
+            Some(v) => print!("uint<{}>{}", v, end),
+            None => print!("uint<>{}", end),
         }
     }
 
     fn repr(&self) -> String {
         match self.value { 
-            Some(v) => format!("u64<{}>", v),
-            None => String::from("u64<>"),
+            Some(v) => format!("uint<{}>", v),
+            None => String::from("uint<>"),
         }
     }
 

@@ -43,7 +43,7 @@ impl ApicaTypeBytecode {
     pub const fn repr(&self) -> &'static str {
         match self {
             ApicaTypeBytecode::Null => "null",
-            ApicaTypeBytecode::Any => "???",
+            ApicaTypeBytecode::Any => "any",
 
             ApicaTypeBytecode::Int => "int",
             ApicaTypeBytecode::UnsignedInt => "uint",

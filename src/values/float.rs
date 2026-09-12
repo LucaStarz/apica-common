@@ -32,20 +32,20 @@ impl ValueTrait for ValueFloat {
     }
 
     fn get_type_repr(&self) -> String {
-        String::from("f64")
+        String::from("float")
     }
 
     fn show(&self, end: char) {
         match self.value {
-            Some(v) => print!("f64<{}>{}", v, end),
-            None => print!("f64<>{}", end),
+            Some(v) => print!("float<{}>{}", v, end),
+            None => print!("float<>{}", end),
         }
     }
 
     fn repr(&self) -> String {
         match self.value { 
-            Some(v) => format!("f64<{}>", v),
-            None => String::from("f64<>"),
+            Some(v) => format!("float<{}>", v),
+            None => String::from("float<>"),
         }
     }
 

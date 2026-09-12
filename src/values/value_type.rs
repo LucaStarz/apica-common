@@ -47,11 +47,15 @@ impl ValueType {
             inner.push('>');
         }
 
-        if self.is_nullable {
-            inner.push('!');
+        if inner.is_empty() {
+            format!("{}{}",
+                self.value.repr(), if self.is_nullable { '\0' } else { '!' }
+            )
+        } else {
+            format!("{}<{}>{}",
+                self.value.repr(), inner, if self.is_nullable { '\0' } else { '!' }
+            )
         }
-        
-        format!("{}<{}>", self.value.repr(), inner)
     }
     
     pub fn type_equals(&self, other: &ValueType) -> bool {
