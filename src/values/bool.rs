@@ -1,16 +1,9 @@
 ﻿use crate::bytecodes::types::ApicaTypeBytecode;
 use crate::values::char::ValueChar;
-use crate::values::f32::ValueF32;
-use crate::values::f64::ValueF64;
-use crate::values::i16::ValueI16;
-use crate::values::i32::ValueI32;
-use crate::values::i64::ValueI64;
-use crate::values::i8::ValueI8;
+use crate::values::float::ValueFloat;
+use crate::values::int::ValueInt;
 use crate::values::string::ValueString;
-use crate::values::u16::ValueU16;
-use crate::values::u32::ValueU32;
-use crate::values::u64::ValueU64;
-use crate::values::u8::ValueU8;
+use crate::values::uint::ValueUInt;
 use crate::values::value::{Value, ValueTrait};
 use crate::values::value_type::ValueType;
 
@@ -58,48 +51,20 @@ impl ValueTrait for ValueBool {
 
     fn add(&self, other: &Value) -> Option<Value> {
         match other {
-            Value::I8(v) => Some(Value::I8(ValueI8::with_value(
-                self.value.unwrap() as i8 + v.value().unwrap()
-            ))),
-
-            Value::I16(v) => Some(Value::I16(ValueI16::with_value(
-                self.value.unwrap() as i16 + v.value().unwrap()
-            ))),
-
-            Value::I32(v) => Some(Value::I32(ValueI32::with_value(
-                self.value.unwrap() as i32 + v.value().unwrap()
-            ))),
-
-            Value::I64(v) => Some(Value::I64(ValueI64::with_value(
+            Value::Int(v) => Some(Value::Int(ValueInt::with_value(
                 self.value.unwrap() as i64 + v.value().unwrap()
             ))),
-
-            Value::U8(v) => Some(Value::U8(ValueU8::with_value(
-                self.value.unwrap() as u8 + v.value().unwrap()
-            ))),
-
-            Value::U16(v) => Some(Value::U16(ValueU16::with_value(
-                self.value.unwrap() as u16 + v.value().unwrap()
-            ))),
-
-            Value::U32(v) => Some(Value::U32(ValueU32::with_value(
-                self.value.unwrap() as u32 + v.value().unwrap()
-            ))),
-
-            Value::U64(v) => Some(Value::U64(ValueU64::with_value(
+            
+            Value::UInt(v) => Some(Value::UInt(ValueUInt::with_value(
                 self.value.unwrap() as u64 + v.value().unwrap()
             ))),
 
-            Value::F32(v) => Some(Value::F32(ValueF32::with_value(
-                self.value.unwrap() as u8 as f32 + v.value().unwrap()
+            Value::Float(v) => Some(Value::Float(ValueFloat::with_value(
+                self.value.unwrap() as u8 as f64 + v.value().unwrap(),
             ))),
 
-            Value::F64(v) => Some(Value::F64(ValueF64::with_value(
-                self.value.unwrap() as u8 as f64 + v.value().unwrap()
-            ))),
-
-            Value::Bool(v) => Some(Value::U8(ValueU8::with_value(
-                self.value.unwrap() as u8 + v.value().unwrap() as u8
+            Value::Bool(v) => Some(Value::UInt(ValueUInt::with_value(
+                self.value.unwrap() as u64 + v.value().unwrap() as u64
             ))),
 
             Value::Char(v) => Some(Value::Char(ValueChar::with_value(
@@ -120,48 +85,20 @@ impl ValueTrait for ValueBool {
 
     fn subtract(&self, other: &Value) -> Option<Value> {
         match other {
-            Value::I8(v) => Some(Value::I8(ValueI8::with_value(
-                self.value.unwrap() as i8 - v.value().unwrap()
-            ))),
-
-            Value::I16(v) => Some(Value::I16(ValueI16::with_value(
-                self.value.unwrap() as i16 - v.value().unwrap()
-            ))),
-
-            Value::I32(v) => Some(Value::I32(ValueI32::with_value(
-                self.value.unwrap() as i32 - v.value().unwrap()
-            ))),
-
-            Value::I64(v) => Some(Value::I64(ValueI64::with_value(
+            Value::Int(v) => Some(Value::Int(ValueInt::with_value(
                 self.value.unwrap() as i64 - v.value().unwrap()
             ))),
 
-            Value::U8(v) => Some(Value::U8(ValueU8::with_value(
-                self.value.unwrap() as u8 - v.value().unwrap()
-            ))),
-
-            Value::U16(v) => Some(Value::U16(ValueU16::with_value(
-                self.value.unwrap() as u16 - v.value().unwrap()
-            ))),
-
-            Value::U32(v) => Some(Value::U32(ValueU32::with_value(
-                self.value.unwrap() as u32 - v.value().unwrap()
-            ))),
-
-            Value::U64(v) => Some(Value::U64(ValueU64::with_value(
+            Value::UInt(v) => Some(Value::UInt(ValueUInt::with_value(
                 self.value.unwrap() as u64 - v.value().unwrap()
             ))),
 
-            Value::F32(v) => Some(Value::F32(ValueF32::with_value(
-                self.value.unwrap() as u8 as f32 - v.value().unwrap()
+            Value::Float(v) => Some(Value::Float(ValueFloat::with_value(
+                self.value.unwrap() as u8 as f64 - v.value().unwrap(),
             ))),
 
-            Value::F64(v) => Some(Value::F64(ValueF64::with_value(
-                self.value.unwrap() as u8 as f64 - v.value().unwrap()
-            ))),
-
-            Value::Bool(v) => Some(Value::U8(ValueU8::with_value(
-                self.value.unwrap() as u8 - v.value().unwrap() as u8
+            Value::Bool(v) => Some(Value::UInt(ValueUInt::with_value(
+                self.value.unwrap() as u64 - v.value().unwrap() as u64
             ))),
 
             Value::Char(v) => Some(Value::Char(ValueChar::with_value(
@@ -182,48 +119,20 @@ impl ValueTrait for ValueBool {
 
     fn times(&self, other: &Value) -> Option<Value> {
         match other {
-            Value::I8(v) => Some(Value::I8(ValueI8::with_value(
-                self.value.unwrap() as i8 * v.value().unwrap()
-            ))),
-
-            Value::I16(v) => Some(Value::I16(ValueI16::with_value(
-                self.value.unwrap() as i16 * v.value().unwrap()
-            ))),
-
-            Value::I32(v) => Some(Value::I32(ValueI32::with_value(
-                self.value.unwrap() as i32 * v.value().unwrap()
-            ))),
-
-            Value::I64(v) => Some(Value::I64(ValueI64::with_value(
+            Value::Int(v) => Some(Value::Int(ValueInt::with_value(
                 self.value.unwrap() as i64 * v.value().unwrap()
             ))),
-
-            Value::U8(v) => Some(Value::U8(ValueU8::with_value(
-                self.value.unwrap() as u8 * v.value().unwrap()
-            ))),
-
-            Value::U16(v) => Some(Value::U16(ValueU16::with_value(
-                self.value.unwrap() as u16 * v.value().unwrap()
-            ))),
-
-            Value::U32(v) => Some(Value::U32(ValueU32::with_value(
-                self.value.unwrap() as u32 * v.value().unwrap()
-            ))),
-
-            Value::U64(v) => Some(Value::U64(ValueU64::with_value(
+            
+            Value::UInt(v) => Some(Value::UInt(ValueUInt::with_value(
                 self.value.unwrap() as u64 * v.value().unwrap()
             ))),
-
-            Value::F32(v) => Some(Value::F32(ValueF32::with_value(
-                self.value.unwrap() as u8 as f32 * v.value().unwrap()
+            
+            Value::Float(v) => Some(Value::Float(ValueFloat::with_value(
+                self.value.unwrap() as u8 as f64 * v.value().unwrap(),
             ))),
 
-            Value::F64(v) => Some(Value::F64(ValueF64::with_value(
-                self.value.unwrap() as u8 as f64 * v.value().unwrap()
-            ))),
-
-            Value::Bool(v) => Some(Value::U8(ValueU8::with_value(
-                self.value.unwrap() as u8 * v.value().unwrap() as u8
+            Value::Bool(v) => Some(Value::UInt(ValueUInt::with_value(
+                self.value.unwrap() as u64 * v.value().unwrap() as u64
             ))),
 
             Value::Char(v) => Some(Value::Char(ValueChar::with_value(
@@ -251,44 +160,16 @@ impl ValueTrait for ValueBool {
 
     fn bitwise_or(&self, other: &Value) -> Option<Value> {
         match other {
-            Value::I8(v) => Some(Value::I8(ValueI8::with_value(
-                self.value.unwrap() as i8 | v.value().unwrap()
-            ))),
-
-            Value::I16(v) => Some(Value::I16(ValueI16::with_value(
-                self.value.unwrap() as i16 | v.value().unwrap()
-            ))),
-
-            Value::I32(v) => Some(Value::I32(ValueI32::with_value(
-                self.value.unwrap() as i32 | v.value().unwrap()
-            ))),
-
-            Value::I64(v) => Some(Value::I64(ValueI64::with_value(
+            Value::Int(v) => Some(Value::Int(ValueInt::with_value(
                 self.value.unwrap() as i64 | v.value().unwrap()
             ))),
-
-            Value::U8(v) => Some(Value::U8(ValueU8::with_value(
-                self.value.unwrap() as u8 | v.value().unwrap()
-            ))),
-
-            Value::U16(v) => Some(Value::U16(ValueU16::with_value(
-                self.value.unwrap() as u16 | v.value().unwrap()
-            ))),
-
-            Value::U32(v) => Some(Value::U32(ValueU32::with_value(
-                self.value.unwrap() as u32 | v.value().unwrap()
-            ))),
-
-            Value::U64(v) => Some(Value::U64(ValueU64::with_value(
+            
+            Value::UInt(v) => Some(Value::UInt(ValueUInt::with_value(
                 self.value.unwrap() as u64 | v.value().unwrap()
             ))),
-
-            Value::F32(v) => Some(Value::U32(ValueU32::with_value(
-                self.value.unwrap() as u32 | v.value().unwrap() as u32
-            ))),
-
-            Value::F64(v) => Some(Value::U64(ValueU64::with_value(
-                self.value.unwrap() as u64 | v.value().unwrap() as u64
+            
+            Value::Float(v) => Some(Value::Int(ValueInt::with_value(
+                self.value.unwrap() as i64 | v.value().unwrap() as i64
             ))),
 
             Value::Bool(v) => Some(Value::Bool(ValueBool::with_value(
@@ -305,44 +186,16 @@ impl ValueTrait for ValueBool {
 
     fn bitwise_xor(&self, other: &Value) -> Option<Value> {
         match other {
-            Value::I8(v) => Some(Value::I8(ValueI8::with_value(
-                self.value.unwrap() as i8 ^ v.value().unwrap()
-            ))),
-
-            Value::I16(v) => Some(Value::I16(ValueI16::with_value(
-                self.value.unwrap() as i16 ^ v.value().unwrap()
-            ))),
-
-            Value::I32(v) => Some(Value::I32(ValueI32::with_value(
-                self.value.unwrap() as i32 ^ v.value().unwrap()
-            ))),
-
-            Value::I64(v) => Some(Value::I64(ValueI64::with_value(
+            Value::Int(v) => Some(Value::Int(ValueInt::with_value(
                 self.value.unwrap() as i64 ^ v.value().unwrap()
             ))),
 
-            Value::U8(v) => Some(Value::U8(ValueU8::with_value(
-                self.value.unwrap() as u8 ^ v.value().unwrap()
-            ))),
-
-            Value::U16(v) => Some(Value::U16(ValueU16::with_value(
-                self.value.unwrap() as u16 ^ v.value().unwrap()
-            ))),
-
-            Value::U32(v) => Some(Value::U32(ValueU32::with_value(
-                self.value.unwrap() as u32 ^ v.value().unwrap()
-            ))),
-
-            Value::U64(v) => Some(Value::U64(ValueU64::with_value(
+            Value::UInt(v) => Some(Value::UInt(ValueUInt::with_value(
                 self.value.unwrap() as u64 ^ v.value().unwrap()
             ))),
 
-            Value::F32(v) => Some(Value::U32(ValueU32::with_value(
-                self.value.unwrap() as u32 ^ v.value().unwrap() as u32
-            ))),
-
-            Value::F64(v) => Some(Value::U64(ValueU64::with_value(
-                self.value.unwrap() as u64 ^ v.value().unwrap() as u64
+            Value::Float(v) => Some(Value::Int(ValueInt::with_value(
+                self.value.unwrap() as i64 ^ v.value().unwrap() as i64
             ))),
 
             Value::Bool(v) => Some(Value::Bool(ValueBool::with_value(
@@ -359,44 +212,16 @@ impl ValueTrait for ValueBool {
 
     fn bitwise_and(&self, other: &Value) -> Option<Value> {
         match other {
-            Value::I8(v) => Some(Value::I8(ValueI8::with_value(
-                self.value.unwrap() as i8 & v.value().unwrap()
-            ))),
-
-            Value::I16(v) => Some(Value::I16(ValueI16::with_value(
-                self.value.unwrap() as i16 & v.value().unwrap()
-            ))),
-
-            Value::I32(v) => Some(Value::I32(ValueI32::with_value(
-                self.value.unwrap() as i32 & v.value().unwrap()
-            ))),
-
-            Value::I64(v) => Some(Value::I64(ValueI64::with_value(
+            Value::Int(v) => Some(Value::Int(ValueInt::with_value(
                 self.value.unwrap() as i64 & v.value().unwrap()
             ))),
 
-            Value::U8(v) => Some(Value::U8(ValueU8::with_value(
-                self.value.unwrap() as u8 & v.value().unwrap()
-            ))),
-
-            Value::U16(v) => Some(Value::U16(ValueU16::with_value(
-                self.value.unwrap() as u16 & v.value().unwrap()
-            ))),
-
-            Value::U32(v) => Some(Value::U32(ValueU32::with_value(
-                self.value.unwrap() as u32 & v.value().unwrap()
-            ))),
-
-            Value::U64(v) => Some(Value::U64(ValueU64::with_value(
+            Value::UInt(v) => Some(Value::UInt(ValueUInt::with_value(
                 self.value.unwrap() as u64 & v.value().unwrap()
             ))),
 
-            Value::F32(v) => Some(Value::U32(ValueU32::with_value(
-                self.value.unwrap() as u32 & v.value().unwrap() as u32
-            ))),
-
-            Value::F64(v) => Some(Value::U64(ValueU64::with_value(
-                self.value.unwrap() as u64 & v.value().unwrap() as u64
+            Value::Float(v) => Some(Value::Int(ValueInt::with_value(
+                self.value.unwrap() as i64 & v.value().unwrap() as i64
             ))),
 
             Value::Bool(v) => Some(Value::Bool(ValueBool::with_value(
@@ -413,43 +238,15 @@ impl ValueTrait for ValueBool {
 
     fn less_than(&self, other: &Value) -> Option<Value> {
         match other {
-            Value::I8(v) => Some(Value::Bool(ValueBool::with_value(
-                (self.value.unwrap() as i8) < v.value().unwrap()
-            ))),
-
-            Value::I16(v) => Some(Value::Bool(ValueBool::with_value(
-                (self.value.unwrap() as i16) < v.value().unwrap()
-            ))),
-
-            Value::I32(v) => Some(Value::Bool(ValueBool::with_value(
-                (self.value.unwrap() as i32) < v.value().unwrap()
-            ))),
-
-            Value::I64(v) => Some(Value::Bool(ValueBool::with_value(
+            Value::Int(v) => Some(Value::Bool(ValueBool::with_value(
                 (self.value.unwrap() as i64) < v.value().unwrap()
             ))),
-
-            Value::U8(v) => Some(Value::Bool(ValueBool::with_value(
-                (self.value.unwrap() as u8) < v.value().unwrap()
-            ))),
-
-            Value::U16(v) => Some(Value::Bool(ValueBool::with_value(
-                (self.value.unwrap() as u16) < v.value().unwrap()
-            ))),
-
-            Value::U32(v) => Some(Value::Bool(ValueBool::with_value(
-                (self.value.unwrap() as u32) < v.value().unwrap()
-            ))),
-
-            Value::U64(v) => Some(Value::Bool(ValueBool::with_value(
+            
+            Value::UInt(v) => Some(Value::Bool(ValueBool::with_value(
                 (self.value.unwrap() as u64) < v.value().unwrap()
             ))),
-
-            Value::F32(v) => Some(Value::Bool(ValueBool::with_value(
-                (self.value.unwrap() as u8 as f32) < v.value().unwrap()
-            ))),
-
-            Value::F64(v) => Some(Value::Bool(ValueBool::with_value(
+            
+            Value::Float(v) => Some(Value::Bool(ValueBool::with_value(
                 (self.value.unwrap() as u8 as f64) < v.value().unwrap()
             ))),
 
@@ -467,43 +264,15 @@ impl ValueTrait for ValueBool {
 
     fn less_or_equal(&self, other: &Value) -> Option<Value> {
         match other {
-            Value::I8(v) => Some(Value::Bool(ValueBool::with_value(
-                (self.value.unwrap() as i8) <= v.value().unwrap()
-            ))),
-
-            Value::I16(v) => Some(Value::Bool(ValueBool::with_value(
-                (self.value.unwrap() as i16) <= v.value().unwrap()
-            ))),
-
-            Value::I32(v) => Some(Value::Bool(ValueBool::with_value(
-                (self.value.unwrap() as i32) <= v.value().unwrap()
-            ))),
-
-            Value::I64(v) => Some(Value::Bool(ValueBool::with_value(
+            Value::Int(v) => Some(Value::Bool(ValueBool::with_value(
                 (self.value.unwrap() as i64) <= v.value().unwrap()
             ))),
 
-            Value::U8(v) => Some(Value::Bool(ValueBool::with_value(
-                (self.value.unwrap() as u8) <= v.value().unwrap()
-            ))),
-
-            Value::U16(v) => Some(Value::Bool(ValueBool::with_value(
-                (self.value.unwrap() as u16) <= v.value().unwrap()
-            ))),
-
-            Value::U32(v) => Some(Value::Bool(ValueBool::with_value(
-                (self.value.unwrap() as u32) <= v.value().unwrap()
-            ))),
-
-            Value::U64(v) => Some(Value::Bool(ValueBool::with_value(
+            Value::UInt(v) => Some(Value::Bool(ValueBool::with_value(
                 (self.value.unwrap() as u64) <= v.value().unwrap()
             ))),
 
-            Value::F32(v) => Some(Value::Bool(ValueBool::with_value(
-                (self.value.unwrap() as u8 as f32) <= v.value().unwrap()
-            ))),
-
-            Value::F64(v) => Some(Value::Bool(ValueBool::with_value(
+            Value::Float(v) => Some(Value::Bool(ValueBool::with_value(
                 (self.value.unwrap() as u8 as f64) <= v.value().unwrap()
             ))),
 
@@ -521,43 +290,15 @@ impl ValueTrait for ValueBool {
 
     fn greater_than(&self, other: &Value) -> Option<Value> {
         match other {
-            Value::I8(v) => Some(Value::Bool(ValueBool::with_value(
-                (self.value.unwrap() as i8) > v.value().unwrap()
-            ))),
-
-            Value::I16(v) => Some(Value::Bool(ValueBool::with_value(
-                (self.value.unwrap() as i16) > v.value().unwrap()
-            ))),
-
-            Value::I32(v) => Some(Value::Bool(ValueBool::with_value(
-                (self.value.unwrap() as i32) > v.value().unwrap()
-            ))),
-
-            Value::I64(v) => Some(Value::Bool(ValueBool::with_value(
+            Value::Int(v) => Some(Value::Bool(ValueBool::with_value(
                 (self.value.unwrap() as i64) > v.value().unwrap()
             ))),
 
-            Value::U8(v) => Some(Value::Bool(ValueBool::with_value(
-                (self.value.unwrap() as u8) > v.value().unwrap()
-            ))),
-
-            Value::U16(v) => Some(Value::Bool(ValueBool::with_value(
-                (self.value.unwrap() as u16) > v.value().unwrap()
-            ))),
-
-            Value::U32(v) => Some(Value::Bool(ValueBool::with_value(
-                (self.value.unwrap() as u32) > v.value().unwrap()
-            ))),
-
-            Value::U64(v) => Some(Value::Bool(ValueBool::with_value(
+            Value::UInt(v) => Some(Value::Bool(ValueBool::with_value(
                 (self.value.unwrap() as u64) > v.value().unwrap()
             ))),
 
-            Value::F32(v) => Some(Value::Bool(ValueBool::with_value(
-                (self.value.unwrap() as u8 as f32) > v.value().unwrap()
-            ))),
-
-            Value::F64(v) => Some(Value::Bool(ValueBool::with_value(
+            Value::Float(v) => Some(Value::Bool(ValueBool::with_value(
                 (self.value.unwrap() as u8 as f64) > v.value().unwrap()
             ))),
 
@@ -575,43 +316,15 @@ impl ValueTrait for ValueBool {
 
     fn greater_or_equal(&self, other: &Value) -> Option<Value> {
         match other {
-            Value::I8(v) => Some(Value::Bool(ValueBool::with_value(
-                (self.value.unwrap() as i8) >= v.value().unwrap()
-            ))),
-
-            Value::I16(v) => Some(Value::Bool(ValueBool::with_value(
-                (self.value.unwrap() as i16) >= v.value().unwrap()
-            ))),
-
-            Value::I32(v) => Some(Value::Bool(ValueBool::with_value(
-                (self.value.unwrap() as i32) >= v.value().unwrap()
-            ))),
-
-            Value::I64(v) => Some(Value::Bool(ValueBool::with_value(
+            Value::Int(v) => Some(Value::Bool(ValueBool::with_value(
                 (self.value.unwrap() as i64) >= v.value().unwrap()
             ))),
 
-            Value::U8(v) => Some(Value::Bool(ValueBool::with_value(
-                (self.value.unwrap() as u8) >= v.value().unwrap()
-            ))),
-
-            Value::U16(v) => Some(Value::Bool(ValueBool::with_value(
-                (self.value.unwrap() as u16) >= v.value().unwrap()
-            ))),
-
-            Value::U32(v) => Some(Value::Bool(ValueBool::with_value(
-                (self.value.unwrap() as u32) >= v.value().unwrap()
-            ))),
-
-            Value::U64(v) => Some(Value::Bool(ValueBool::with_value(
+            Value::UInt(v) => Some(Value::Bool(ValueBool::with_value(
                 (self.value.unwrap() as u64) >= v.value().unwrap()
             ))),
 
-            Value::F32(v) => Some(Value::Bool(ValueBool::with_value(
-                (self.value.unwrap() as u8 as f32) >= v.value().unwrap()
-            ))),
-
-            Value::F64(v) => Some(Value::Bool(ValueBool::with_value(
+            Value::Float(v) => Some(Value::Bool(ValueBool::with_value(
                 (self.value.unwrap() as u8 as f64) >= v.value().unwrap()
             ))),
 
@@ -632,44 +345,16 @@ impl ValueTrait for ValueBool {
             Value::Null(_) => Some(Value::Bool(ValueBool::with_value(
                 self.is_null()
             ))),
-
-            Value::I8(v) => Some(Value::Bool(ValueBool::with_value(
-                if self.is_null() { v.is_null() } else { self.value.unwrap() as i8 == v.value().unwrap() }
-            ))),
-
-            Value::I16(v) => Some(Value::Bool(ValueBool::with_value(
-                if self.is_null() { v.is_null() } else { self.value.unwrap() as i16 == v.value().unwrap() }
-            ))),
-
-            Value::I32(v) => Some(Value::Bool(ValueBool::with_value(
-                if self.is_null() { v.is_null() } else { self.value.unwrap() as i32 == v.value().unwrap() }
-            ))),
-
-            Value::I64(v) => Some(Value::Bool(ValueBool::with_value(
+            
+            Value::Int(v) => Some(Value::Bool(ValueBool::with_value(
                 if self.is_null() { v.is_null() } else { self.value.unwrap() as i64 == v.value().unwrap() }
             ))),
 
-            Value::U8(v) => Some(Value::Bool(ValueBool::with_value(
-                if self.is_null() { v.is_null() } else { self.value.unwrap() as u8 == v.value().unwrap() }
-            ))),
-
-            Value::U16(v) => Some(Value::Bool(ValueBool::with_value(
-                if self.is_null() { v.is_null() } else { self.value.unwrap() as u16 == v.value().unwrap() }
-            ))),
-
-            Value::U32(v) => Some(Value::Bool(ValueBool::with_value(
-                if self.is_null() { v.is_null() } else { self.value.unwrap() as u32 == v.value().unwrap() }
-            ))),
-
-            Value::U64(v) => Some(Value::Bool(ValueBool::with_value(
+            Value::UInt(v) => Some(Value::Bool(ValueBool::with_value(
                 if self.is_null() { v.is_null() } else { self.value.unwrap() as u64 == v.value().unwrap() }
             ))),
 
-            Value::F32(v) => Some(Value::Bool(ValueBool::with_value(
-                if self.is_null() { v.is_null() } else { self.value.unwrap() as u8 as f32 == v.value().unwrap() }
-            ))),
-
-            Value::F64(v) => Some(Value::Bool(ValueBool::with_value(
+            Value::Float(v) => Some(Value::Bool(ValueBool::with_value(
                 if self.is_null() { v.is_null() } else { self.value.unwrap() as u8 as f64 == v.value().unwrap() }
             ))),
 
@@ -691,44 +376,16 @@ impl ValueTrait for ValueBool {
                 !self.is_null()
             ))),
 
-            Value::I8(v) => Some(Value::Bool(ValueBool::with_value(
-                if self.is_null() { !v.is_null() } else { self.value.unwrap() as i8 != v.value().unwrap() }
+            Value::Int(v) => Some(Value::Bool(ValueBool::with_value(
+                if self.is_null() { v.is_null() } else { self.value.unwrap() as i64 != v.value().unwrap() }
             ))),
 
-            Value::I16(v) => Some(Value::Bool(ValueBool::with_value(
-                if self.is_null() { !v.is_null() } else { self.value.unwrap() as i16 != v.value().unwrap() }
+            Value::UInt(v) => Some(Value::Bool(ValueBool::with_value(
+                if self.is_null() { v.is_null() } else { self.value.unwrap() as u64 != v.value().unwrap() }
             ))),
 
-            Value::I32(v) => Some(Value::Bool(ValueBool::with_value(
-                if self.is_null() { !v.is_null() } else { self.value.unwrap() as i32 != v.value().unwrap() }
-            ))),
-
-            Value::I64(v) => Some(Value::Bool(ValueBool::with_value(
-                if self.is_null() { !v.is_null() } else { self.value.unwrap() as i64 != v.value().unwrap() }
-            ))),
-
-            Value::U8(v) => Some(Value::Bool(ValueBool::with_value(
-                if self.is_null() { !v.is_null() } else { self.value.unwrap() as u8 != v.value().unwrap() }
-            ))),
-
-            Value::U16(v) => Some(Value::Bool(ValueBool::with_value(
-                if self.is_null() { !v.is_null() } else { self.value.unwrap() as u16 != v.value().unwrap() }
-            ))),
-
-            Value::U32(v) => Some(Value::Bool(ValueBool::with_value(
-                if self.is_null() { !v.is_null() } else { self.value.unwrap() as u32 != v.value().unwrap() }
-            ))),
-
-            Value::U64(v) => Some(Value::Bool(ValueBool::with_value(
-                if self.is_null() { !v.is_null() } else { self.value.unwrap() as u64 != v.value().unwrap() }
-            ))),
-
-            Value::F32(v) => Some(Value::Bool(ValueBool::with_value(
-                if self.is_null() { !v.is_null() } else { self.value.unwrap() as u8 as f32 != v.value().unwrap() }
-            ))),
-
-            Value::F64(v) => Some(Value::Bool(ValueBool::with_value(
-                if self.is_null() { !v.is_null() } else { self.value.unwrap() as u8 as f64 != v.value().unwrap() }
+            Value::Float(v) => Some(Value::Bool(ValueBool::with_value(
+                if self.is_null() { v.is_null() } else { self.value.unwrap() as u8 as f64 != v.value().unwrap() }
             ))),
 
             Value::Bool(v) => Some(Value::Bool(ValueBool::with_value(
@@ -750,7 +407,7 @@ impl ValueTrait for ValueBool {
                 Some(Value::Bool(self.clone()))
             },
             
-            Value::I8(v) => {
+            Value::Int(v) => {
                 self.value = match v.value() { 
                     Some(val) => Some(val != 0),
                     None => None,
@@ -758,7 +415,7 @@ impl ValueTrait for ValueBool {
                 Some(Value::Bool(self.clone()))
             },
             
-            Value::I16(v) => {
+            Value::UInt(v) => {
                 self.value = match v.value() { 
                     Some(val) => Some(val != 0),
                     None => None,
@@ -766,63 +423,7 @@ impl ValueTrait for ValueBool {
                 Some(Value::Bool(self.clone()))
             },
             
-            Value::I32(v) => {
-                self.value = match v.value() { 
-                    Some(val) => Some(val != 0),
-                    None => None,
-                };
-                Some(Value::Bool(self.clone()))
-            },
-            
-            Value::I64(v) => {
-                self.value = match v.value() { 
-                    Some(val) => Some(val != 0),
-                    None => None,
-                };
-                Some(Value::Bool(self.clone()))
-            },
-            
-            Value::U8(v) => {
-                self.value = match v.value() { 
-                    Some(val) => Some(val != 0),
-                    None => None,
-                };
-                Some(Value::Bool(self.clone()))
-            },
-            
-            Value::U16(v) => {
-                self.value = match v.value() { 
-                    Some(val) => Some(val != 0),
-                    None => None,
-                };
-                Some(Value::Bool(self.clone()))
-            },
-            
-            Value::U32(v) => {
-                self.value = match v.value() { 
-                    Some(val) => Some(val != 0),
-                    None => None,
-                };
-                Some(Value::Bool(self.clone()))
-            },
-            
-            Value::U64(v) => {
-                self.value = match v.value() { 
-                    Some(val) => Some(val != 0),
-                    None => None,
-                };
-                Some(Value::Bool(self.clone()))
-            },
-            
-            Value::F32(v) => {
-                self.value = match v.value() { 
-                    Some(val) => Some(val != 0.0),
-                    None => None,
-                };
-                Some(Value::Bool(self.clone()))
-            },
-            
-            Value::F64(v) => {
+            Value::Float(v) => {
                 self.value = match v.value() { 
                     Some(val) => Some(val != 0.0),
                     None => None,
@@ -871,32 +472,18 @@ impl ValueTrait for ValueBool {
         if let Some(value) = self.value {
             match to.value() {
                 ApicaTypeBytecode::Any | ApicaTypeBytecode::Bool => Some(Value::Bool(ValueBool::with_value(value))),
-                ApicaTypeBytecode::I8 => Some(Value::I8(ValueI8::with_value(value as i8))),
-                ApicaTypeBytecode::I16 => Some(Value::I16(ValueI16::with_value(value as i16))),
-                ApicaTypeBytecode::I32 => Some(Value::I32(ValueI32::with_value(value as i32))),
-                ApicaTypeBytecode::I64 => Some(Value::I64(ValueI64::with_value(value as i64))),
-                ApicaTypeBytecode::U8 => Some(Value::U8(ValueU8::with_value(value as u8))),
-                ApicaTypeBytecode::U16 => Some(Value::U16(ValueU16::with_value(value as u16))),
-                ApicaTypeBytecode::U32 => Some(Value::U32(ValueU32::with_value(value as u32))),
-                ApicaTypeBytecode::U64 => Some(Value::U64(ValueU64::with_value(value as u64))),
-                ApicaTypeBytecode::F32 => Some(Value::F32(ValueF32::with_value(value as u8 as f32))),
-                ApicaTypeBytecode::F64 => Some(Value::F64(ValueF64::with_value(value as u8 as f64))),
+                ApicaTypeBytecode::Int => Some(Value::Int(ValueInt::with_value(value as i64))),
+                ApicaTypeBytecode::UnsignedInt => Some(Value::UInt(ValueUInt::with_value(value as u64))),
+                ApicaTypeBytecode::Float => Some(Value::Float(ValueFloat::with_value(value as u8 as f64))),
 
                 _ => None,
             }
         } else {
             match to.value() {
                 ApicaTypeBytecode::Any | ApicaTypeBytecode::Bool => Some(Value::Bool(ValueBool::new())),
-                ApicaTypeBytecode::I8 => Some(Value::I8(ValueI8::new())),
-                ApicaTypeBytecode::I16 => Some(Value::I16(ValueI16::new())),
-                ApicaTypeBytecode::I32 => Some(Value::I32(ValueI32::new())),
-                ApicaTypeBytecode::I64 => Some(Value::I64(ValueI64::new())),
-                ApicaTypeBytecode::U8 => Some(Value::U8(ValueU8::new())),
-                ApicaTypeBytecode::U16 => Some(Value::U16(ValueU16::new())),
-                ApicaTypeBytecode::U32 => Some(Value::U32(ValueU32::new())),
-                ApicaTypeBytecode::U64 => Some(Value::U64(ValueU64::new())),
-                ApicaTypeBytecode::F32 => Some(Value::F32(ValueF32::new())),
-                ApicaTypeBytecode::F64 => Some(Value::F64(ValueF64::new())),
+                ApicaTypeBytecode::Int => Some(Value::Int(ValueInt::new())),
+                ApicaTypeBytecode::UnsignedInt => Some(Value::UInt(ValueUInt::new())),
+                ApicaTypeBytecode::Float => Some(Value::Float(ValueFloat::new())),
 
                 _ => None,
             }

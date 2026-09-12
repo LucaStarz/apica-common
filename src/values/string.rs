@@ -47,43 +47,15 @@ impl ValueTrait for ValueString {
 
     fn add(&self, other: &Value) -> Option<Value> {
         match other {
-            Value::I8(v) => Some(Value::String(ValueString::with_value(
+            Value::Int(v) => Some(Value::String(ValueString::with_value(
                 format!("{}{}", self.value.as_ref().unwrap(), v.value().unwrap())
             ))),
             
-            Value::I16(v) => Some(Value::String(ValueString::with_value(
+            Value::UInt(v) => Some(Value::String(ValueString::with_value(
                 format!("{}{}", self.value.as_ref().unwrap(), v.value().unwrap())
             ))),
             
-            Value::I32(v) => Some(Value::String(ValueString::with_value(
-                format!("{}{}", self.value.as_ref().unwrap(), v.value().unwrap())
-            ))),
-            
-            Value::I64(v) => Some(Value::String(ValueString::with_value(
-                format!("{}{}", self.value.as_ref().unwrap(), v.value().unwrap())
-            ))),
-            
-            Value::U8(v) => Some(Value::String(ValueString::with_value(
-                format!("{}{}", self.value.as_ref().unwrap(), v.value().unwrap())
-            ))),
-            
-            Value::U16(v) => Some(Value::String(ValueString::with_value(
-                format!("{}{}", self.value.as_ref().unwrap(), v.value().unwrap())
-            ))),
-            
-            Value::U32(v) => Some(Value::String(ValueString::with_value(
-                format!("{}{}", self.value.as_ref().unwrap(), v.value().unwrap())
-            ))),
-            
-            Value::U64(v) => Some(Value::String(ValueString::with_value(
-                format!("{}{}", self.value.as_ref().unwrap(), v.value().unwrap())
-            ))),
-            
-            Value::F32(v) => Some(Value::String(ValueString::with_value(
-                format!("{}{}", self.value.as_ref().unwrap(), v.value().unwrap())
-            ))),
-            
-            Value::F64(v) => Some(Value::String(ValueString::with_value(
+            Value::Float(v) => Some(Value::String(ValueString::with_value(
                 format!("{}{}", self.value.as_ref().unwrap(), v.value().unwrap())
             ))),
             
@@ -138,66 +110,18 @@ impl ValueTrait for ValueString {
 
     fn times(&self, other: &Value) -> Option<Value> {
         match other {
-            Value::I8(v) => {
+            Value::Int(v) => {
                 let val = v.value().unwrap();
                 let s = if val < 0 {
-                    String::from("")
+                    String::new()
                 } else {
-                    self.value.as_ref().unwrap().repeat(v.value().unwrap() as usize)
+                    self.value.as_ref().unwrap().repeat(val as usize)
                 };
-
+                
                 Some(Value::String(ValueString::with_value(s)))
             },
-
-            Value::I16(v) => {
-                let val = v.value().unwrap();
-                let s = if val < 0 {
-                    String::from("")
-                } else {
-                    self.value.as_ref().unwrap().repeat(v.value().unwrap() as usize)
-                };
-
-                Some(Value::String(ValueString::with_value(s)))
-            },
-
-            Value::I32(v) => {
-                let val = v.value().unwrap();
-                let s = if val < 0 {
-                    String::from("")
-                } else {
-                    self.value.as_ref().unwrap().repeat(v.value().unwrap() as usize)
-                };
-
-                Some(Value::String(ValueString::with_value(s)))
-            },
-
-            Value::I64(v) => {
-                let val = v.value().unwrap();
-                let s = if val < 0 {
-                    String::from("")
-                } else {
-                    self.value.as_ref().unwrap().repeat(v.value().unwrap() as usize)
-                };
-
-                Some(Value::String(ValueString::with_value(s)))
-            },
-
-            Value::U8(v) => {
-                let s = self.value.as_ref().unwrap().repeat(v.value().unwrap() as usize);
-                Some(Value::String(ValueString::with_value(s)))
-            },
-
-            Value::U16(v) => {
-                let s = self.value.as_ref().unwrap().repeat(v.value().unwrap() as usize);
-                Some(Value::String(ValueString::with_value(s)))
-            },
-
-            Value::U32(v) => {
-                let s = self.value.as_ref().unwrap().repeat(v.value().unwrap() as usize);
-                Some(Value::String(ValueString::with_value(s)))
-            },
-
-            Value::U64(v) => {
+            
+            Value::UInt(v) => {
                 let s = self.value.as_ref().unwrap().repeat(v.value().unwrap() as usize);
                 Some(Value::String(ValueString::with_value(s)))
             },

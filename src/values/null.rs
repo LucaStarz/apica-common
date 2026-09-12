@@ -2,18 +2,11 @@
 use crate::values::bool::ValueBool;
 use crate::values::char::ValueChar;
 use crate::values::error::ValueError;
-use crate::values::f32::ValueF32;
-use crate::values::f64::ValueF64;
-use crate::values::i16::ValueI16;
-use crate::values::i32::ValueI32;
-use crate::values::i64::ValueI64;
-use crate::values::i8::ValueI8;
+use crate::values::float::ValueFloat;
+use crate::values::int::ValueInt;
 use crate::values::reference::ValueReference;
 use crate::values::string::ValueString;
-use crate::values::u16::ValueU16;
-use crate::values::u32::ValueU32;
-use crate::values::u64::ValueU64;
-use crate::values::u8::ValueU8;
+use crate::values::uint::ValueUInt;
 use crate::values::value::{Value, ValueTrait};
 use crate::values::value_type::ValueType;
 
@@ -128,16 +121,9 @@ impl ValueTrait for ValueNull {
     fn auto_convert(&self, to: &ValueType, is_nullable: bool) -> Option<Value> {
         Some(match to.value() {
             ApicaTypeBytecode::Any | ApicaTypeBytecode::Null => Value::Null(ValueNull::new()),
-            ApicaTypeBytecode::I8 => Value::I8(ValueI8::new()),
-            ApicaTypeBytecode::I16 => Value::I16(ValueI16::new()),
-            ApicaTypeBytecode::I32 => Value::I32(ValueI32::new()),
-            ApicaTypeBytecode::I64 => Value::I64(ValueI64::new()),
-            ApicaTypeBytecode::U8 => Value::U8(ValueU8::new()),
-            ApicaTypeBytecode::U16 => Value::U16(ValueU16::new()),
-            ApicaTypeBytecode::U32 => Value::U32(ValueU32::new()),
-            ApicaTypeBytecode::U64 => Value::U64(ValueU64::new()),
-            ApicaTypeBytecode::F32 => Value::F32(ValueF32::new()),
-            ApicaTypeBytecode::F64 => Value::F64(ValueF64::new()),
+            ApicaTypeBytecode::Int => Value::Int(ValueInt::new()),
+            ApicaTypeBytecode::UnsignedInt => Value::UInt(ValueUInt::new()),
+            ApicaTypeBytecode::Float => Value::Float(ValueFloat::new()),
             ApicaTypeBytecode::Bool => Value::Bool(ValueBool::new()),
             ApicaTypeBytecode::Char => Value::Char(ValueChar::new()),
             ApicaTypeBytecode::String => Value::String(ValueString::new()),

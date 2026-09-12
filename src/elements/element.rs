@@ -560,8 +560,8 @@ impl Element {
 
     /// Add another [`String`] to the trace of a stack-trace if the value of the element is a [`Value::StackTrace`].
     pub fn add_trace(&mut self, trace: String) {
-        if let Value::StackTrace(stack) = &mut self.value {
-            stack.add_trace(trace);
+        if let Value::Error(error) = &mut self.value {
+            error.add_trace(trace);
         }
     }
 }

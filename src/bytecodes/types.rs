@@ -5,58 +5,37 @@
 #[derive(Debug, Clone, Copy, PartialEq, Eq, IntoPrimitive, TryFromPrimitive)]
 pub enum ApicaTypeBytecode {
     /// Null (null).
-    Null =      0x00,
+    Null =          0x00,
 
     /// Dynamic type (any).
-    Any =       0x01,
-
-    /// 8-bit signed integer (i8).
-    I8 =        0x02,
-
-    /// 16-bit signed integer (i16).
-    I16 =       0x03,
-
-    /// 32-bit signed integer (i32).
-    I32 =       0x04,
-
-    /// 64-bit signed integer (i64).
-    I64 =       0x05,
-
-    /// 8-bit unsigned integer (u8).
-    U8 =        0x06,
-
-    /// 16-bit unsigned integer (u16).
-    U16 =       0x07,
-
-    /// 32-bit unsigned integer (u32).
-    U32 =       0x08,
-
-    /// 64-bit unsigned integer (u64).
-    U64 =       0x09,
-
-    /// 32-bit float (f32).
-    F32 =       0x0A,
-
-    /// 64-bit float (f64).
-    F64 =       0x0B,
+    Any =           0x01,
+    
+    /// 64-bit signed integer value (int).
+    Int =           0x02,
+    
+    /// 64-bit unsigned integer value (uint).
+    UnsignedInt =   0x03,
+    
+    /// 64-bit signed float value (float).
+    Float =         0x04,
 
     /// Boolean value (bool, true/false).
-    Bool =      0x0C,
+    Bool =      0x05,
 
     /// UTF-32 character (char).
-    Char =      0x0D,
+    Char =      0x06,
 
     /// UTF-8 encoded string (string).
-    String =    0x0E,
+    String =    0x07,
 
     /// Error (error).
-    Error =     0x0F,
+    Error =     0x08,
 
     /// Type reference (type).
-    Type =      0x10,
+    Type =      0x09,
 
     /// Reference to other value (ref).
-    Reference = 0x11,
+    Reference = 0x0A,
 }
 
 impl ApicaTypeBytecode {
@@ -66,16 +45,9 @@ impl ApicaTypeBytecode {
             ApicaTypeBytecode::Null => "null",
             ApicaTypeBytecode::Any => "???",
 
-            ApicaTypeBytecode::I8 => "i8",
-            ApicaTypeBytecode::I16 => "i16",
-            ApicaTypeBytecode::I32 => "i32",
-            ApicaTypeBytecode::I64 => "i64",
-            ApicaTypeBytecode::U8 => "u8",
-            ApicaTypeBytecode::U16 => "u16",
-            ApicaTypeBytecode::U32 => "u32",
-            ApicaTypeBytecode::U64 => "u64",
-            ApicaTypeBytecode::F32 => "f32",
-            ApicaTypeBytecode::F64 => "f64",
+            ApicaTypeBytecode::Int => "int",
+            ApicaTypeBytecode::UnsignedInt => "uint",
+            ApicaTypeBytecode::Float => "float",
             ApicaTypeBytecode::Bool => "bool",
 
             ApicaTypeBytecode::Char => "char",

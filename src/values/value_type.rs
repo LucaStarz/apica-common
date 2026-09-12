@@ -38,6 +38,7 @@ impl ValueType {
             inner.push('<');
             for i in 0..self.contained.len() {
                 inner.push_str(&self.contained[i].inner_repr());
+
                 if i < self.contained.len() - 1 {
                     inner.push_str(", ");
                 }
@@ -45,12 +46,16 @@ impl ValueType {
             
             inner.push('>');
         }
+
+        if self.is_nullable {
+            inner.push('!');
+        }
         
         format!("{}<{}>", self.value.repr(), inner)
     }
     
     pub fn type_equals(&self, other: &ValueType) -> bool {
-        let mut result = self.value == other.value && self.contained.len() == other.contained.len();
+        let mut result = (self.value == other.value || self.value == ApicaTypeBytecode::Any) && self.contained.len() == other.contained.len();
         if result {
             for i in 0..self.contained.len() {
                 result = self.contained[i].type_equals(&other.contained[i]);
@@ -69,24 +74,8 @@ impl ValueType {
         self.value as u8
     }
 
-    fn is_signed_integer(&self) -> bool {
-        matches!(self.value, ApicaTypeBytecode::I8 | ApicaTypeBytecode::I16 | ApicaTypeBytecode::I32 | ApicaTypeBytecode::I64)
-    }
-
-    fn is_unsigned_integer(&self) -> bool {
-        matches!(self.value, ApicaTypeBytecode::U8 | ApicaTypeBytecode::U16 | ApicaTypeBytecode::U32 | ApicaTypeBytecode::U64)
-    }
-
-    fn is_integer(&self) -> bool {
-        self.is_signed_integer() || self.is_unsigned_integer()
-    }
-
-    fn is_float(&self) -> bool {
-        matches!(self.value, ApicaTypeBytecode::F32 | ApicaTypeBytecode::F64)
-    }
-
     fn is_number(&self) -> bool {
-        self.is_integer() || self.is_float()
+        matches!(self.value, ApicaTypeBytecode::Int | ApicaTypeBytecode::UnsignedInt | ApicaTypeBytecode::Float)
     }
 
     fn number_can_convert_to(to: &ValueType, is_auto: bool) -> bool {
@@ -146,7 +135,7 @@ impl ValueType {
         match self.value {
             ApicaTypeBytecode::Any => Some(ValueType::new(ApicaTypeBytecode::Any, true)),
 
-            ApicaTypeBytecode::Null | ApicaTypeBytecode::F32 | ApicaTypeBytecode::F64
+            ApicaTypeBytecode::Null | ApicaTypeBytecode::Float
             | ApicaTypeBytecode::String | ApicaTypeBytecode::Error | ApicaTypeBytecode::Type
             | ApicaTypeBytecode::Reference => None,
 
@@ -195,135 +184,35 @@ impl ValueType {
                 None
             },
 
-            ApicaTypeBytecode::I8 => match other.value {
+            ApicaTypeBytecode::Int => match other.value {
                 ApicaTypeBytecode::Any => Some(ValueType::new(ApicaTypeBytecode::Any, true)),
 
-                ApicaTypeBytecode::I8 | ApicaTypeBytecode::I16 | ApicaTypeBytecode::I32 | ApicaTypeBytecode::I64
-                | ApicaTypeBytecode::F32 | ApicaTypeBytecode::F64 => Some(other.clone()),
+                ApicaTypeBytecode::Int | ApicaTypeBytecode::UnsignedInt | ApicaTypeBytecode::Bool  | ApicaTypeBytecode::Char
+                    => Some(ValueType::new(ApicaTypeBytecode::Int, true)),
 
-                ApicaTypeBytecode::U8 | ApicaTypeBytecode::Bool => Some(ValueType::new(ApicaTypeBytecode::I8, true)),
-                ApicaTypeBytecode::U16 => Some(ValueType::new(ApicaTypeBytecode::I16, true)),
-                ApicaTypeBytecode::U32 | ApicaTypeBytecode::Char => Some(ValueType::new(ApicaTypeBytecode::I32, true)),
-                ApicaTypeBytecode::U64 => Some(ValueType::new(ApicaTypeBytecode::I64, true)),
+                ApicaTypeBytecode::Float => Some(ValueType::new(ApicaTypeBytecode::Float, true)),
 
                 _ => None,
             },
 
-            ApicaTypeBytecode::I16 => match other.value {
+            ApicaTypeBytecode::UnsignedInt => match other.value {
                 ApicaTypeBytecode::Any => Some(ValueType::new(ApicaTypeBytecode::Any, true)),
 
-                ApicaTypeBytecode::I16 | ApicaTypeBytecode::I32 | ApicaTypeBytecode::I64
-                | ApicaTypeBytecode::F32 | ApicaTypeBytecode::F64 => Some(other.clone()),
+                ApicaTypeBytecode::Int => Some(ValueType::new(ApicaTypeBytecode::Int, true)),
+                ApicaTypeBytecode::UnsignedInt | ApicaTypeBytecode::Bool  | ApicaTypeBytecode::Char
+                    => Some(ValueType::new(ApicaTypeBytecode::UnsignedInt, true)),
 
-                ApicaTypeBytecode::I8 | ApicaTypeBytecode::U8 | ApicaTypeBytecode::U16 | ApicaTypeBytecode::Bool
-                    => Some(ValueType::new(ApicaTypeBytecode::I16, true)),
-
-                ApicaTypeBytecode::U32 | ApicaTypeBytecode::Char => Some(ValueType::new(ApicaTypeBytecode::I32, true)),
-                ApicaTypeBytecode::U64 => Some(ValueType::new(ApicaTypeBytecode::I64, true)),
+                ApicaTypeBytecode::Float => Some(ValueType::new(ApicaTypeBytecode::Float, true)),
 
                 _ => None,
             },
 
-            ApicaTypeBytecode::I32 => match other.value {
+            ApicaTypeBytecode::Float => match other.value {
                 ApicaTypeBytecode::Any => Some(ValueType::new(ApicaTypeBytecode::Any, true)),
 
-                ApicaTypeBytecode::I32 | ApicaTypeBytecode::I64
-                | ApicaTypeBytecode::F32 | ApicaTypeBytecode::F64 => Some(other.clone()),
-
-                ApicaTypeBytecode::I8 | ApicaTypeBytecode::I16 | ApicaTypeBytecode::U8 | ApicaTypeBytecode::U16
-                | ApicaTypeBytecode::U32 | ApicaTypeBytecode::Bool | ApicaTypeBytecode::Char
-                    => Some(ValueType::new(ApicaTypeBytecode::I32, true)),
-
-                ApicaTypeBytecode::U64 => Some(ValueType::new(ApicaTypeBytecode::I64, true)),
-
-                _ => None,
-            },
-
-            ApicaTypeBytecode::I64 => match other.value {
-                ApicaTypeBytecode::Any => Some(ValueType::new(ApicaTypeBytecode::Any, true)),
-
-                ApicaTypeBytecode::F32 | ApicaTypeBytecode::F64 => Some(ValueType::new(ApicaTypeBytecode::F64, true)),
-
-                ApicaTypeBytecode::I8 | ApicaTypeBytecode::I16 | ApicaTypeBytecode::I32 | ApicaTypeBytecode::I64
-                | ApicaTypeBytecode::U8 | ApicaTypeBytecode::U16 | ApicaTypeBytecode::U32 | ApicaTypeBytecode::U64
+                ApicaTypeBytecode::Int | ApicaTypeBytecode::UnsignedInt | ApicaTypeBytecode::Float
                 | ApicaTypeBytecode::Bool | ApicaTypeBytecode::Char
-                    => Some(ValueType::new(ApicaTypeBytecode::I64, true)),
-
-                _ => None,
-            },
-
-            ApicaTypeBytecode::U8 | ApicaTypeBytecode::Bool => match other.value {
-                ApicaTypeBytecode::Any => Some(ValueType::new(ApicaTypeBytecode::Any, true)),
-
-                ApicaTypeBytecode::I8 | ApicaTypeBytecode::I16 | ApicaTypeBytecode::I32 | ApicaTypeBytecode::I64
-                | ApicaTypeBytecode::U8 | ApicaTypeBytecode::U16 | ApicaTypeBytecode::U32 | ApicaTypeBytecode::U64
-                | ApicaTypeBytecode::F32 | ApicaTypeBytecode::F64 => Some(other.clone()),
-
-                ApicaTypeBytecode::Bool => Some(ValueType::new(ApicaTypeBytecode::U8, true)),
-                ApicaTypeBytecode::Char => Some(ValueType::new(ApicaTypeBytecode::U32, true)),
-
-                _ => None,
-            },
-
-            ApicaTypeBytecode::U16 => match other.value {
-                ApicaTypeBytecode::Any => Some(ValueType::new(ApicaTypeBytecode::Any, true)),
-
-                ApicaTypeBytecode::I16 | ApicaTypeBytecode::I32 | ApicaTypeBytecode::I64
-                | ApicaTypeBytecode::U16 | ApicaTypeBytecode::U32 | ApicaTypeBytecode::U64
-                | ApicaTypeBytecode::F32 | ApicaTypeBytecode::F64 => Some(other.clone()),
-
-                ApicaTypeBytecode::I8 => Some(ValueType::new(ApicaTypeBytecode::I16, true)),
-                ApicaTypeBytecode::U8 | ApicaTypeBytecode::Bool => Some(ValueType::new(ApicaTypeBytecode::U16, true)),
-                ApicaTypeBytecode::Char => Some(ValueType::new(ApicaTypeBytecode::U32, true)),
-
-                _ => None,
-            },
-
-            ApicaTypeBytecode::U32 | ApicaTypeBytecode::Char => match other.value {
-                ApicaTypeBytecode::Any => Some(ValueType::new(ApicaTypeBytecode::Any, true)),
-
-                ApicaTypeBytecode::I64 | ApicaTypeBytecode::U64 | ApicaTypeBytecode::F32 | ApicaTypeBytecode::F64 => Some(other.clone()),
-
-                ApicaTypeBytecode::I8 | ApicaTypeBytecode::I16 | ApicaTypeBytecode::I32 => Some(ValueType::new(ApicaTypeBytecode::I32, true)),
-
-                ApicaTypeBytecode::U8 | ApicaTypeBytecode::U16 | ApicaTypeBytecode::U32
-                | ApicaTypeBytecode::Bool | ApicaTypeBytecode::Char => Some(ValueType::new(ApicaTypeBytecode::U32, true)),
-
-                _ => None,
-            },
-
-            ApicaTypeBytecode::U64 => match other.value {
-                ApicaTypeBytecode::Any => Some(ValueType::new(ApicaTypeBytecode::Any, true)),
-
-                ApicaTypeBytecode::F32 | ApicaTypeBytecode::F64 => Some(ValueType::new(ApicaTypeBytecode::F64, true)),
-
-                ApicaTypeBytecode::I8 | ApicaTypeBytecode::I16 | ApicaTypeBytecode::I32 | ApicaTypeBytecode::I64
-                    => Some(ValueType::new(ApicaTypeBytecode::I64, true)),
-
-                ApicaTypeBytecode::U8 | ApicaTypeBytecode::U16 | ApicaTypeBytecode::U32 | ApicaTypeBytecode::U64
-                | ApicaTypeBytecode::Bool | ApicaTypeBytecode::Char => Some(ValueType::new(ApicaTypeBytecode::U64, true)),
-
-                _ => None,
-            },
-
-            ApicaTypeBytecode::F32 => match other.value {
-                ApicaTypeBytecode::Any => Some(ValueType::new(ApicaTypeBytecode::Any, true)),
-
-                ApicaTypeBytecode::I8 | ApicaTypeBytecode::I16 | ApicaTypeBytecode::I32
-                | ApicaTypeBytecode::U8 | ApicaTypeBytecode::U16 | ApicaTypeBytecode::U32
-                | ApicaTypeBytecode::F32 | ApicaTypeBytecode::Bool | ApicaTypeBytecode::Char
-                => Some(ValueType::new(ApicaTypeBytecode::F32, true)),
-
-                ApicaTypeBytecode::I64 | ApicaTypeBytecode::U64 | ApicaTypeBytecode::F64 => Some(ValueType::new(ApicaTypeBytecode::F64, true)),
-
-                _ => None,
-            },
-
-            ApicaTypeBytecode::F64 => match other.value {
-                ApicaTypeBytecode::Any => Some(ValueType::new(ApicaTypeBytecode::Any, true)),
-
-                _ if other.is_number() || matches!(other.value, ApicaTypeBytecode::Bool | ApicaTypeBytecode::Char)
-                => Some(ValueType::new(ApicaTypeBytecode::F64, true)),
+                    => Some(ValueType::new(ApicaTypeBytecode::Float, true)),
 
                 _ => None,
             },
@@ -373,20 +262,12 @@ impl ValueType {
     pub fn can_be_converted_to(&self, to: &ValueType, is_auto: bool) -> bool {
         match self.value {
             ApicaTypeBytecode::Null | ApicaTypeBytecode::Any => true,
-
-            ApicaTypeBytecode::I8 | ApicaTypeBytecode::I16 | ApicaTypeBytecode::I32 | ApicaTypeBytecode::I64 |
-            ApicaTypeBytecode::U8 | ApicaTypeBytecode::U16 | ApicaTypeBytecode::U32 | ApicaTypeBytecode::U64
-            => ValueType::number_can_convert_to(to, is_auto),
-
-            ApicaTypeBytecode::F32 | ApicaTypeBytecode::F64 | ApicaTypeBytecode::Bool
-            => ValueType::decimal_can_convert_to(to, is_auto),
+            ApicaTypeBytecode::Int | ApicaTypeBytecode::UnsignedInt => ValueType::number_can_convert_to(to, is_auto),
+            ApicaTypeBytecode::Float | ApicaTypeBytecode::Bool => ValueType::decimal_can_convert_to(to, is_auto),
 
             ApicaTypeBytecode::Char => match to.value {
-                ApicaTypeBytecode::Any |
-                ApicaTypeBytecode::I8 | ApicaTypeBytecode::I16 | ApicaTypeBytecode::I32 | ApicaTypeBytecode::I64 |
-                ApicaTypeBytecode::U8 | ApicaTypeBytecode::U16 | ApicaTypeBytecode::U32 | ApicaTypeBytecode::U64 |
-                ApicaTypeBytecode::F32 | ApicaTypeBytecode::F64 |
-                ApicaTypeBytecode::Char => true,
+                ApicaTypeBytecode::Any | ApicaTypeBytecode::Int | ApicaTypeBytecode::UnsignedInt
+                | ApicaTypeBytecode::Float | ApicaTypeBytecode::Char => true,
 
                 ApicaTypeBytecode::Bool | ApicaTypeBytecode::String | ApicaTypeBytecode::Type => !is_auto,
 

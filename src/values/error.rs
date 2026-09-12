@@ -8,19 +8,20 @@ use crate::values::value_type::ValueType;
 pub struct ValueError {
     name: Option<String>,
     details: Option<String>,
+    stack_trace: Vec<String>,
 }
 
 impl ValueError {
     pub fn new() -> ValueError {
-        ValueError { name: None, details: None }
+        ValueError { name: None, details: None, stack_trace: vec![] }
     }
 
     pub fn with_name(name: String) -> ValueError {
-        ValueError { name: Some(name), details: None }
+        ValueError { name: Some(name), details: None, stack_trace: vec![] }
     }
 
     pub fn with_details(name: String, details: String) -> ValueError {
-        ValueError { name: Some(name), details: Some(details) }
+        ValueError { name: Some(name), details: Some(details), stack_trace: vec![] }
     }
 
     pub fn name(&self) -> Option<&str> {
@@ -29,6 +30,30 @@ impl ValueError {
 
     pub fn details(&self) -> Option<&str> {
         self.details.as_deref()
+    }
+    
+    pub fn stack_trace(&self) -> &Vec<String> {
+        &self.stack_trace
+    }
+    
+    pub fn message(&self) -> String {
+        let mut message = self.name.as_ref().unwrap_or(&String::from("error")).clone();
+        if let Some(d) = self.details.as_deref() {
+            message.push_str(": ");
+            message.push_str(d);
+        }
+
+        message.push_str("\nStack trace:");
+        for trace in self.stack_trace.iter() {
+            message.push('\n');
+            message.push_str(trace);
+        }
+
+        message
+    }
+    
+    pub fn add_trace(&mut self, trace: String) {
+        self.stack_trace.push(trace);
     }
 }
 
