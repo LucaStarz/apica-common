@@ -345,18 +345,36 @@ impl ValueTrait for ValueType {
     }
 
     fn show(&self, end: char) {
-        if self.is_nullable {
-            print!("type<{}!>{}", self.value.repr(), end);
+        let mut inner = String::new();
+        for ty in self.contained.iter() {
+            inner.push_str(&ty.inner_repr());
+        }
+
+        if inner.is_empty() {
+            print!("type<{}{}>{}",
+                    self.value.repr(), if self.is_nullable { '\0' } else { '!' }, end
+            )
         } else {
-            print!("type<{}>{}", self.value.repr(), end);
+            print!("type<{}<{}>{}>{}",
+                    self.value.repr(), inner, if self.is_nullable { '\0' } else { '!' }, end
+            )
         }
     }
 
     fn repr(&self) -> String {
-        if self.is_nullable {
-            format!("type<{}!>", self.value.repr())
+        let mut inner = String::new();
+        for ty in self.contained.iter() {
+            inner.push_str(&ty.inner_repr());
+        }
+
+        if inner.is_empty() {
+            format!("type<{}{}>",
+                self.value.repr(), if self.is_nullable { '\0' } else { '!' }
+            )
         } else {
-            format!("type<{}>", self.value.repr())
+            format!("type<{}<{}>{}>",
+                self.value.repr(), inner, if self.is_nullable { '\0' } else { '!' }
+            )
         }
     }
 
