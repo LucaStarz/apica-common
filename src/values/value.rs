@@ -36,6 +36,9 @@ pub trait ValueTrait {
     fn greater_or_equal(&self, other: &Value) -> Option<Value>;
     fn equals(&self, other: &Value) -> Option<Value>;
     fn not_equals(&self, other: &Value) -> Option<Value>;
+    
+    fn left_shift(&self, other: &Value) -> Option<Value>;
+    fn right_shift(&self, other: &Value) -> Option<Value>;
 
     fn assign(&mut self, other: &Value) -> Option<Value>;
     
@@ -444,6 +447,36 @@ impl ValueTrait for Value {
             Value::Error(v) => v.not_equals(other),
             Value::Type(v) => v.not_equals(other),
             Value::Reference(v) => v.not_equals(other),
+        }
+    }
+
+    fn left_shift(&self, other: &Value) -> Option<Value> {
+        match self { 
+            Value::Null(v) => v.left_shift(other),
+            Value::Int(v) => v.left_shift(other),
+            Value::UInt(v) => v.left_shift(other),
+            Value::Float(v) => v.left_shift(other),
+            Value::Bool(v) => v.left_shift(other),
+            Value::Char(v) => v.left_shift(other),
+            Value::String(v) => v.left_shift(other),
+            Value::Error(v) => v.left_shift(other),
+            Value::Type(v) => v.left_shift(other),
+            Value::Reference(v) => v.left_shift(other),
+        }
+    }
+
+    fn right_shift(&self, other: &Value) -> Option<Value> {
+        match self { 
+            Value::Null(v) => v.right_shift(other),
+            Value::Int(v) => v.right_shift(other),
+            Value::UInt(v) => v.right_shift(other),
+            Value::Float(v) => v.right_shift(other),
+            Value::Bool(v) => v.right_shift(other),
+            Value::Char(v) => v.right_shift(other),
+            Value::String(v) => v.right_shift(other),
+            Value::Error(v) => v.right_shift(other),
+            Value::Type(v) => v.right_shift(other),
+            Value::Reference(v) => v.right_shift(other),
         }
     }
 

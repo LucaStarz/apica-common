@@ -420,6 +420,42 @@ impl ValueTrait for ValueChar {
         }
     }
 
+    fn left_shift(&self, other: &Value) -> Option<Value> {
+        match other {
+            Value::Int(v) => Some(Value::Char(ValueChar::with_value(
+                if v.value().unwrap() < 0 { 0 } else { self.value.unwrap() << v.value().unwrap() }
+            ))),
+            
+            Value::UInt(v) => Some(Value::Char(ValueChar::with_value(
+                self.value.unwrap() << v.value().unwrap()
+            ))),
+            
+            Value::Char(v) => Some(Value::Char(ValueChar::with_value(
+                self.value.unwrap() << v.value().unwrap()
+            ))),
+            
+            _ => None,
+        }
+    }
+
+    fn right_shift(&self, other: &Value) -> Option<Value> {
+        match other {
+            Value::Int(v) => Some(Value::Char(ValueChar::with_value(
+                if v.value().unwrap() < 0 { 0 } else { self.value.unwrap() >> v.value().unwrap() }
+            ))),
+
+            Value::UInt(v) => Some(Value::Char(ValueChar::with_value(
+                self.value.unwrap() >> v.value().unwrap()
+            ))),
+
+            Value::Char(v) => Some(Value::Char(ValueChar::with_value(
+                self.value.unwrap() >> v.value().unwrap()
+            ))),
+
+            _ => None,
+        }
+    }
+
     fn assign(&mut self, other: &Value) -> Option<Value> {
         match other {
             Value::Null(_) => {

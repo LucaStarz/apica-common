@@ -241,6 +241,10 @@ impl ValueType {
     }
 
     fn resolve_type_assign(&self, other: &ValueType) -> Option<ValueType> {
+        if !self.is_nullable && other.value == ApicaTypeBytecode::Null {
+            return None
+        }
+
         match self.value {
             ApicaTypeBytecode::Any => Some(ValueType::new(ApicaTypeBytecode::Any, true)),
             ApicaTypeBytecode::Null => None,
@@ -477,6 +481,14 @@ impl ValueTrait for ValueType {
             
             _ => None,
         }
+    }
+
+    fn left_shift(&self, _other: &Value) -> Option<Value> {
+        None
+    }
+
+    fn right_shift(&self, _other: &Value) -> Option<Value> {
+        None
     }
 
     fn assign(&mut self, other: &Value) -> Option<Value> {

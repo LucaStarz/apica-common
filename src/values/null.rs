@@ -110,6 +110,14 @@ impl ValueTrait for ValueNull {
         Some(Value::Bool(ValueBool::with_value(!other.is_null())))
     }
 
+    fn left_shift(&self, _other: &Value) -> Option<Value> {
+        None
+    }
+
+    fn right_shift(&self, _other: &Value) -> Option<Value> {
+        None
+    }
+
     fn assign(&mut self, _other: &Value) -> Option<Value> {
         None
     }

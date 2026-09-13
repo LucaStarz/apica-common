@@ -412,6 +412,14 @@ impl ValueTrait for ValueFloat {
         }
     }
 
+    fn left_shift(&self, _other: &Value) -> Option<Value> {
+        None
+    }
+
+    fn right_shift(&self, _other: &Value) -> Option<Value> {
+        None
+    }
+
     fn assign(&mut self, other: &Value) -> Option<Value> {
         match other {
             Value::Null(_) => {

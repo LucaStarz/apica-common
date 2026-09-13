@@ -441,6 +441,52 @@ impl Element {
         }
     }
     
+    /// Performs a left-shift operation (elt << other) with another [`Element`].
+    /// 
+    /// # Returns
+    /// 
+    /// A new [`Element`] representing the result of the left-shift operation or an error.
+    pub fn left_shift(&self, other: &Element) -> Element {
+        if self.value.is_null() || other.value.is_null() {
+            return Element::new(
+                ElementModifier::ERROR,
+                Value::null_operation_error("<<", false),
+            );
+        }
+        
+        let result = self.value.left_shift(&other.value);
+        match result { 
+            Some(val) => Element::new(ElementModifier::NONE, val),
+            None => Element::new(
+                ElementModifier::ERROR,
+                Value::binary_operation_error("<<", &self.value.get_type_repr(), &other.value.get_type_repr()),
+            )
+        }
+    }
+
+    /// Performs a right-shift operation (elt >> other) with another [`Element`].
+    ///
+    /// # Returns
+    ///
+    /// A new [`Element`] representing the result of the right-shift operation or an error.
+    pub fn right_shift(&self, other: &Element) -> Element {
+        if self.value.is_null() || other.value.is_null() {
+            return Element::new(
+                ElementModifier::ERROR,
+                Value::null_operation_error(">>", false),
+            );
+        }
+
+        let result = self.value.right_shift(&other.value);
+        match result {
+            Some(val) => Element::new(ElementModifier::NONE, val),
+            None => Element::new(
+                ElementModifier::ERROR,
+                Value::binary_operation_error(">>", &self.value.get_type_repr(), &other.value.get_type_repr()),
+            )
+        }
+    }
+    
     /// Performs an assignation (elt = other) with another [`Element`].
     /// 
     /// # Returns

@@ -414,6 +414,42 @@ impl ValueTrait for ValueInt {
         }
     }
 
+    fn left_shift(&self, other: &Value) -> Option<Value> {
+        match other {
+            Value::Int(v) => Some(Value::Int(ValueInt::with_value(
+                if v.value.unwrap() < 0 { 0 } else { self.value.unwrap() << v.value().unwrap() }
+            ))),
+
+            Value::UInt(v) => Some(Value::Int(ValueInt::with_value(
+                self.value.unwrap() << v.value().unwrap()
+            ))),
+
+            Value::Char(v) => Some(Value::Int(ValueInt::with_value(
+                self.value.unwrap() << v.value().unwrap()
+            ))),
+
+            _ => None,
+        }
+    }
+
+    fn right_shift(&self, other: &Value) -> Option<Value> {
+        match other {
+            Value::Int(v) => Some(Value::Int(ValueInt::with_value(
+                if v.value.unwrap() < 0 { 0 } else { self.value.unwrap() >> v.value().unwrap() }
+            ))),
+
+            Value::UInt(v) => Some(Value::Int(ValueInt::with_value(
+                self.value.unwrap() >> v.value().unwrap()
+            ))),
+
+            Value::Char(v) => Some(Value::Int(ValueInt::with_value(
+                self.value.unwrap() >> v.value().unwrap()
+            ))),
+
+            _ => None,
+        }
+    }
+
     fn assign(&mut self, other: &Value) -> Option<Value> {
         match other {
             Value::Null(_) => {
