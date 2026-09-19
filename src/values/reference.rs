@@ -1,5 +1,6 @@
 use crate::bytecodes::types::ApicaTypeBytecode;
 use crate::values::bool::ValueBool;
+use crate::values::common;
 use crate::values::string::ValueString;
 use crate::values::value::{Value, ValueTrait};
 use crate::values::value_type::ValueType;
@@ -78,8 +79,16 @@ impl ValueTrait for ValueReference {
         None
     }
 
-    fn times(&self, _other: &Value) -> Option<Value> {
-        None
+    fn times(&self, _other: &Value) -> Result<Option<Value>, ()> {
+        Ok(None)
+    }
+
+    fn divide(&self, _other: &Value) -> Result<Option<Value>, ()> {
+        Ok(None)
+    }
+
+    fn modulo(&self, _other: &Value) -> Result<Option<Value>, ()> {
+        Ok(None)
     }
 
     fn unary_not(&self) -> Option<Value> {
@@ -142,12 +151,28 @@ impl ValueTrait for ValueReference {
         }
     }
 
-    fn left_shift(&self, _other: &Value) -> Option<Value> {
-        None
+    fn logical_or(&self, other: &Value) -> Value {
+        if self.address.is_some() {
+            return Value::Bool(ValueBool::with_value(true));
+        }
+        
+        common::boolean_state(other)
     }
 
-    fn right_shift(&self, _other: &Value) -> Option<Value> {
-        None
+    fn logical_and(&self, other: &Value) -> Value {
+        if self.address.is_none() {
+            return Value::Bool(ValueBool::with_value(false));
+        }
+        
+        common::boolean_state(other)
+    }
+
+    fn left_shift(&self, _other: &Value) -> Result<Option<Value>, ()> {
+        Ok(None)
+    }
+
+    fn right_shift(&self, _other: &Value) -> Result<Option<Value>, ()> {
+        Ok(None)
     }
 
     fn assign(&mut self, other: &Value) -> Option<Value> {

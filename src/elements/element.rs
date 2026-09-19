@@ -201,11 +201,17 @@ impl Element {
 
         let result = self.value.times(&other.value);
         match result {
-            Some(val) => Element::new(ElementModifier::NONE, val),
-            None => Element::new(
+            Ok(result_value) => match result_value {
+                Some(val) => Element::new(ElementModifier::NONE, val),
+                None => Element::new(
+                    ElementModifier::ERROR,
+                    Value::binary_operation_error("*", &self.value.get_type_repr(), &other.value.get_type_repr()),
+                ),
+            }
+            Err(_) => Element::new(
                 ElementModifier::ERROR,
-                Value::binary_operation_error("*", &self.value.get_type_repr(), &other.value.get_type_repr()),
-            ),
+                Value::negative_operation_error("*"),
+            )
         }
     }
 
@@ -440,6 +446,30 @@ impl Element {
             )
         }
     }
+
+    /// Performs a logical or operation (elt || other) with another [`Element`].
+    ///
+    /// # Returns
+    ///
+    /// A new [`Element`] representing the result of the logical or operation.
+    pub fn logical_or(&self, other: &Element) -> Element {
+        Element::new(
+            ElementModifier::NONE,
+            self.value.logical_or(&other.value),
+        )
+    }
+
+    /// Performs a logical and operation (elt && other) with another [`Element`].
+    ///
+    /// # Returns
+    ///
+    /// A new [`Element`] representing the result of the logical and operation.
+    pub fn logical_and(&self, other: &Element) -> Element {
+        Element::new(
+            ElementModifier::NONE,
+            self.value.logical_and(&other.value),
+        )
+    }
     
     /// Performs a left-shift operation (elt << other) with another [`Element`].
     /// 
@@ -455,11 +485,18 @@ impl Element {
         }
         
         let result = self.value.left_shift(&other.value);
-        match result { 
-            Some(val) => Element::new(ElementModifier::NONE, val),
-            None => Element::new(
+        match result {
+            Ok(result_value) => match result_value {
+                Some(val) => Element::new(ElementModifier::NONE, val),
+                None => Element::new(
+                    ElementModifier::ERROR,
+                    Value::binary_operation_error("<<", &self.value.get_type_repr(), &other.value.get_type_repr()),
+                )
+            },
+
+            Err(_) => Element::new(
                 ElementModifier::ERROR,
-                Value::binary_operation_error("<<", &self.value.get_type_repr(), &other.value.get_type_repr()),
+                Value::zero_operation_error("<<"),
             )
         }
     }
@@ -479,10 +516,17 @@ impl Element {
 
         let result = self.value.right_shift(&other.value);
         match result {
-            Some(val) => Element::new(ElementModifier::NONE, val),
-            None => Element::new(
+            Ok(result_value) => match result_value {
+                Some(val) => Element::new(ElementModifier::NONE, val),
+                None => Element::new(
+                    ElementModifier::ERROR,
+                    Value::binary_operation_error(">>", &self.value.get_type_repr(), &other.value.get_type_repr()),
+                )
+            },
+
+            Err(_) => Element::new(
                 ElementModifier::ERROR,
-                Value::binary_operation_error(">>", &self.value.get_type_repr(), &other.value.get_type_repr()),
+                Value::zero_operation_error(">>"),
             )
         }
     }

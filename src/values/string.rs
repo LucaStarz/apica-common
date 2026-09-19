@@ -1,5 +1,6 @@
 ﻿use crate::bytecodes::types::ApicaTypeBytecode;
 use crate::values::bool::ValueBool;
+use crate::values::common;
 use crate::values::value::{Value, ValueTrait};
 use crate::values::value_type::ValueType;
 
@@ -108,26 +109,39 @@ impl ValueTrait for ValueString {
         None
     }
 
-    fn times(&self, other: &Value) -> Option<Value> {
+    fn times(&self, other: &Value) -> Result<Option<Value>, ()> {
         match other {
             Value::Int(v) => {
                 let val = v.value().unwrap();
                 let s = if val < 0 {
-                    String::new()
+                    return Err(());
                 } else {
                     self.value.as_ref().unwrap().repeat(val as usize)
                 };
                 
-                Some(Value::String(ValueString::with_value(s)))
+                Ok(Some(Value::String(ValueString::with_value(s))))
             },
             
             Value::UInt(v) => {
                 let s = self.value.as_ref().unwrap().repeat(v.value().unwrap() as usize);
-                Some(Value::String(ValueString::with_value(s)))
+                Ok(Some(Value::String(ValueString::with_value(s))))
+            },
+            
+            Value::Char(v) => {
+                let s = self.value.as_ref().unwrap().repeat(v.value().unwrap() as usize);
+                Ok(Some(Value::String(ValueString::with_value(s))))
             },
 
-            _ => None,
+            _ => Ok(None),
         }
+    }
+
+    fn divide(&self, _other: &Value) -> Result<Option<Value>, ()> {
+        Ok(None)
+    }
+
+    fn modulo(&self, _other: &Value) -> Result<Option<Value>, ()> {
+        Ok(None)
     }
 
     fn unary_not(&self) -> Option<Value> {
@@ -199,12 +213,28 @@ impl ValueTrait for ValueString {
         }
     }
 
-    fn left_shift(&self, _other: &Value) -> Option<Value> {
-        None
+    fn logical_or(&self, other: &Value) -> Value {
+        if !self.value().unwrap_or("").is_empty() {
+            return Value::Bool(ValueBool::with_value(true));
+        }
+        
+        common::boolean_state(other)
     }
 
-    fn right_shift(&self, _other: &Value) -> Option<Value> {
-        None
+    fn logical_and(&self, other: &Value) -> Value {
+        if self.value().unwrap_or("").is_empty() {
+            return Value::Bool(ValueBool::with_value(false));
+        }
+        
+        common::boolean_state(other)
+    }
+
+    fn left_shift(&self, _other: &Value) -> Result<Option<Value>, ()> {
+        Ok(None)
+    }
+
+    fn right_shift(&self, _other: &Value) -> Result<Option<Value>, ()> {
+        Ok(None)
     }
 
     fn assign(&mut self, other: &Value) -> Option<Value> {

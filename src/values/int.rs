@@ -1,6 +1,7 @@
 ﻿use crate::bytecodes::types::ApicaTypeBytecode;
 use crate::values::bool::ValueBool;
 use crate::values::char::ValueChar;
+use crate::values::common;
 use crate::values::float::ValueFloat;
 use crate::values::string::ValueString;
 use crate::values::uint::ValueUInt;
@@ -131,29 +132,81 @@ impl ValueTrait for ValueInt {
         Some(Value::Int(ValueInt::with_value(*val_ref)))
     }
 
-    fn times(&self, other: &Value) -> Option<Value> {
+    fn times(&self, other: &Value) -> Result<Option<Value>, ()> {
         match other {
-            Value::Int(v) => Some(Value::Int(ValueInt::with_value(
+            Value::Int(v) => Ok(Some(Value::Int(ValueInt::with_value(
                 self.value.unwrap() * v.value.unwrap()
-            ))),
+            )))),
 
-            Value::UInt(v) => Some(Value::Int(ValueInt::with_value(
+            Value::UInt(v) => Ok(Some(Value::Int(ValueInt::with_value(
                 self.value.unwrap() * v.value().unwrap() as i64
-            ))),
+            )))),
 
-            Value::Float(v) => Some(Value::Float(ValueFloat::with_value(
+            Value::Float(v) => Ok(Some(Value::Float(ValueFloat::with_value(
                 self.value.unwrap() as f64 * v.value().unwrap()
-            ))),
+            )))),
 
-            Value::Bool(v) => Some(Value::Int(ValueInt::with_value(
+            Value::Bool(v) => Ok(Some(Value::Int(ValueInt::with_value(
                 self.value.unwrap() * v.value().unwrap() as i64
-            ))),
+            )))),
 
-            Value::Char(v) => Some(Value::Int(ValueInt::with_value(
+            Value::Char(v) => Ok(Some(Value::Int(ValueInt::with_value(
                 self.value.unwrap() * v.value().unwrap() as i64
-            ))),
+            )))),
 
-            _ => None,
+            _ => Ok(None),
+        }
+    }
+
+    fn divide(&self, other: &Value) -> Result<Option<Value>, ()> {
+        match other {
+            Value::Bool(v) => if v.value().unwrap() {
+                Ok(Some(Value::Int(self.clone())))
+            } else { Err(()) },
+
+            Value::Int(v) => if v.value().unwrap() != 0 {
+                Ok(Some(Value::Int(ValueInt::with_value(self.value.unwrap() / v.value().unwrap()))))
+            } else { Err(()) },
+
+            Value::UInt(v) => if v.value().unwrap() != 0 {
+                Ok(Some(Value::Int(ValueInt::with_value(self.value.unwrap() / v.value().unwrap() as i64))))
+            } else { Err(()) },
+
+            Value::Float(v) => if v.value().unwrap() != 0.0 {
+                Ok(Some(Value::Float(ValueFloat::with_value(self.value.unwrap() as f64 / v.value().unwrap()))))
+            } else { Err(()) },
+
+            Value::Char(v) => if v.value().unwrap() != 0 {
+                Ok(Some(Value::Int(ValueInt::with_value(self.value.unwrap() / v.value().unwrap() as i64))))
+            } else { Err(()) },
+
+            _ => Ok(None),
+        }
+    }
+
+    fn modulo(&self, other: &Value) -> Result<Option<Value>, ()> {
+        match other {
+            Value::Bool(v) => if v.value().unwrap() {
+                Ok(Some(Value::Int(ValueInt::with_value(0))))
+            } else { Err(()) },
+
+            Value::Int(v) => if v.value().unwrap() != 0 {
+                Ok(Some(Value::Int(ValueInt::with_value(self.value.unwrap() % v.value().unwrap()))))
+            } else { Err(()) },
+
+            Value::UInt(v) => if v.value().unwrap() != 0 {
+                Ok(Some(Value::Int(ValueInt::with_value(self.value.unwrap() % v.value().unwrap() as i64))))
+            } else { Err(()) },
+
+            Value::Float(v) => if v.value().unwrap() != 0.0 {
+                Ok(Some(Value::Float(ValueFloat::with_value(self.value.unwrap() as f64 % v.value().unwrap()))))
+            } else { Err(()) },
+
+            Value::Char(v) => if v.value().unwrap() != 0 {
+                Ok(Some(Value::Int(ValueInt::with_value(self.value.unwrap() % v.value().unwrap() as i64))))
+            } else { Err(()) },
+
+            _ => Ok(None),
         }
     }
 
@@ -414,39 +467,47 @@ impl ValueTrait for ValueInt {
         }
     }
 
-    fn left_shift(&self, other: &Value) -> Option<Value> {
+    fn logical_or(&self, other: &Value) -> Value {
+        if self.value.unwrap_or(0) != 0 {
+            return Value::Bool(ValueBool::with_value(true));
+        }
+
+        common::boolean_state(other)
+    }
+
+    fn logical_and(&self, other: &Value) -> Value {
+        if self.value.unwrap_or(0) == 0 {
+            return Value::Bool(ValueBool::with_value(false));
+        }
+
+        common::boolean_state(other)
+    }
+
+    fn left_shift(&self, other: &Value) -> Result<Option<Value>, ()> {
         match other {
-            Value::Int(v) => Some(Value::Int(ValueInt::with_value(
-                if v.value.unwrap() < 0 { 0 } else { self.value.unwrap() << v.value().unwrap() }
-            ))),
+            Value::Int(v) => if v.value.unwrap() < 0 { Err(()) } else {
+                Ok(Some(Value::Int(ValueInt::with_value(self.value.unwrap() << v.value().unwrap()))))
+            },
 
-            Value::UInt(v) => Some(Value::Int(ValueInt::with_value(
-                self.value.unwrap() << v.value().unwrap()
-            ))),
+            Value::UInt(v) => Ok(Some(Value::Int(ValueInt::with_value(self.value.unwrap() << v.value().unwrap())))),
 
-            Value::Char(v) => Some(Value::Int(ValueInt::with_value(
-                self.value.unwrap() << v.value().unwrap()
-            ))),
+            Value::Char(v) => Ok(Some(Value::Int(ValueInt::with_value(self.value.unwrap() << v.value().unwrap())))),
 
-            _ => None,
+            _ => Ok(None),
         }
     }
 
-    fn right_shift(&self, other: &Value) -> Option<Value> {
+    fn right_shift(&self, other: &Value) -> Result<Option<Value>, ()> {
         match other {
-            Value::Int(v) => Some(Value::Int(ValueInt::with_value(
-                if v.value.unwrap() < 0 { 0 } else { self.value.unwrap() >> v.value().unwrap() }
-            ))),
+            Value::Int(v) => if v.value.unwrap() < 0 { Err(()) } else {
+                Ok(Some(Value::Int(ValueInt::with_value(self.value.unwrap() >> v.value().unwrap()))))
+            },
 
-            Value::UInt(v) => Some(Value::Int(ValueInt::with_value(
-                self.value.unwrap() >> v.value().unwrap()
-            ))),
+            Value::UInt(v) => Ok(Some(Value::Int(ValueInt::with_value(self.value.unwrap() >> v.value().unwrap())))),
 
-            Value::Char(v) => Some(Value::Int(ValueInt::with_value(
-                self.value.unwrap() >> v.value().unwrap()
-            ))),
+            Value::Char(v) => Ok(Some(Value::Int(ValueInt::with_value(self.value.unwrap() >> v.value().unwrap())))),
 
-            _ => None,
+            _ => Ok(None),
         }
     }
 

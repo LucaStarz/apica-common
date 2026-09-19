@@ -1,6 +1,7 @@
 ﻿use crate::bytecodes::types::ApicaTypeBytecode;
 use crate::values::bool::ValueBool;
 use crate::values::char::ValueChar;
+use crate::values::common;
 use crate::values::error::ValueError;
 use crate::values::float::ValueFloat;
 use crate::values::int::ValueInt;
@@ -62,8 +63,16 @@ impl ValueTrait for ValueNull {
         None
     }
 
-    fn times(&self, _other: &Value) -> Option<Value> {
-        None
+    fn times(&self, _other: &Value) -> Result<Option<Value>, ()> {
+        Ok(None)
+    }
+
+    fn divide(&self, _other: &Value) -> Result<Option<Value>, ()> {
+        Ok(None)
+    }
+
+    fn modulo(&self, _other: &Value) -> Result<Option<Value>, ()> {
+        Ok(None)
     }
 
     fn unary_not(&self) -> Option<Value> {
@@ -110,12 +119,20 @@ impl ValueTrait for ValueNull {
         Some(Value::Bool(ValueBool::with_value(!other.is_null())))
     }
 
-    fn left_shift(&self, _other: &Value) -> Option<Value> {
-        None
+    fn logical_or(&self, other: &Value) -> Value {
+        common::boolean_state(other)
     }
 
-    fn right_shift(&self, _other: &Value) -> Option<Value> {
-        None
+    fn logical_and(&self, _other: &Value) -> Value {
+        Value::Bool(ValueBool::with_value(false))
+    }
+
+    fn left_shift(&self, _other: &Value) -> Result<Option<Value>, ()> {
+        Ok(None)
+    }
+
+    fn right_shift(&self, _other: &Value) -> Result<Option<Value>, ()> {
+        Ok(None)
     }
 
     fn assign(&mut self, _other: &Value) -> Option<Value> {

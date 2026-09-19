@@ -105,4 +105,13 @@ pub enum ApicaBuiltinFunctionBytecode {
 
     /// Get the actual timestamp, in milliseconds.
     GetActualMilliTimestamp =       0x00000020,
+
+    /// Load a shader into GPU memory.
+    LoadShader =                    0x00000021,
+
+    /// Unload a shader from GPU memory.
+    UnloadShader =                  0x00000022,
+
+    /// Use a specific shader for following draw-calls.
+    UseShader =                     0x00000023,
 }

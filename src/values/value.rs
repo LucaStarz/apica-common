@@ -22,7 +22,9 @@ pub trait ValueTrait {
     fn subtract(&self, other: &Value) -> Option<Value>;
     fn decrement(&mut self) -> Option<Value>;
     fn left_decrement(&mut self) -> Option<Value>;
-    fn times(&self, other: &Value) -> Option<Value>;
+    fn times(&self, other: &Value) -> Result<Option<Value>, ()>;
+    fn divide(&self, other: &Value) -> Result<Option<Value>, ()>;
+    fn modulo(&self, other: &Value) -> Result<Option<Value>, ()>;
 
     fn unary_not(&self) -> Option<Value>;
     fn bitwise_not(&self) -> Option<Value>;
@@ -36,9 +38,11 @@ pub trait ValueTrait {
     fn greater_or_equal(&self, other: &Value) -> Option<Value>;
     fn equals(&self, other: &Value) -> Option<Value>;
     fn not_equals(&self, other: &Value) -> Option<Value>;
+    fn logical_or(&self, other: &Value) -> Value;
+    fn logical_and(&self, other: &Value) -> Value;
     
-    fn left_shift(&self, other: &Value) -> Option<Value>;
-    fn right_shift(&self, other: &Value) -> Option<Value>;
+    fn left_shift(&self, other: &Value) -> Result<Option<Value>, ()>;
+    fn right_shift(&self, other: &Value) -> Result<Option<Value>, ()>;
 
     fn assign(&mut self, other: &Value) -> Option<Value>;
     
@@ -86,15 +90,29 @@ impl Value {
     
     pub fn constant_operation_error(op: &str) -> Value {
         Value::Error(Box::from(ValueError::with_details(
-            String::from("ConstantError"),
+            String::from("OperationError"),
             format!("Cannot perform binary operation `{}` with a constant", op)
         )))
     }
 
     pub fn not_nullable_error(op: &str) -> Value {
         Value::Error(Box::from(ValueError::with_details(
-            String::from("NotNullableError"),
-            format!("Cannot perform operation `{}` with a not-nullable variable", op)
+            String::from("OperationError"),
+            format!("Cannot perform operation `{}` with a non-nullable variable", op)
+        )))
+    }
+    
+    pub fn negative_operation_error(op: &str) -> Value {
+        Value::Error(Box::from(ValueError::with_details(
+            String::from("OperationError"),
+            format!("Cannot perform operation `{}` with a negative number as right operand", op)
+        )))
+    }
+    
+    pub fn zero_operation_error(op: &str) -> Value {
+        Value::Error(Box::from(ValueError::with_details(
+            String::from("OperationError"),
+            format!("Cannot perform operation `{}` with 0 as right operand", op)
         )))
     }
 
@@ -270,7 +288,7 @@ impl ValueTrait for Value {
         }
     }
 
-    fn times(&self, other: &Value) -> Option<Value> {
+    fn times(&self, other: &Value) -> Result<Option<Value>, ()> {
         match self { 
             Value::Null(v) => v.times(other),
             Value::Int(v) => v.times(other),
@@ -282,6 +300,36 @@ impl ValueTrait for Value {
             Value::Error(v) => v.times(other),
             Value::Type(v) => v.times(other),
             Value::Reference(v) => v.times(other),
+        }
+    }
+
+    fn divide(&self, other: &Value) -> Result<Option<Value>, ()> {
+        match self { 
+            Value::Null(v) => v.divide(other),
+            Value::Int(v) => v.divide(other),
+            Value::UInt(v) => v.divide(other),
+            Value::Float(v) => v.divide(other),
+            Value::Bool(v) => v.divide(other),
+            Value::Char(v) => v.divide(other),
+            Value::String(v) => v.divide(other),
+            Value::Error(v) => v.divide(other),
+            Value::Type(v) => v.divide(other),
+            Value::Reference(v) => v.divide(other),
+        }
+    }
+
+    fn modulo(&self, other: &Value) -> Result<Option<Value>, ()> {
+        match self { 
+            Value::Null(v) => v.modulo(other),
+            Value::Int(v) => v.modulo(other),
+            Value::UInt(v) => v.modulo(other),
+            Value::Float(v) => v.modulo(other),
+            Value::Bool(v) => v.modulo(other),
+            Value::Char(v) => v.modulo(other),
+            Value::String(v) => v.modulo(other),
+            Value::Error(v) => v.modulo(other),
+            Value::Type(v) => v.modulo(other),
+            Value::Reference(v) => v.modulo(other),
         }
     }
 
@@ -450,7 +498,37 @@ impl ValueTrait for Value {
         }
     }
 
-    fn left_shift(&self, other: &Value) -> Option<Value> {
+    fn logical_or(&self, other: &Value) -> Value {
+        match self { 
+            Value::Null(v) => v.logical_or(other),
+            Value::Int(v) => v.logical_or(other),
+            Value::UInt(v) => v.logical_or(other),
+            Value::Float(v) => v.logical_or(other),
+            Value::Bool(v) => v.logical_or(other),
+            Value::Char(v) => v.logical_or(other),
+            Value::String(v) => v.logical_or(other),
+            Value::Error(v) => v.logical_or(other),
+            Value::Type(v) => v.logical_or(other),
+            Value::Reference(v) => v.logical_or(other),
+        }
+    }
+
+    fn logical_and(&self, other: &Value) -> Value {
+        match self { 
+            Value::Null(v) => v.logical_and(other),
+            Value::Int(v) => v.logical_and(other),
+            Value::UInt(v) => v.logical_and(other),
+            Value::Float(v) => v.logical_and(other),
+            Value::Bool(v) => v.logical_and(other),
+            Value::Char(v) => v.logical_and(other),
+            Value::String(v) => v.logical_and(other),
+            Value::Error(v) => v.logical_and(other),
+            Value::Type(v) => v.logical_and(other),
+            Value::Reference(v) => v.logical_and(other),
+        }
+    }
+
+    fn left_shift(&self, other: &Value) -> Result<Option<Value>, ()> {
         match self { 
             Value::Null(v) => v.left_shift(other),
             Value::Int(v) => v.left_shift(other),
@@ -465,7 +543,7 @@ impl ValueTrait for Value {
         }
     }
 
-    fn right_shift(&self, other: &Value) -> Option<Value> {
+    fn right_shift(&self, other: &Value) -> Result<Option<Value>, ()> {
         match self { 
             Value::Null(v) => v.right_shift(other),
             Value::Int(v) => v.right_shift(other),
