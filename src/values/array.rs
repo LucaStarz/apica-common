@@ -71,7 +71,7 @@ impl ValueTrait for ValueArray {
 
     fn get_type_repr(&self) -> String {
         let inner = self.contained.inner_repr();
-        format!("array<{}>", inner)
+        format!("array{}", inner)
     }
 
     fn show(&self, end: char) {

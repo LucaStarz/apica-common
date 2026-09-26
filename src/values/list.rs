@@ -70,7 +70,7 @@ impl ValueTrait for ValueList {
 
     fn get_type_repr(&self) -> String {
         let inner = self.contained.inner_repr();
-        format!("list<{}>", inner)
+        format!("list{}", inner)
     }
 
     fn show(&self, end: char) {

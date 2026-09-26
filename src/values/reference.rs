@@ -37,7 +37,7 @@ impl ValueTrait for ValueReference {
 
     fn get_type_repr(&self) -> String {
         let inner = self.contained.inner_repr();
-        format!("reference<{}>", inner)
+        format!("reference{}", inner)
     }
 
     fn show(&self, end: char) {
