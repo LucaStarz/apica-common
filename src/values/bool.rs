@@ -1,4 +1,5 @@
-﻿use crate::bytecodes::types::ApicaTypeBytecode;
+﻿use crate::bytecodes::builtin_method::ApicaBuiltinMethodBytecode;
+use crate::bytecodes::types::ApicaTypeBytecode;
 use crate::values::char::ValueChar;
 use crate::values::common;
 use crate::values::float::ValueFloat;
@@ -455,18 +456,18 @@ impl ValueTrait for ValueBool {
 
     fn logical_or(&self, other: &Value) -> Value {
         if self.value.unwrap_or(false) {
-            return Value::Bool(ValueBool::with_value(true))
+            Value::Bool(ValueBool::with_value(true))
+        } else {
+            common::boolean_state(other)   
         }
-        
-        common::boolean_state(other)
     }
 
     fn logical_and(&self, other: &Value) -> Value {
         if !self.value.unwrap_or(false) {
-            return Value::Bool(ValueBool::with_value(false))
+            Value::Bool(ValueBool::with_value(false))
+        } else {
+            common::boolean_state(other)
         }
-
-        common::boolean_state(other)
     }
 
     fn left_shift(&self, _other: &Value) -> Result<Option<Value>, ()> {
@@ -522,6 +523,12 @@ impl ValueTrait for ValueBool {
             },
             
             _ => None,
+        }
+    }
+
+    fn access(&mut self, method: ApicaBuiltinMethodBytecode) -> Option<Value> {
+        match method { 
+            _ => None
         }
     }
 

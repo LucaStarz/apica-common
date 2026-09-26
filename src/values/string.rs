@@ -1,6 +1,8 @@
-﻿use crate::bytecodes::types::ApicaTypeBytecode;
+﻿use crate::bytecodes::builtin_method::ApicaBuiltinMethodBytecode;
+use crate::bytecodes::types::ApicaTypeBytecode;
 use crate::values::bool::ValueBool;
 use crate::values::common;
+use crate::values::uint::ValueUInt;
 use crate::values::value::{Value, ValueTrait};
 use crate::values::value_type::ValueType;
 
@@ -215,18 +217,18 @@ impl ValueTrait for ValueString {
 
     fn logical_or(&self, other: &Value) -> Value {
         if !self.value().unwrap_or("").is_empty() {
-            return Value::Bool(ValueBool::with_value(true));
+            Value::Bool(ValueBool::with_value(true))
+        } else {
+            common::boolean_state(other)   
         }
-        
-        common::boolean_state(other)
     }
 
     fn logical_and(&self, other: &Value) -> Value {
         if self.value().unwrap_or("").is_empty() {
-            return Value::Bool(ValueBool::with_value(false));
+            Value::Bool(ValueBool::with_value(false))
+        } else {
+            common::boolean_state(other)   
         }
-        
-        common::boolean_state(other)
     }
 
     fn left_shift(&self, _other: &Value) -> Result<Option<Value>, ()> {
@@ -251,6 +253,15 @@ impl ValueTrait for ValueString {
                 };
                 Some(Value::String(self.clone()))
             },
+            
+            _ => None,
+        }
+    }
+
+    fn access(&mut self, method: ApicaBuiltinMethodBytecode) -> Option<Value> {
+        match method { 
+            ApicaBuiltinMethodBytecode::Length => Some(Value::UInt(ValueUInt::with_value(self.value().unwrap().len() as u64))),
+            ApicaBuiltinMethodBytecode::Empty => Some(Value::Bool(ValueBool::with_value(self.value().unwrap().is_empty()))),
             
             _ => None,
         }

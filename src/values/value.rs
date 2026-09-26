@@ -1,9 +1,12 @@
-﻿use crate::bytecodes::types::ApicaTypeBytecode;
+﻿use crate::bytecodes::builtin_method::ApicaBuiltinMethodBytecode;
+use crate::bytecodes::types::ApicaTypeBytecode;
+use crate::values::array::ValueArray;
 use crate::values::bool::ValueBool;
 use crate::values::char::ValueChar;
 use crate::values::error::ValueError;
 use crate::values::float::ValueFloat;
 use crate::values::int::ValueInt;
+use crate::values::list::ValueList;
 use crate::values::null::ValueNull;
 use crate::values::reference::ValueReference;
 use crate::values::string::ValueString;
@@ -45,7 +48,9 @@ pub trait ValueTrait {
     fn right_shift(&self, other: &Value) -> Result<Option<Value>, ()>;
 
     fn assign(&mut self, other: &Value) -> Option<Value>;
-    
+
+    fn access(&mut self, method: ApicaBuiltinMethodBytecode) -> Option<Value>;
+
     fn convert(&self, to: &ValueType, is_nullable: bool) -> Option<Value>;
     fn auto_convert(&self, to: &ValueType, is_nullable: bool) -> Option<Value>;
 }
@@ -62,6 +67,8 @@ pub enum Value {
     Error(Box<ValueError>),
     Type(Box<ValueType>),
     Reference(Box<ValueReference>),
+    Array(Box<ValueArray>),
+    List(Box<ValueList>),
 }
 
 impl Value {
@@ -116,6 +123,13 @@ impl Value {
         )))
     }
 
+    pub fn undefined_method_error(operand: &str, method: &str) -> Value {
+        Value::Error(Box::from(ValueError::with_details(
+            String::from("UndefinedMethodError"),
+            format!("Method `{}` is not defined for type <{}>", method, operand)
+        )))
+    }
+
     pub fn value_type(&self) -> ValueType {
         match self {
             Value::Null(_) => ValueType::new(ApicaTypeBytecode::Null, true),
@@ -130,6 +144,18 @@ impl Value {
             
             Value::Reference(v) => ValueType::with_contained(
                 ApicaTypeBytecode::Reference, 
+                true,
+                vec![v.contained().clone()],
+            ),
+            
+            Value::Array(v) => ValueType::with_contained(
+                ApicaTypeBytecode::Array,
+                true,
+                vec![v.contained().clone()],
+            ),
+            
+            Value::List(v) => ValueType::with_contained(
+                ApicaTypeBytecode::List,
                 true,
                 vec![v.contained().clone()],
             ),
@@ -150,6 +176,8 @@ impl ValueTrait for Value {
             Value::Error(v) => v.is_null(),
             Value::Type(v) => v.is_null(),
             Value::Reference(v) => v.is_null(),
+            Value::Array(v) => v.is_null(),
+            Value::List(v) => v.is_null(),
         }
     }
 
@@ -165,6 +193,8 @@ impl ValueTrait for Value {
             Value::Error(v) => v.get_type_repr(),
             Value::Type(v) => v.get_type_repr(),
             Value::Reference(v) => v.get_type_repr(),
+            Value::Array(v) => v.get_type_repr(),
+            Value::List(v) => v.get_type_repr(),
         }
     }
 
@@ -180,6 +210,8 @@ impl ValueTrait for Value {
             Value::Error(v) => v.show(end),
             Value::Type(v) => v.show(end),
             Value::Reference(v) => v.show(end),
+            Value::Array(v) => v.show(end),
+            Value::List(v) => v.show(end),
         }
     }
 
@@ -195,6 +227,8 @@ impl ValueTrait for Value {
             Value::Error(v) => v.repr(),
             Value::Type(v) => v.repr(),
             Value::Reference(v) => v.repr(),
+            Value::Array(v) => v.repr(),
+            Value::List(v) => v.repr(),
         }
     }
 
@@ -210,6 +244,8 @@ impl ValueTrait for Value {
             Value::Error(v) => v.add(other),
             Value::Type(v) => v.add(other),
             Value::Reference(v) => v.add(other),
+            Value::Array(v) => v.add(other),
+            Value::List(v) => v.add(other),
         }
     }
 
@@ -225,6 +261,8 @@ impl ValueTrait for Value {
             Value::Error(v) => v.increment(),
             Value::Type(v) => v.increment(),
             Value::Reference(v) => v.increment(),
+            Value::Array(v) => v.increment(),
+            Value::List(v) => v.increment(),
         }
     }
 
@@ -240,6 +278,8 @@ impl ValueTrait for Value {
             Value::Error(v) => v.left_increment(),
             Value::Type(v) => v.left_increment(),
             Value::Reference(v) => v.left_increment(),
+            Value::Array(v) => v.left_increment(),
+            Value::List(v) => v.left_increment(),
         }
     }
 
@@ -255,6 +295,8 @@ impl ValueTrait for Value {
             Value::Error(v) => v.subtract(other),
             Value::Type(v) => v.subtract(other),
             Value::Reference(v) => v.subtract(other),
+            Value::Array(v) => v.subtract(other),
+            Value::List(v) => v.subtract(other),
         }
     }
 
@@ -270,6 +312,8 @@ impl ValueTrait for Value {
             Value::Error(v) => v.decrement(),
             Value::Type(v) => v.decrement(),
             Value::Reference(v) => v.decrement(),
+            Value::Array(v) => v.decrement(),
+            Value::List(v) => v.decrement(),
         }
     }
 
@@ -285,6 +329,8 @@ impl ValueTrait for Value {
             Value::Error(v) => v.left_decrement(),
             Value::Type(v) => v.left_decrement(),
             Value::Reference(v) => v.left_decrement(),
+            Value::Array(v) => v.left_decrement(),
+            Value::List(v) => v.left_decrement(),
         }
     }
 
@@ -300,6 +346,8 @@ impl ValueTrait for Value {
             Value::Error(v) => v.times(other),
             Value::Type(v) => v.times(other),
             Value::Reference(v) => v.times(other),
+            Value::Array(v) => v.times(other),
+            Value::List(v) => v.times(other),
         }
     }
 
@@ -315,6 +363,8 @@ impl ValueTrait for Value {
             Value::Error(v) => v.divide(other),
             Value::Type(v) => v.divide(other),
             Value::Reference(v) => v.divide(other),
+            Value::Array(v) => v.divide(other),
+            Value::List(v) => v.divide(other),
         }
     }
 
@@ -330,6 +380,8 @@ impl ValueTrait for Value {
             Value::Error(v) => v.modulo(other),
             Value::Type(v) => v.modulo(other),
             Value::Reference(v) => v.modulo(other),
+            Value::Array(v) => v.modulo(other),
+            Value::List(v) => v.modulo(other),
         }
     }
 
@@ -345,6 +397,8 @@ impl ValueTrait for Value {
             Value::Error(v) => v.unary_not(),
             Value::Type(v) => v.unary_not(),
             Value::Reference(v) => v.unary_not(),
+            Value::Array(v) => v.unary_not(),
+            Value::List(v) => v.unary_not(),
         }
     }
 
@@ -360,6 +414,8 @@ impl ValueTrait for Value {
             Value::Error(v) => v.bitwise_not(),
             Value::Type(v) => v.bitwise_not(),
             Value::Reference(v) => v.bitwise_not(),
+            Value::Array(v) => v.bitwise_not(),
+            Value::List(v) => v.bitwise_not(),
         }
     }
 
@@ -375,6 +431,8 @@ impl ValueTrait for Value {
             Value::Error(v) => v.bitwise_or(other),
             Value::Type(v) => v.bitwise_or(other),
             Value::Reference(v) => v.bitwise_or(other),
+            Value::Array(v) => v.bitwise_or(other),
+            Value::List(v) => v.bitwise_or(other),
         }
     }
 
@@ -390,6 +448,8 @@ impl ValueTrait for Value {
             Value::Error(v) => v.bitwise_xor(other),
             Value::Type(v) => v.bitwise_xor(other),
             Value::Reference(v) => v.bitwise_xor(other),
+            Value::Array(v) => v.bitwise_xor(other),
+            Value::List(v) => v.bitwise_xor(other),
         }
     }
 
@@ -405,6 +465,8 @@ impl ValueTrait for Value {
             Value::Error(v) => v.bitwise_and(other),
             Value::Type(v) => v.bitwise_and(other),
             Value::Reference(v) => v.bitwise_and(other),
+            Value::Array(v) => v.bitwise_and(other),
+            Value::List(v) => v.bitwise_and(other),
         }
     }
 
@@ -420,6 +482,8 @@ impl ValueTrait for Value {
             Value::Error(v) => v.less_than(other),
             Value::Type(v) => v.less_than(other),
             Value::Reference(v) => v.less_than(other),
+            Value::Array(v) => v.less_than(other),
+            Value::List(v) => v.less_than(other),
         }
     }
 
@@ -435,6 +499,8 @@ impl ValueTrait for Value {
             Value::Error(v) => v.less_or_equal(other),
             Value::Type(v) => v.less_or_equal(other),
             Value::Reference(v) => v.less_or_equal(other),
+            Value::Array(v) => v.less_or_equal(other),
+            Value::List(v) => v.less_or_equal(other),
         }
     }
 
@@ -450,6 +516,8 @@ impl ValueTrait for Value {
             Value::Error(v) => v.greater_than(other),
             Value::Type(v) => v.greater_than(other),
             Value::Reference(v) => v.greater_than(other),
+            Value::Array(v) => v.greater_than(other),
+            Value::List(v) => v.greater_than(other),
         }
     }
 
@@ -465,6 +533,8 @@ impl ValueTrait for Value {
             Value::Error(v) => v.greater_or_equal(other),
             Value::Type(v) => v.greater_or_equal(other),
             Value::Reference(v) => v.greater_or_equal(other),
+            Value::Array(v) => v.greater_or_equal(other),
+            Value::List(v) => v.greater_or_equal(other),
         }
     }
 
@@ -480,6 +550,8 @@ impl ValueTrait for Value {
             Value::Error(v) => v.equals(other),
             Value::Type(v) => v.equals(other),
             Value::Reference(v) => v.equals(other),
+            Value::Array(v) => v.equals(other),
+            Value::List(v) => v.equals(other),
         }
     }
 
@@ -495,6 +567,8 @@ impl ValueTrait for Value {
             Value::Error(v) => v.not_equals(other),
             Value::Type(v) => v.not_equals(other),
             Value::Reference(v) => v.not_equals(other),
+            Value::Array(v) => v.not_equals(other),
+            Value::List(v) => v.not_equals(other),
         }
     }
 
@@ -510,6 +584,8 @@ impl ValueTrait for Value {
             Value::Error(v) => v.logical_or(other),
             Value::Type(v) => v.logical_or(other),
             Value::Reference(v) => v.logical_or(other),
+            Value::Array(v) => v.logical_or(other),
+            Value::List(v) => v.logical_or(other),
         }
     }
 
@@ -525,6 +601,8 @@ impl ValueTrait for Value {
             Value::Error(v) => v.logical_and(other),
             Value::Type(v) => v.logical_and(other),
             Value::Reference(v) => v.logical_and(other),
+            Value::Array(v) => v.logical_and(other),
+            Value::List(v) => v.logical_and(other),
         }
     }
 
@@ -540,6 +618,8 @@ impl ValueTrait for Value {
             Value::Error(v) => v.left_shift(other),
             Value::Type(v) => v.left_shift(other),
             Value::Reference(v) => v.left_shift(other),
+            Value::Array(v) => v.left_shift(other),
+            Value::List(v) => v.left_shift(other),
         }
     }
 
@@ -555,6 +635,8 @@ impl ValueTrait for Value {
             Value::Error(v) => v.right_shift(other),
             Value::Type(v) => v.right_shift(other),
             Value::Reference(v) => v.right_shift(other),
+            Value::Array(v) => v.right_shift(other),
+            Value::List(v) => v.right_shift(other),
         }
     }
 
@@ -570,6 +652,25 @@ impl ValueTrait for Value {
             Value::Error(v) => v.assign(other),
             Value::Type(v) => v.assign(other),
             Value::Reference(v) => v.assign(other),
+            Value::Array(v) => v.assign(other),
+            Value::List(v) => v.assign(other),
+        }
+    }
+
+    fn access(&mut self, method: ApicaBuiltinMethodBytecode) -> Option<Value> {
+        match self {
+            Value::Null(v) => v.access(method),
+            Value::Int(v) => v.access(method),
+            Value::UInt(v) => v.access(method),
+            Value::Float(v) => v.access(method),
+            Value::Bool(v) => v.access(method),
+            Value::Char(v) => v.access(method),
+            Value::String(v) => v.access(method),
+            Value::Error(v) => v.access(method),
+            Value::Type(v) => v.access(method),
+            Value::Reference(v) => v.access(method),
+            Value::Array(v) => v.access(method),
+            Value::List(v) => v.access(method),
         }
     }
 
@@ -585,6 +686,8 @@ impl ValueTrait for Value {
             Value::Error(v) => v.convert(to, is_nullable),
             Value::Type(v) => v.convert(to, is_nullable),
             Value::Reference(v) => v.convert(to, is_nullable),
+            Value::Array(v) => v.convert(to, is_nullable),
+            Value::List(v) => v.convert(to, is_nullable),
         }
     }
 
@@ -600,6 +703,8 @@ impl ValueTrait for Value {
             Value::Error(v) => v.auto_convert(to, is_nullable),
             Value::Type(v) => v.auto_convert(to, is_nullable),
             Value::Reference(v) => v.auto_convert(to, is_nullable),
+            Value::Array(v) => v.auto_convert(to, is_nullable),
+            Value::List(v) => v.auto_convert(to, is_nullable),
         }
     }
 }

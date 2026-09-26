@@ -16,7 +16,6 @@ mod tests {
     /// to ensure optimal cache locality and stack efficiency during evaluation loops.
     #[test]
     fn test_element_size() {
-        println!("size of element : {}", size_of::<Element>());
-        assert!(size_of::<Element>() <= 32);
+        assert!(size_of::<Element>() <= 32, "size of element is greater than 32 : {}", size_of::<Element>());
     }
 }

@@ -1,4 +1,5 @@
-﻿use crate::bytecodes::types::ApicaTypeBytecode;
+﻿use crate::bytecodes::builtin_method::ApicaBuiltinMethodBytecode;
+use crate::bytecodes::types::ApicaTypeBytecode;
 use crate::values::bool::ValueBool;
 use crate::values::char::ValueChar;
 use crate::values::common;
@@ -469,18 +470,18 @@ impl ValueTrait for ValueUInt {
 
     fn logical_or(&self, other: &Value) -> Value {
         if self.value.unwrap_or(0) != 0 {
-            return Value::Bool(ValueBool::with_value(true));
+            Value::Bool(ValueBool::with_value(true))
+        } else {
+            common::boolean_state(other)
         }
-
-        common::boolean_state(other)
     }
 
     fn logical_and(&self, other: &Value) -> Value {
         if self.value.unwrap_or(0) == 0 {
-            return Value::Bool(ValueBool::with_value(false));
+            Value::Bool(ValueBool::with_value(false))
+        } else {
+            common::boolean_state(other)
         }
-
-        common::boolean_state(other)
     }
 
     fn left_shift(&self, other: &Value) -> Result<Option<Value>, ()> {
@@ -554,6 +555,24 @@ impl ValueTrait for ValueUInt {
                 };
                 Some(Value::UInt(self.clone()))
             }
+
+            _ => None,
+        }
+    }
+
+    fn access(&mut self, method: ApicaBuiltinMethodBytecode) -> Option<Value> {
+        match method {
+            ApicaBuiltinMethodBytecode::BinaryRepresentation => Some(Value::String(ValueString::with_value(
+                format!("{:b}", self.value.unwrap())
+            ))),
+
+            ApicaBuiltinMethodBytecode::OctalRepresentation => Some(Value::String(ValueString::with_value(
+                format!("{:o}", self.value.unwrap())
+            ))),
+
+            ApicaBuiltinMethodBytecode::HexadecimalRepresentation => Some(Value::String(ValueString::with_value(
+                format!("{:X}", self.value.unwrap())
+            ))),
 
             _ => None,
         }

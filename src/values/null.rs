@@ -1,10 +1,13 @@
-﻿use crate::bytecodes::types::ApicaTypeBytecode;
+﻿use crate::bytecodes::builtin_method::ApicaBuiltinMethodBytecode;
+use crate::bytecodes::types::ApicaTypeBytecode;
+use crate::values::array::ValueArray;
 use crate::values::bool::ValueBool;
 use crate::values::char::ValueChar;
 use crate::values::common;
 use crate::values::error::ValueError;
 use crate::values::float::ValueFloat;
 use crate::values::int::ValueInt;
+use crate::values::list::ValueList;
 use crate::values::reference::ValueReference;
 use crate::values::string::ValueString;
 use crate::values::uint::ValueUInt;
@@ -138,6 +141,10 @@ impl ValueTrait for ValueNull {
     fn assign(&mut self, _other: &Value) -> Option<Value> {
         None
     }
+
+    fn access(&mut self, _method: ApicaBuiltinMethodBytecode) -> Option<Value> {
+        None
+    }
     
     fn convert(&self, _to: &ValueType, _is_nullable: bool) -> Option<Value> {
         None // null is AUTOMATICALLY converted
@@ -158,6 +165,14 @@ impl ValueTrait for ValueNull {
             ApicaTypeBytecode::Reference => Value::Reference(Box::new(ValueReference::new(
                 to.contained()[0].clone()
             ))),
+            
+            ApicaTypeBytecode::Array => Value::Array(Box::new(ValueArray::new(
+                to.contained()[0].clone()
+            ))),
+            
+            ApicaTypeBytecode::List => Value::List(Box::new(ValueList::new(
+                to.contained()[0].clone()
+            )))
         })
     }
 }

@@ -1,4 +1,5 @@
 ﻿use crate::bytecodes::apica::ApicaBytecode;
+use crate::bytecodes::builtin_method::ApicaBuiltinMethodBytecode;
 use crate::bytecodes::types::ApicaTypeBytecode;
 use crate::values::bool::ValueBool;
 use crate::values::common;
@@ -140,11 +141,10 @@ impl ValueType {
         match self.value {
             ApicaTypeBytecode::Any => Some(ValueType::new(ApicaTypeBytecode::Any, true)),
 
-            ApicaTypeBytecode::Null | ApicaTypeBytecode::Float
-            | ApicaTypeBytecode::String | ApicaTypeBytecode::Error | ApicaTypeBytecode::Type
-            | ApicaTypeBytecode::Reference => None,
+            ApicaTypeBytecode::Int | ApicaTypeBytecode::UnsignedInt | ApicaTypeBytecode::Bool
+            | ApicaTypeBytecode::Char => Some(self.clone()),
 
-            _ => Some(self.clone()),
+            _ => None,
         }
     }
 
@@ -163,14 +163,14 @@ impl ValueType {
         match self.value {
             ApicaTypeBytecode::Any | ApicaTypeBytecode::Null => Some(ValueType::new(ApicaTypeBytecode::Bool, false)),
 
-            ApicaTypeBytecode::Reference => match other.value {
+            ApicaTypeBytecode::Reference | ApicaTypeBytecode::Array | ApicaTypeBytecode::List => match other.value {
                 ApicaTypeBytecode::Null => Some(ValueType::new(ApicaTypeBytecode::Bool, false)),
-                ApicaTypeBytecode::Reference => if self.contained[0].type_equals(&other.contained[0]) {
+                _ if other.value == self.value => if self.contained[0].type_equals(&other.contained[0]) {
                     Some(ValueType::new(ApicaTypeBytecode::Bool, false))
                 } else { None },
 
                 _ => None,
-            }
+            },
 
             _ if self.is_number() || matches!(self.value, ApicaTypeBytecode::Bool | ApicaTypeBytecode::Char)
                 => ValueType::number_comparison_resolve_to(other, false),
@@ -227,6 +227,42 @@ impl ValueType {
                 _ => None,
             },
 
+            ApicaTypeBytecode::Array => if is_addition {
+                match other.value { 
+                    ApicaTypeBytecode::Array => if self.contained[0].type_equals(&other.contained[0]) {
+                        Some(ValueType::with_contained(ApicaTypeBytecode::Array, self.is_nullable, self.contained.clone()))
+                    } else {
+                        Some(ValueType::with_contained(ApicaTypeBytecode::Array, true, vec![
+                            ValueType::new(ApicaTypeBytecode::Any, true),
+                        ]))
+                    },
+                    
+                    ApicaTypeBytecode::List => if self.contained[0].type_equals(&other.contained[0]) {
+                        Some(ValueType::with_contained(ApicaTypeBytecode::List, self.is_nullable, self.contained.clone()))
+                    } else {
+                        Some(ValueType::with_contained(ApicaTypeBytecode::List, true, vec![
+                            ValueType::new(ApicaTypeBytecode::Any, true),
+                        ]))
+                    },
+                    
+                    _ => None,
+                }
+            } else { None },
+            
+            ApicaTypeBytecode::List => if is_addition {
+                match other.value { 
+                    ApicaTypeBytecode::Array | ApicaTypeBytecode::List => if self.contained[0].type_equals(&other.contained[0]) {
+                        Some(ValueType::with_contained(ApicaTypeBytecode::List, self.is_nullable, self.contained.clone()))
+                    } else {
+                        Some(ValueType::with_contained(ApicaTypeBytecode::List, true, vec![
+                            ValueType::new(ApicaTypeBytecode::Any, true),
+                        ]))
+                    },
+                    
+                    _ => None,
+                }
+            } else { None },
+
             _ => None,
         }
     }
@@ -257,7 +293,15 @@ impl ValueType {
                 } else { None },
 
                 _ => None,
-            }
+            },
+
+            ApicaTypeBytecode::Array | ApicaTypeBytecode::List => match other.value {
+                ApicaTypeBytecode::Array | ApicaTypeBytecode::List => if self.contained[0].type_equals(&other.contained()[0]) {
+                    Some(self.clone())
+                } else { None },
+
+                _ => None,
+            },
 
             _ if self.is_number() && (other.is_number() || other.value == ApicaTypeBytecode::Null)
                 => Some(self.clone()),
@@ -313,7 +357,15 @@ impl ValueType {
             
             ApicaTypeBytecode::Reference => match to.value { 
                 ApicaTypeBytecode::Any => true,
+                ApicaTypeBytecode::Bool | ApicaTypeBytecode::String | ApicaTypeBytecode::Type => !is_auto,
                 ApicaTypeBytecode::Reference => self.contained[0].type_equals(&to.contained()[0]),
+                _ => false,
+            },
+
+            ApicaTypeBytecode::Array | ApicaTypeBytecode::List => match to.value {
+                ApicaTypeBytecode::Any => true,
+                ApicaTypeBytecode::Bool | ApicaTypeBytecode::String | ApicaTypeBytecode::Type => !is_auto,
+                ApicaTypeBytecode::Array | ApicaTypeBytecode::List => self.contained[0].type_equals(&to.contained()[0]),
                 _ => false,
             },
         }
@@ -495,18 +547,18 @@ impl ValueTrait for ValueType {
 
     fn logical_or(&self, other: &Value) -> Value {
         if self.value != ApicaTypeBytecode::Null {
-            return Value::Bool(ValueBool::with_value(true));
+            Value::Bool(ValueBool::with_value(true))
+        } else {
+            common::boolean_state(other)
         }
-        
-        common::boolean_state(other)
     }
 
     fn logical_and(&self, other: &Value) -> Value {
         if self.value == ApicaTypeBytecode::Null {
-            return Value::Bool(ValueBool::with_value(false));
+            Value::Bool(ValueBool::with_value(false))
+        } else {
+            common::boolean_state(other)
         }
-        
-        common::boolean_state(other)
     }
 
     fn left_shift(&self, _other: &Value) -> Result<Option<Value>, ()> {
@@ -524,6 +576,12 @@ impl ValueTrait for ValueType {
                 Some(Value::Type(Box::new(self.clone())))
             },
             
+            _ => None,
+        }
+    }
+
+    fn access(&mut self, method: ApicaBuiltinMethodBytecode) -> Option<Value> {
+        match method { 
             _ => None,
         }
     }

@@ -27,3 +27,5 @@ pub mod error;
 pub mod value_type;
 pub mod reference;
 mod common;
+pub mod array;
+pub mod list;

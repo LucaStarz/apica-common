@@ -1,4 +1,5 @@
-﻿use crate::bytecodes::types::ApicaTypeBytecode;
+﻿use crate::bytecodes::builtin_method::ApicaBuiltinMethodBytecode;
+use crate::bytecodes::types::ApicaTypeBytecode;
 use crate::values::bool::ValueBool;
 use crate::values::common;
 use crate::values::string::ValueString;
@@ -194,18 +195,18 @@ impl ValueTrait for ValueError {
 
     fn logical_or(&self, other: &Value) -> Value {
         if !self.name().unwrap_or("").is_empty() {
-            return Value::Bool(ValueBool::with_value(true));
+            Value::Bool(ValueBool::with_value(true))
+        } else {
+            common::boolean_state(other)
         }
-        
-        common::boolean_state(other)
     }
 
     fn logical_and(&self, other: &Value) -> Value {
         if self.name().unwrap_or("").is_empty() {
-            return Value::Bool(ValueBool::with_value(false));
+            Value::Bool(ValueBool::with_value(false))
+        } else {
+            common::boolean_state(other)
         }
-        
-        common::boolean_state(other)
     }
 
     fn left_shift(&self, _other: &Value) -> Result<Option<Value>, ()> {
@@ -237,6 +238,24 @@ impl ValueTrait for ValueError {
                 Some(Value::Error(Box::new(self.clone())))
             },
             
+            _ => None,
+        }
+    }
+
+    fn access(&mut self, method: ApicaBuiltinMethodBytecode) -> Option<Value> {
+        match method {
+            ApicaBuiltinMethodBytecode::Name => Some(Value::String(ValueString::with_value(
+                self.name().unwrap().to_string()
+            ))),
+
+            ApicaBuiltinMethodBytecode::Details => Some(Value::String(ValueString::with_value(
+                self.details().unwrap().to_string()
+            ))),
+
+            ApicaBuiltinMethodBytecode::StackTrace => Some(Value::String(ValueString::with_value(
+                self.stack_trace.join("\n")
+            ))),
+
             _ => None,
         }
     }

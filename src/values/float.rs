@@ -1,4 +1,5 @@
-﻿use crate::bytecodes::types::ApicaTypeBytecode;
+﻿use crate::bytecodes::builtin_method::ApicaBuiltinMethodBytecode;
+use crate::bytecodes::types::ApicaTypeBytecode;
 use crate::values::bool::ValueBool;
 use crate::values::char::ValueChar;
 use crate::values::common;
@@ -8,7 +9,7 @@ use crate::values::uint::ValueUInt;
 use crate::values::value::{Value, ValueTrait};
 use crate::values::value_type::ValueType;
 
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub struct ValueFloat {
     value: Option<f64>,
 }
@@ -38,14 +39,14 @@ impl ValueTrait for ValueFloat {
 
     fn show(&self, end: char) {
         match self.value {
-            Some(v) => print!("float<{}>{}", v, end),
+            Some(v) => print!("float<{:.}>{}", v, end),
             None => print!("float<>{}", end),
         }
     }
 
     fn repr(&self) -> String {
         match self.value { 
-            Some(v) => format!("float<{}>", v),
+            Some(v) => format!("float<{:.}>", v),
             None => String::from("float<>"),
         }
     }
@@ -467,18 +468,18 @@ impl ValueTrait for ValueFloat {
 
     fn logical_or(&self, other: &Value) -> Value {
         if self.value.unwrap_or(0.0) != 0.0 {
-            return Value::Bool(ValueBool::with_value(true));
+            Value::Bool(ValueBool::with_value(true))
+        } else {
+            common::boolean_state(other)
         }
-        
-        common::boolean_state(other)
     }
 
     fn logical_and(&self, other: &Value) -> Value {
         if self.value.unwrap_or(0.0) == 0.0 {
-            return Value::Bool(ValueBool::with_value(false));
+            Value::Bool(ValueBool::with_value(false))
+        } else {
+            common::boolean_state(other)
         }
-        
-        common::boolean_state(other)
     }
 
     fn left_shift(&self, _other: &Value) -> Result<Option<Value>, ()> {
@@ -528,6 +529,12 @@ impl ValueTrait for ValueFloat {
                 Some(Value::Float(self.clone()))
             }
 
+            _ => None,
+        }
+    }
+
+    fn access(&mut self, method: ApicaBuiltinMethodBytecode) -> Option<Value> {
+        match method { 
             _ => None,
         }
     }

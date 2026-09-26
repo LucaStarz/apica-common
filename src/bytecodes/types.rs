@@ -36,6 +36,12 @@ pub enum ApicaTypeBytecode {
 
     /// Reference to other value (ref).
     Reference = 0x0A,
+
+    /// Non-mutable list of values (array).
+    Array =     0x0B,
+
+    /// Mutable list of values (list).
+    List =      0x0C,
 }
 
 impl ApicaTypeBytecode {
@@ -56,6 +62,9 @@ impl ApicaTypeBytecode {
             ApicaTypeBytecode::Error => "error",
             ApicaTypeBytecode::Type => "type",
             ApicaTypeBytecode::Reference => "reference",
+
+            ApicaTypeBytecode::Array => "array",
+            ApicaTypeBytecode::List => "list",
         }
     }
 }

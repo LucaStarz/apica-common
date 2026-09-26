@@ -1,3 +1,4 @@
+use crate::bytecodes::builtin_method::ApicaBuiltinMethodBytecode;
 use crate::bytecodes::types::ApicaTypeBytecode;
 use crate::values::bool::ValueBool;
 use crate::values::common;
@@ -41,7 +42,7 @@ impl ValueTrait for ValueReference {
 
     fn show(&self, end: char) {
         if let Some(address) = self.address {
-            print!("reference<{}>{}", address, end);
+            print!("reference<{:x}>{}", address, end);
         } else {
             print!("reference<>{}", end);
         }
@@ -49,7 +50,7 @@ impl ValueTrait for ValueReference {
 
     fn repr(&self) -> String {
         if let Some(address) = self.address {
-            format!("reference<{}>", address)
+            format!("reference<{:x}>", address)
         } else {
             String::from("reference<>")
         }
@@ -153,18 +154,18 @@ impl ValueTrait for ValueReference {
 
     fn logical_or(&self, other: &Value) -> Value {
         if self.address.is_some() {
-            return Value::Bool(ValueBool::with_value(true));
+            Value::Bool(ValueBool::with_value(true))
+        } else {
+            common::boolean_state(other)
         }
-        
-        common::boolean_state(other)
     }
 
     fn logical_and(&self, other: &Value) -> Value {
         if self.address.is_none() {
-            return Value::Bool(ValueBool::with_value(false));
+            Value::Bool(ValueBool::with_value(false))
+        } else {
+            common::boolean_state(other)
         }
-        
-        common::boolean_state(other)
     }
 
     fn left_shift(&self, _other: &Value) -> Result<Option<Value>, ()> {
@@ -187,6 +188,12 @@ impl ValueTrait for ValueReference {
                 Some(Value::Reference(v.clone()))
             } else { None },
             
+            _ => None,
+        }
+    }
+
+    fn access(&mut self, method: ApicaBuiltinMethodBytecode) -> Option<Value> {
+        match method { 
             _ => None,
         }
     }

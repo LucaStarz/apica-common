@@ -1,5 +1,7 @@
-﻿use crate::bytecodes::types::ApicaTypeBytecode;
+﻿use crate::bytecodes::builtin_method::ApicaBuiltinMethodBytecode;
+use crate::bytecodes::types::ApicaTypeBytecode;
 use crate::elements::modifier::ElementModifier;
+use crate::values::null::ValueNull;
 use crate::values::value::{Value, ValueTrait};
 use crate::values::value_type::ValueType;
 
@@ -211,6 +213,64 @@ impl Element {
             Err(_) => Element::new(
                 ElementModifier::ERROR,
                 Value::negative_operation_error("*"),
+            )
+        }
+    }
+
+    /// Performs a division (elt / other) with another [`Element`].
+    ///
+    /// # Returns
+    ///
+    /// A new [`Element`] representing the result of the division or an error.
+    pub fn divide(&self, other: &Element) -> Element {
+        if self.value.is_null() || other.value.is_null() {
+            return Element::new(
+                ElementModifier::ERROR,
+                Value::null_operation_error("/", false),
+            );
+        }
+
+        let result = self.value.divide(&other.value);
+        match result {
+            Ok(result_value) => match result_value {
+                Some(val) => Element::new(ElementModifier::NONE, val),
+                None => Element::new(
+                    ElementModifier::ERROR,
+                    Value::binary_operation_error("/", &self.value.get_type_repr(), &other.value.get_type_repr()),
+                ),
+            }
+            Err(_) => Element::new(
+                ElementModifier::ERROR,
+                Value::negative_operation_error("/"),
+            )
+        }
+    }
+
+    /// Performs a modulo division (elt % other) with another [`Element`].
+    ///
+    /// # Returns
+    ///
+    /// A new [`Element`] representing the result of the modulo division or an error.
+    pub fn modulo(&self, other: &Element) -> Element {
+        if self.value.is_null() || other.value.is_null() {
+            return Element::new(
+                ElementModifier::ERROR,
+                Value::null_operation_error("%", false),
+            );
+        }
+
+        let result = self.value.modulo(&other.value);
+        match result {
+            Ok(result_value) => match result_value {
+                Some(val) => Element::new(ElementModifier::NONE, val),
+                None => Element::new(
+                    ElementModifier::ERROR,
+                    Value::binary_operation_error("%", &self.value.get_type_repr(), &other.value.get_type_repr()),
+                ),
+            }
+            Err(_) => Element::new(
+                ElementModifier::ERROR,
+                Value::negative_operation_error("%"),
             )
         }
     }
@@ -574,6 +634,45 @@ impl Element {
                 Value::binary_operation_error("=", &self.value.get_type_repr(), &other.value.get_type_repr()),
             ),
         }
+    }
+
+    /// Performs an access operation (elt.method()) with a built-in method bytecode [`ApicaBuiltinMethodBytecode`].
+    ///
+    /// # Returns
+    ///
+    /// A new [`Element`] representing the result of the access operation or an error.
+    pub fn access(&mut self, method: ApicaBuiltinMethodBytecode) -> Element {
+        if self.value.is_null() {
+            return Element::new(
+                ElementModifier::ERROR,
+                Value::null_operation_error(".", false),
+            );
+        }
+        
+        let result = self.value.access(method);
+        match result { 
+            Some(val) => Element::new(ElementModifier::NONE, val),
+            None => Element::new(
+                ElementModifier::ERROR,
+                Value::undefined_method_error(&self.value.get_type_repr(), method.repr()),
+            )
+        }
+    }
+
+    /// Performs a conditional access operation (elt?.method()) with a built-in method bytecode [`ApicaBuiltinMethodBytecode`].
+    ///
+    /// # Returns
+    ///
+    /// A new [`Element`] representing the result of the access operation or an error.
+    pub fn conditional_access(&mut self, method: ApicaBuiltinMethodBytecode) -> Element {
+        if self.value.is_null() {
+            return Element::new(
+                ElementModifier::NONE,
+                Value::Null(ValueNull::new()),
+            )
+        }
+        
+        self.access(method)
     }
 
     /// Performs a conversion (elt as to) with a [`ValueType`].

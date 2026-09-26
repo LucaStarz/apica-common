@@ -14,5 +14,16 @@ pub fn boolean_state(value: &Value) -> Value {
         Value::Error(v) => Value::Bool(ValueBool::with_value(!v.name().unwrap_or("").is_empty())),
         Value::Type(v) => Value::Bool(ValueBool::with_value(v.value() != ApicaTypeBytecode::Null)),
         Value::Reference(v) => Value::Bool(ValueBool::with_value(!v.is_null())),
+        Value::Array(v) => Value::Bool(ValueBool::with_value(!v.is_null())),
+        Value::List(v) => Value::Bool(ValueBool::with_value(!v.is_null())),
     }
+}
+
+pub fn vec_equals(a: &Vec<Value>, b: &Vec<Value>) -> bool {
+    a.len() == b.len() && a.iter().zip(b.iter()).all(|(vi, oi)| {
+        matches!(
+            vi.equals(oi),
+            Some(Value::Bool(boolean)) if boolean.value().unwrap_or(false)
+        )
+    })
 }

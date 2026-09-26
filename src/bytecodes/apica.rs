@@ -184,5 +184,8 @@ pub enum ApicaBytecode {
     RightShiftAssign =  0x0000003A,
     
     /// Reference of operation (&elt)
-    ReferenceOf =         0x0000003B,
+    ReferenceOf =       0x0000003B,
+    
+    /// Index of operation (elt\[other])
+    IndexOf =           0x0000003C,
 }
