@@ -37,7 +37,6 @@ impl ValueType {
     pub fn inner_repr(&self) -> String {
         let mut inner = String::new();
         if !self.contained.is_empty() {
-            inner.push('<');
             for i in 0..self.contained.len() {
                 inner.push_str(&self.contained[i].inner_repr());
 
@@ -45,8 +44,6 @@ impl ValueType {
                     inner.push_str(", ");
                 }
             }
-            
-            inner.push('>');
         }
 
         if inner.is_empty() {
