@@ -355,14 +355,14 @@ impl ValueType {
             ApicaTypeBytecode::Reference => match to.value { 
                 ApicaTypeBytecode::Any => true,
                 ApicaTypeBytecode::Bool | ApicaTypeBytecode::String | ApicaTypeBytecode::Type => !is_auto,
-                ApicaTypeBytecode::Reference => self.contained[0].type_equals(&to.contained()[0]),
+                ApicaTypeBytecode::Reference => to.contained[0].type_equals(&self.contained[0]),
                 _ => false,
             },
 
             ApicaTypeBytecode::Array | ApicaTypeBytecode::List => match to.value {
                 ApicaTypeBytecode::Any => true,
                 ApicaTypeBytecode::Bool | ApicaTypeBytecode::String | ApicaTypeBytecode::Type => !is_auto,
-                ApicaTypeBytecode::Array | ApicaTypeBytecode::List => self.contained[0].type_equals(&to.contained()[0]),
+                ApicaTypeBytecode::Array | ApicaTypeBytecode::List => to.contained[0].type_equals(&self.contained[0]),
                 _ => false,
             },
         }
