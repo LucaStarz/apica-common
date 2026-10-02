@@ -221,7 +221,7 @@ impl ValueTrait for ValueReference {
     fn auto_convert(&self, to: &ValueType, _is_nullable: bool) -> Option<Value> {
         match to.value() { 
             ApicaTypeBytecode::Any => Some(Value::Reference(Box::new(self.clone()))),
-            ApicaTypeBytecode::Reference => if self.contained.contained()[0].can_be_converted_to(&to.contained()[0], true) {
+            ApicaTypeBytecode::Reference => if self.contained.can_be_converted_to(&to.contained()[0], true) {
                 Some(Value::Reference(Box::new(self.clone())))
             } else { None },
             
