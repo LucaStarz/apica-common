@@ -25,8 +25,13 @@ impl Element {
     }
 
     /// Returns a shared reference to the inner [`Value`].
-    pub fn get_value(&self) -> &Value {
+    pub fn value(&self) -> &Value {
         &self.value
+    }
+
+    /// Take the inner [`Value`].
+    pub fn take_value(&mut self) -> Value {
+        std::mem::replace(&mut self.value, Value::Null(ValueNull::new()))
     }
 
     /// Checks whether this element carries the [`ElementModifier::ERROR`] flag.
