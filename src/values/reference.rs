@@ -37,7 +37,7 @@ impl ValueTrait for ValueReference {
 
     fn get_type_repr(&self) -> String {
         let inner = self.contained.inner_repr();
-        format!("reference{}", inner)
+        format!("reference<{}>", inner)
     }
 
     fn show(&self, end: char) {
@@ -221,7 +221,7 @@ impl ValueTrait for ValueReference {
     fn auto_convert(&self, to: &ValueType, _is_nullable: bool) -> Option<Value> {
         match to.value() { 
             ApicaTypeBytecode::Any => Some(Value::Reference(Box::new(self.clone()))),
-            ApicaTypeBytecode::Reference => if self.contained.type_equals(&to.contained()[0]) {
+            ApicaTypeBytecode::Reference => if self.contained.contained()[0].can_be_converted_to(&to.contained()[0], true) {
                 Some(Value::Reference(Box::new(self.clone())))
             } else { None },
             
