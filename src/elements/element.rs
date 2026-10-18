@@ -78,6 +78,20 @@ impl Element {
         }
     }
 
+    /// Performs an addition assignment (elt += other) with another [`Element`].
+    ///
+    /// # Returns
+    ///
+    /// A new [`Element`] representing the result of the addition assignment or an error.
+    pub fn add_assign(&mut self, other: &Element) -> Element {
+        let result = self.add(&other);
+        if result.is_error_or_control() {
+            return result;
+        }
+
+        self.assign(other)
+    }
+
     /// Performs a right incrementation (elt++).
     ///
     /// # Returns
@@ -145,6 +159,20 @@ impl Element {
                 Value::binary_operation_error("-", &self.value.get_type_repr(), &other.value.get_type_repr()),
             ),
         }
+    }
+
+    /// Performs a subtraction assignment (elt -= other) with another [`Element`].
+    ///
+    /// # Returns
+    ///
+    /// A new [`Element`] representing the result of the subtraction assignment or an error.
+    pub fn subtract_assign(&mut self, other: &Element) -> Element {
+        let result = self.subtract(&other);
+        if result.is_error_or_control() {
+            return result;
+        }
+
+        self.assign(other)
     }
 
     /// Performs a right decrementation (elt--).
@@ -222,6 +250,20 @@ impl Element {
         }
     }
 
+    /// Performs a multiplication assignment (elt *= other) with another [`Element`].
+    ///
+    /// # Returns
+    ///
+    /// A new [`Element`] representing the result of the multiplication assignment or an error.
+    pub fn times_assign(&mut self, other: &Element) -> Element {
+        let result = self.times(&other);
+        if result.is_error_or_control() {
+            return result;
+        }
+
+        self.assign(other)
+    }
+
     /// Performs a division (elt / other) with another [`Element`].
     ///
     /// # Returns
@@ -251,6 +293,20 @@ impl Element {
         }
     }
 
+    /// Performs a division assignment (elt /= other) with another [`Element`].
+    ///
+    /// # Returns
+    ///
+    /// A new [`Element`] representing the result of the division assignment or an error.
+    pub fn divide_assign(&mut self, other: &Element) -> Element {
+        let result = self.divide(&other);
+        if result.is_error_or_control() {
+            return result;
+        }
+
+        self.assign(other)
+    }
+
     /// Performs a modulo division (elt % other) with another [`Element`].
     ///
     /// # Returns
@@ -278,6 +334,20 @@ impl Element {
                 Value::negative_operation_error("%"),
             )
         }
+    }
+
+    /// Performs a modulo division assignment (elt *= other) with another [`Element`].
+    ///
+    /// # Returns
+    ///
+    /// A new [`Element`] representing the result of the modulo division assignment or an error.
+    pub fn modulo_assign(&mut self, other: &Element) -> Element {
+        let result = self.modulo(&other);
+        if result.is_error_or_control() {
+            return result;
+        }
+
+        self.assign(other)
     }
 
     /// Performs a not operation (!elt).
@@ -342,6 +412,20 @@ impl Element {
         }
     }
 
+    /// Performs a bitwise or assignment (elt |= other) with another [`Element`].
+    ///
+    /// # Returns
+    ///
+    /// A new [`Element`] representing the result of the bitwise or assignment or an error.
+    pub fn bitwise_or_assign(&mut self, other: &Element) -> Element {
+        let result = self.bitwise_or(&other);
+        if result.is_error_or_control() {
+            return result;
+        }
+
+        self.assign(other)
+    }
+
     /// Performs a bitwise xor operation (elt ^ other) with another [`Element`].
     ///
     /// # Returns
@@ -365,6 +449,20 @@ impl Element {
         }
     }
 
+    /// Performs a bitwise xor assignment (elt ^= other) with another [`Element`].
+    ///
+    /// # Returns
+    ///
+    /// A new [`Element`] representing the result of the bitwise xor assignment or an error.
+    pub fn bitwise_xor_assign(&mut self, other: &Element) -> Element {
+        let result = self.bitwise_xor(&other);
+        if result.is_error_or_control() {
+            return result;
+        }
+
+        self.assign(other)
+    }
+
     /// Performs a bitwise and operation (elt & other) with another [`Element`].
     ///
     /// # Returns
@@ -386,6 +484,20 @@ impl Element {
                 Value::binary_operation_error("&", &self.value.get_type_repr(), &other.value.get_type_repr()),
             )
         }
+    }
+
+    /// Performs a bitwise and assignment (elt &= other) with another [`Element`].
+    ///
+    /// # Returns
+    ///
+    /// A new [`Element`] representing the result of the bitwise and assignment or an error.
+    pub fn bitwise_and_assign(&mut self, other: &Element) -> Element {
+        let result = self.bitwise_and(&other);
+        if result.is_error_or_control() {
+            return result;
+        }
+
+        self.assign(other)
     }
 
     /// Performs a less than operation (elt < other) with another [`Element`].
@@ -566,6 +678,20 @@ impl Element {
         }
     }
 
+    /// Performs a left-shift operation assignment (elt <<= other) with another [`Element`].
+    ///
+    /// # Returns
+    ///
+    /// A new [`Element`] representing the result of the left-shift operation assignment or an error.
+    pub fn left_shift_assign(&mut self, other: &Element) -> Element {
+        let result = self.left_shift(&other);
+        if result.is_error_or_control() {
+            return result;
+        }
+
+        self.assign(other)
+    }
+
     /// Performs a right-shift operation (elt >> other) with another [`Element`].
     ///
     /// # Returns
@@ -594,6 +720,20 @@ impl Element {
                 Value::zero_operation_error(">>"),
             )
         }
+    }
+
+    /// Performs a right-shift operation assignment (elt >>= other) with another [`Element`].
+    ///
+    /// # Returns
+    ///
+    /// A new [`Element`] representing the result of the right-shift operation assignment or an error.
+    pub fn right_shift_assign(&mut self, other: &Element) -> Element {
+        let result = self.right_shift(&other);
+        if result.is_error_or_control() {
+            return result;
+        }
+
+        self.assign(other)
     }
     
     /// Performs an assignation (elt = other) with another [`Element`].

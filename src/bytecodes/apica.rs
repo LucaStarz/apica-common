@@ -133,7 +133,7 @@ pub enum ApicaBytecode {
     Modulo =            0x00000029,
 
     /// Modulo assignment (elt %= elt).
-    ModuloEquals =      0x0000002A,
+    ModuloAssign =      0x0000002A,
 
     /// Member access (elt.member).
     Access =            0x0000002B,
