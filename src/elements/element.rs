@@ -89,7 +89,7 @@ impl Element {
             return result;
         }
 
-        self.assign(other)
+        self.assign(&result)
     }
 
     /// Performs a right incrementation (elt++).
@@ -172,7 +172,7 @@ impl Element {
             return result;
         }
 
-        self.assign(other)
+        self.assign(&result)
     }
 
     /// Performs a right decrementation (elt--).
@@ -261,7 +261,7 @@ impl Element {
             return result;
         }
 
-        self.assign(other)
+        self.assign(&result)
     }
 
     /// Performs a division (elt / other) with another [`Element`].
@@ -304,7 +304,7 @@ impl Element {
             return result;
         }
 
-        self.assign(other)
+        self.assign(&result)
     }
 
     /// Performs a modulo division (elt % other) with another [`Element`].
@@ -347,7 +347,7 @@ impl Element {
             return result;
         }
 
-        self.assign(other)
+        self.assign(&result)
     }
 
     /// Performs a not operation (!elt).
@@ -423,7 +423,7 @@ impl Element {
             return result;
         }
 
-        self.assign(other)
+        self.assign(&result)
     }
 
     /// Performs a bitwise xor operation (elt ^ other) with another [`Element`].
@@ -460,7 +460,7 @@ impl Element {
             return result;
         }
 
-        self.assign(other)
+        self.assign(&result)
     }
 
     /// Performs a bitwise and operation (elt & other) with another [`Element`].
@@ -497,7 +497,7 @@ impl Element {
             return result;
         }
 
-        self.assign(other)
+        self.assign(&result)
     }
 
     /// Performs a less than operation (elt < other) with another [`Element`].
@@ -689,7 +689,7 @@ impl Element {
             return result;
         }
 
-        self.assign(other)
+        self.assign(&result)
     }
 
     /// Performs a right-shift operation (elt >> other) with another [`Element`].
@@ -733,7 +733,7 @@ impl Element {
             return result;
         }
 
-        self.assign(other)
+        self.assign(&result)
     }
     
     /// Performs an assignation (elt = other) with another [`Element`].
